@@ -20,5 +20,16 @@ RUN curl -fsSL \
  && rm /tmp/tomcat.zip \
  && chmod +x $CATALINA_HOME/bin/*.sh
 
+# Clear out any JDK-global flags that VS Code’s base image may inject
+ENV JAVA_TOOL_OPTIONS=""
+ENV _JAVA_OPTIONS=""
+
+# 1) Drop a setenv.sh in Tomcat to clear any unwanted JVM flags
+RUN echo 'CATALINA_OPTS=""' > $CATALINA_HOME/bin/setenv.sh \
+ && chmod +x $CATALINA_HOME/bin/setenv.sh
+
+# 2) Give the vscode user ownership of the entire Tomcat directory, to be able to copy .war files (deploying)
+RUN chown -R vscode:root $CATALINA_HOME
+
 USER vscode
-WORKDIR /workspace
+WORKDIR /cheeper

@@ -1,9 +1,9 @@
 {
     "name": "Java 11 + Maven + Tomcat 11",
     "build": { "dockerfile": "Dockerfile" },
-    "workspaceFolder": "/workspace",
+    "workspaceFolder": "/cheeper",
     //Explicit mount: bind your local folder to the container
-    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/cheeper,type=bind,consistency=cached",
     "features": {
       // No features. Installing everything directly on Dockerfile over published base image.
       //"ghcr.io/devcontainers/features/maven:1": {} 
@@ -13,7 +13,7 @@
         "extensions": [
           "vscjava.vscode-java-pack",   // Java devtools & debugger
           "vscjava.vscode-maven",       // Maven explorer
-          "adashen.vscode-tomcat"       // Tomcat server UI
+          "redhat.vscode-community-server-connector" // Community Server Connector to connect to Tomcat
         ]
       }
     },
