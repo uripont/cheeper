@@ -1,0 +1,22 @@
+{
+    "name": "Java 11 + Maven + Tomcat 11",
+    "build": { "dockerfile": "Dockerfile" },
+    "workspaceFolder": "/workspace",
+    //Explicit mount: bind your local folder to the container
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+    "features": {
+      // No features. Installing everything directly on Dockerfile over published base image.
+      //"ghcr.io/devcontainers/features/maven:1": {} 
+    },
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "vscjava.vscode-java-pack",   // Java devtools & debugger
+          "vscjava.vscode-maven",       // Maven explorer
+          "adashen.vscode-tomcat"       // Tomcat server UI
+        ]
+      }
+    },
+    "forwardPorts": [8080],
+    "postCreateCommand": "mvn clean package -DskipTests"
+  }
