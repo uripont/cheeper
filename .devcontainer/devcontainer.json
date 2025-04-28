@@ -12,15 +12,15 @@
       "vscode": {
         "extensions": [
           "vscjava.vscode-java-pack",   // Java devtools & debugger
-          "vscjava.vscode-maven",       // Maven explorer
-          "redhat.vscode-community-server-connector" // Community Server Connector to connect to Tomcat
+          "vscjava.vscode-maven"       // Maven explorer
+          //"redhat.vscode-community-server-connector" // Community Server Connector to connect to Tomcat
         ]
       }
     },
     "forwardPorts": [8080],
     "portsAttributes": {
       "8080": {
-        "label": "Tomcat (cheeper)",
+        "label": "Tomcat server (cheeper)",
         "onAutoForward": "openBrowser"
       }
     },

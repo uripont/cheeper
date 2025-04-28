@@ -16,31 +16,32 @@
     {
       "label": "Deploy as ROOT.war",
       "type": "shell",
-      "command": "cp target/cheeper.war /opt/tomcat/webapps/ROOT.war",
+      // `rm -rf` here to delete the exploded ROOT app first
+      "command": "rm -rf /opt/tomcat/webapps/ROOT && cp target/cheeper.war /opt/tomcat/webapps/ROOT.war",
       "problemMatcher": []
     },
     {
       "label": "Run Tomcat (foreground)",
       "type": "shell",
-      "command": "unset JAVA_TOOL_OPTIONS _JAVA_OPTIONS && /opt/tomcat/bin/catalina.sh run",
+      "command": "/opt/tomcat/bin/catalina.sh run",
       "presentation": {
-        "panel": "new",
-        "reveal": "always"
+        "panel": "new",       // opens a fresh terminal panel
+        "reveal": "always"    // always shows the panel to see logs
       },
       "problemMatcher": []
     },
     {
       "label": "Rebuild & Restart Tomcat",
+      "dependsOrder": "sequence",
       "dependsOn": [
         "Stop Tomcat",
         "Build WAR",
         "Deploy as ROOT.war",
         "Run Tomcat (foreground)"
       ],
-      "dependsOrder": "sequence",
       "group": {
         "kind": "build",
-        "isDefault": true
+        "isDefault": true     // makes Ctrl+Shift+B run build+deploy end-to-end
       }
     }
   ]

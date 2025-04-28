@@ -1,35 +1,32 @@
-# Base off the VS Code–maintained Java 11 image
-FROM mcr.microsoft.com/vscode/devcontainers/java:1-11
+FROM eclipse-temurin:21-jdk-jammy
 
+# install Maven (Java project management) + git/curl/unzip
 USER root
-
-# Install Maven + curl/unzip for Tomcat
 RUN apt-get update \
- && apt-get install -y --no-install-recommends maven curl unzip \
+ && apt-get install -y --no-install-recommends git maven curl unzip \
  && rm -rf /var/lib/apt/lists/*
 
-# Download & unpack Tomcat 11
-ENV CATALINA_VERSION=11.0.0
-ENV CATALINA_HOME=/opt/tomcat
-ENV PATH="$CATALINA_HOME/bin:$PATH"
+# download & unpack Tomcat 11
+ENV CATALINA_VERSION=11.0.0 \
+    CATALINA_HOME=/opt/tomcat \
+    PATH=/opt/tomcat/bin:$PATH
 RUN curl -fsSL \
     https://archive.apache.org/dist/tomcat/tomcat-11/v${CATALINA_VERSION}/bin/apache-tomcat-${CATALINA_VERSION}.zip \
     -o /tmp/tomcat.zip \
  && unzip /tmp/tomcat.zip -d /opt \
  && mv /opt/apache-tomcat-${CATALINA_VERSION} $CATALINA_HOME \
  && rm /tmp/tomcat.zip \
- && chmod +x $CATALINA_HOME/bin/*.sh
+ && chmod +x $CATALINA_HOME/bin/*.sh \
+ && chown -R root:root $CATALINA_HOME
 
-# Clear out any JDK-global flags that VS Code’s base image may inject
-ENV JAVA_TOOL_OPTIONS=""
-ENV _JAVA_OPTIONS=""
+# (Re)create the 'vscode' user with UID 1000 and GID 1000 (default for VS Code)
+RUN groupadd -g 1000 vscode \
+ && useradd -m -u 1000 -g 1000 -s /bin/bash vscode \
+ # Give that user access to Tomcat and the workspace
+ && chown -R vscode:vscode $CATALINA_HOME \
+ && mkdir -p /cheeper \
+ && chown -R vscode:vscode /cheeper
 
-# 1) Drop a setenv.sh in Tomcat to clear any unwanted JVM flags
-RUN echo 'CATALINA_OPTS=""' > $CATALINA_HOME/bin/setenv.sh \
- && chmod +x $CATALINA_HOME/bin/setenv.sh
-
-# 2) Give the vscode user ownership of the entire Tomcat directory, to be able to copy .war files (deploying)
-RUN chown -R vscode:vscode $CATALINA_HOME
-
+# Switch into that user for all subsequent operations
 USER vscode
 WORKDIR /cheeper
