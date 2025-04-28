@@ -29,7 +29,7 @@ RUN echo 'CATALINA_OPTS=""' > $CATALINA_HOME/bin/setenv.sh \
  && chmod +x $CATALINA_HOME/bin/setenv.sh
 
 # 2) Give the vscode user ownership of the entire Tomcat directory, to be able to copy .war files (deploying)
-RUN chown -R vscode:root $CATALINA_HOME
+RUN chown -R vscode:vscode $CATALINA_HOME
 
 USER vscode
 WORKDIR /cheeper

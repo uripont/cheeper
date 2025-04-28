@@ -18,5 +18,11 @@
       }
     },
     "forwardPorts": [8080],
+    "portsAttributes": {
+      "8080": {
+        "label": "Tomcat (cheeper)",
+        "onAutoForward": "openBrowser"
+      }
+    },
     "postCreateCommand": "mvn clean package -DskipTests"
   }

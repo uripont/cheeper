@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Stop Tomcat",
+      "type": "shell",
+      "command": "pkill -f catalina || true",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build WAR",
+      "type": "shell",
+      "command": "mvn clean package",
+      "problemMatcher": []
+    },
+    {
+      "label": "Deploy as ROOT.war",
+      "type": "shell",
+      "command": "cp target/cheeper.war /opt/tomcat/webapps/ROOT.war",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Tomcat (foreground)",
+      "type": "shell",
+      "command": "unset JAVA_TOOL_OPTIONS _JAVA_OPTIONS && /opt/tomcat/bin/catalina.sh run",
+      "presentation": {
+        "panel": "new",
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Rebuild & Restart Tomcat",
+      "dependsOn": [
+        "Stop Tomcat",
+        "Build WAR",
+        "Deploy as ROOT.war",
+        "Run Tomcat (foreground)"
+      ],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
