@@ -1,0 +1,48 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Stop Tomcat",
+      "type": "shell",
+      "command": "pkill -f catalina || true",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build WAR",
+      "type": "shell",
+      "command": "mvn clean package",
+      "problemMatcher": []
+    },
+    {
+      "label": "Deploy as ROOT.war",
+      "type": "shell",
+      // `rm -rf` here to delete the exploded ROOT app first
+      "command": "rm -rf /opt/tomcat/webapps/ROOT && cp target/cheeper.war /opt/tomcat/webapps/ROOT.war",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Tomcat (foreground)",
+      "type": "shell",
+      "command": "/opt/tomcat/bin/catalina.sh run",
+      "presentation": {
+        "panel": "new",       // opens a fresh terminal panel
+        "reveal": "always"    // always shows the panel to see logs
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Rebuild & Restart Tomcat",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Stop Tomcat",
+        "Build WAR",
+        "Deploy as ROOT.war",
+        "Run Tomcat (foreground)"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true     // makes Ctrl+Shift+B run build+deploy end-to-end
+      }
+    }
+  ]
+}

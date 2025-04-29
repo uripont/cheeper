@@ -1,2 +1,12 @@
 # macOS system files
 .DS_Store
+
+# Maven build output
+/target/
+
+# VS Code settings & workspace files
+/.devcontainer/devcontainer.json.lock
+
+# VS Code general settings (but we want to keep tasks.json)
+/.vscode/*
+!/.vscode/tasks.json
