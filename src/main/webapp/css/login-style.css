@@ -1,0 +1,123 @@
+@charset "UTF-8";
+
+/* === Base Setup === */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #B41C18; /* UPF Red */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* === Shared Container Styles === */
+.login-container,
+.register-container {
+  background-color: #fff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  margin: 20px;
+}
+
+/* === Shared Heading Styles === */
+.login-container h1,
+.register-container h1 {
+  font-size: 28px;
+  color: #B41C18;
+  margin-bottom: 30px;
+}
+
+/* === Login Page Specific Styles === */
+.google-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  color: #444;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: box-shadow 0.2s ease-in-out;
+  width: 100%;
+  max-width: 300px;
+}
+
+.google-btn:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.google-icon {
+  margin-right: 10px;
+}
+
+/* === Registration Form Specific Styles === */
+#registerForm {
+  text-align: left;
+}
+
+#registerForm label {
+  display: block;
+  font-size: 16px;
+  margin: 15px 0 8px 0;
+  color: #333;
+  font-weight: 500;
+}
+
+#registerForm input,
+#registerForm textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+#registerForm textarea {
+  resize: none;
+  height: 120px;
+  overflow-y: auto;
+}
+
+#registerForm button {
+  width: 100%;
+  padding: 14px;
+  background-color: #B41C18;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+#registerForm button:hover {
+  background-color: #9a1611;
+}
+
+/* === Shared Footer Styles === */
+.footer {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #aaa;
+}
+
+/* === Error Messages === */
+.error-message {
+  color: #d32f2f;
+  font-size: 14px;
+  margin: -5px 0 15px 0;
+  text-align: left;
+}

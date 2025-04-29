@@ -37,6 +37,13 @@
       <version>6.0.0</version>
       <scope>provided</scope>
     </dependency>
+
+    <!-- Adding the Bean Utils library (to allow .populate() JavaBeans)-->
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.10.1</version>
+    </dependency>
   </dependencies>
 
   <build>
