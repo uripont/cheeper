@@ -10,3 +10,5 @@
 # VS Code general settings (but we want to keep tasks.json)
 /.vscode/*
 !/.vscode/tasks.json
+
+.env
