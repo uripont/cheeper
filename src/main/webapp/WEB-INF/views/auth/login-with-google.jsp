@@ -5,7 +5,7 @@
 <head>
     <title>Login | Cheep UPF</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
- 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/login-style.css">
+ 	<link rel="stylesheet" href="<%= request.getContextPath() %>/css/login-style.css">
 </head>
 </head>
 <body>
