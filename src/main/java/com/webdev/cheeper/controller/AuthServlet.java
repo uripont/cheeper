@@ -24,6 +24,8 @@ public class AuthServlet extends HttpServlet {
 		request.getRequestDispatcher("WEB-INF/views/auth/login-with-google.jsp").forward(request, response);
 	}
 
+	// TODO: Move onboarding/registration forms after OAuth login to separate logic according to detected user type
+	/* 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    User user = new User();
 	    
@@ -49,8 +51,8 @@ public class AuthServlet extends HttpServlet {
 	            request.setAttribute("user", user);
 	            request.setAttribute("errors", errors);
 	            request.getRequestDispatcher("Register.jsp").forward(request, response);
-	        } */
-	   }
+	        } 
+	   } 
 	    
-	 }
+	 }*/
 }

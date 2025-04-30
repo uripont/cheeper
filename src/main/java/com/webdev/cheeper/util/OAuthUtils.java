@@ -2,9 +2,6 @@ package com.webdev.cheeper.util;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-/**
- * Utility class for OAuth related functionality
- */
 public class OAuthUtils {
     
     /**

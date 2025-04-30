@@ -67,6 +67,13 @@
         <artifactId>json</artifactId>
         <version>20230227</version>
       </dependency>
+
+      <!-- Dotenv library -->
+      <dependency>
+        <groupId>io.github.cdimascio</groupId>
+        <artifactId>java-dotenv</artifactId>
+        <version>5.2.2</version>
+      </dependency>
   </dependencies>
 
   <build>

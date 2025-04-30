@@ -26,12 +26,14 @@ import com.webdev.cheeper.repository.UserRepository; // Used to verify if the us
 import com.webdev.cheeper.util.OAuthUtils; // Utility class to build redirect URI
 
 import org.json.JSONObject; 
+import io.github.cdimascio.dotenv.Dotenv;
 
 
 @WebServlet("/auth/google-callback")
 public class GoogleOAuthCallbackServlet extends HttpServlet {
-    private static final String CLIENT_ID = System.getenv("GOOGLE_CLIENT_ID");
-    private static final String CLIENT_SECRET = System.getenv("GOOGLE_CLIENT_SECRET");
+    private static final Dotenv dotenv = Dotenv.load(); 
+    private static final String CLIENT_ID = dotenv.get("GOOGLE_CLIENT_ID");
+    private static final String CLIENT_SECRET = dotenv.get("GOOGLE_CLIENT_SECRET");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -84,7 +86,7 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
             
         } catch (GeneralSecurityException | IOException | InterruptedException e ) {
             e.printStackTrace();
-            response.sendRedirect("error.jsp");
+            response.sendRedirect("WEB-INF/views/auth/auth-error.jsp");
   
 		}
     }
