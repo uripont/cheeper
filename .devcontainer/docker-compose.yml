@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  maven:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - ..:/cheeper:cached
+    working_dir: /cheeper
+    command: tail -f /dev/null   # keep container alive for dev tasks
+        
+  tomcat:
+    image: tomcat:11.0-jdk17
+    command:
+      - /bin/sh
+      - -c
+      # on startup: remove any exploded ROOT folder so autoDeploy works
+      - rm -rf /usr/local/tomcat/webapps/ROOT && catalina.sh run
+    ports:
+      - "8080:8080"
+    volumes:
+      # NB: no ":ro" — Maven needs to overwrite this file in-place
+      - ../target/cheeper.war:/usr/local/tomcat/webapps/ROOT.war
+
+  db:
+    image: mysql:8.1
+    environment:
+      MYSQL_DATABASE: cheeper
+      MYSQL_USER: cheeper
+      MYSQL_PASSWORD: # TODO
+      MYSQL_ROOT_PASSWORD: # TODO
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+volumes:
+  db-data:
