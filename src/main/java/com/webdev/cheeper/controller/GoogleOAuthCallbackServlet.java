@@ -65,7 +65,7 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
 
             // Check if the user data is missing
             if (name == null || email == null) {
-                response.sendRedirect("error.jsp");
+                response.sendRedirect("WEB-INF/views/auth/auth-error.jsp");
                 return;
             }
             
@@ -76,9 +76,9 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
             // Redirect to appropriate page based on user existence
             try (UserRepository userRepository = new UserRepository()) {
                 if(!userRepository.emailExists(email)) {
-                    response.sendRedirect("Register.jsp");
+                    response.sendRedirect("WEB-INF/views/auth/login-with-google.jsp"); // TODO: Check desired behavior here
                 } else {
-                    response.sendRedirect("Welcome.jsp");
+                    response.sendRedirect("WEB-INF/views/onboarding/welcome.jsp");
                 }
             }
             
