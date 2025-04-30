@@ -13,11 +13,10 @@
   <packaging>war</packaging>
 
   <name>Cheeper WebApp</name>
-  <url>http://www.example.com</url>
+  <url>https://github.com/uripont/cheeper</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <!-- Change source/target from 1.7 → 11 -->
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
   </properties>
@@ -38,12 +37,36 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- Adding the Bean Utils library (to allow .populate() JavaBeans)-->
+    <!-- Bean Utils library (to allow .populate() JavaBeans)-->
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
       <version>1.10.1</version>
     </dependency>
+
+    <!-- Google OAuth client -->
+      <dependency>
+        <groupId>com.google.api-client</groupId>
+        <artifactId>google-api-client</artifactId>
+        <version>1.34.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.oauth-client</groupId>
+        <artifactId>google-oauth-client-jetty</artifactId>
+        <version>1.34.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.http-client</groupId>
+        <artifactId>google-http-client-gson</artifactId>
+        <version>1.34.1</version>
+      </dependency>
+
+      <!-- JSON parsing -->
+      <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20230227</version>
+      </dependency>
   </dependencies>
 
   <build>
