@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ../.env
+    command: tail -f /dev/null
+    volumes:
+      - ..:/workspace:cached
+    depends_on:
+      - tomcat
+      - db
+
+  tomcat:
+    build:
+      context: .
+      dockerfile: Dockerfile.tomcat
+    volumes:
+      # host's ./tomcat-webapps (will be created if missing)
+      - ../tomcat-webapps:/usr/local/tomcat/webapps:cached
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    env_file:
+      - ../.env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:

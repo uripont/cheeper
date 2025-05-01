@@ -1,0 +1,6 @@
+FROM tomcat:11-jdk17
+
+# backgroundProcessorDelay from 10s to 1s, faster "hot reload" on redeployment of .war
+RUN sed -i \
+    's/backgroundProcessorDelay="10"/backgroundProcessorDelay="1"/' \
+    /usr/local/tomcat/conf/server.xml

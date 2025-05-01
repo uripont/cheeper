@@ -5,15 +5,12 @@
 ### Motivation
 We spent a *non-negligible* amount of time setting up with local Java/Tomcat/Maven setups and interiorizing IDE-specific GUI flows. We wanted to let every teammate use **any IDE** (VS Code, IntelliJ,...) against a single, reproducible environment, with the minimum amount of local installs.
 
-### Dev Container approach
-We settled on using a devcontainer, which is an open standard for defining a development environment in a Docker container. We just have to set up a single Dockerfile, and then we can use it in any IDE that supports devcontainers: they can "mount" the local filesystem into the container and integrate the whole IDE experience, providing a transparent experience as if it was running locally on the host machine.
+### Architecture Overview
+Our project uses Docker Compose to orchestrate three separate services. The first service, `dev`, is our development environment container. We settled on using a devcontainer, which is an open standard for defining a development environment in a Docker container. We just have to set up a single Dockerfile, and then we can use it in any IDE that supports devcontainers: they can "mount" the local filesystem into the container and integrate the whole IDE experience, providing a transparent experience as if it was running locally on the host machine. It includes OpenJDK 21, the Maven CLI, Git, and other essential devtools for our Java EE2 stack.
 
-For our setup (web development using Java), we created a Dev Container that bundles:
-- **OpenJDK 21**  
-- **Maven CLI**  
-- **Tomcat 11**  
+The second service, `tomcat`, runs the official Tomcat 11 server. We extend the base image with a small customization so that Tomcat rescans the deployment directory every second, allowing faster "hot-deploy" when a new WAR file is built. Deployments happen automatically: when a fresh `ROOT.war` is placed into a shared `webapps` folder, Tomcat detects the change and reloads the application. Note that there is a bit of edge-case handling using a container-bind mount directory (`tomcat-webapps`) to ensure that the `webapps` folder on the server is always empty before a new deployment, to trigger the reload.
 
-Everything lives in a small Dockerfile and a config file under `.devcontainer/`. If using VSCode and the Dev Containers extension (recommended approach), the IDE prompts “Reopens in Container” and instantly has the exact JDK/Maven/Tomcat stack we tested.
+The third service, `db`, runs MySQL 8 to host the application’s database. All credentials and configuration values are stored in a single `.env` file at the repository root for simplicity and consistency.
 
 ### Getting Started
 
@@ -24,4 +21,4 @@ Everything lives in a small Dockerfile and a config file under `.devcontainer/`.
 
 ### Running the Application
 
-Can easily be done using the VSCode build task we created for it, that can be run using the Command Palette (Ctrl+Shift+P) and selecting **Tasks: Run Build Task**, or with the shortcut **Ctrl+Shift+B** (Windows/Linux)/**Cmd+Shift+B** (Mac). It automatically builds the project into a `.war` file and runs it on the Tomcat server. The application will be available at `http://localhost:8080/`, which is automatically opened in the browser on your local machine.
+Can easily be done using the VSCode build task we created for it, that can be run using the Command Palette (Ctrl+Shift+P) and selecting **Tasks: Run Build Task**, or with the shortcut **Ctrl+Shift+B** (Windows/Linux)/**Cmd+Shift+B** (Mac). It automatically builds the project into a `.war` file under `/target`, and runs it on the Tomcat server. The application will be available at `http://localhost:8080/` after a few seconds (enough for Tomcat to detect the new `.war` file, explode it into a folder, and start serving from it).

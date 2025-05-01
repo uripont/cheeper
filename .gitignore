@@ -12,3 +12,8 @@
 !/.vscode/tasks.json
 
 .env
+
+# Used to trigger redeployment of .war, to have the exploded .war be mounted from our dev container
+# to the tomcat server, so that we can remove its contents when rebuilding the container to trigger
+# detection of changes of the .war
+tomcat-webapps/

@@ -1,28 +1,27 @@
 {
-    "name": "Java 11 + Maven + Tomcat 11",
-    "build": { "dockerfile": "Dockerfile" },
-    "workspaceFolder": "/cheeper",
-    //Explicit mount: bind your local folder to the container
-    "workspaceMount": "source=${localWorkspaceFolder},target=/cheeper,type=bind,consistency=cached",
-    "features": {
-      // No features. Installing everything directly on Dockerfile over published base image.
-      //"ghcr.io/devcontainers/features/maven:1": {} 
-    },
-    "customizations": {
-      "vscode": {
-        "extensions": [
-          "vscjava.vscode-java-pack",   // Java devtools & debugger
-          "vscjava.vscode-maven"       // Maven explorer
-          //"redhat.vscode-community-server-connector" // Community Server Connector to connect to Tomcat
-        ]
-      }
-    },
-    "forwardPorts": [8080],
-    "portsAttributes": {
-      "8080": {
-        "label": "Tomcat server (cheeper)",
-        "onAutoForward": "openBrowser"
-      }
-    },
-    "postCreateCommand": "mvn clean package -DskipTests"
-  }
+  "name": "Java 11 + Maven Dev Env",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dev",
+  "workspaceFolder": "/workspace",
+
+  "runServices": ["db", "tomcat", "dev"],
+  "overrideCommand": false,
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-maven"
+      ]
+    }
+  },
+
+  "forwardPorts": [8080, 3306],
+  "portsAttributes": {
+    "8080": { "label": "Tomcat server",       
+              "onAutoForward": "openBrowser" },
+    "3306": { "label": "MySQL Database" }
+  },
+
+  "postCreateCommand": "mvn clean package -DskipTests"
+}
