@@ -1,23 +1,27 @@
 {
-  "name": "Cheeper (Java Dev Environment + Tomcat server + MySQL)",
-  "dockerComposeFile": ["./docker-compose.yml"],
-  "service": "maven",
-  "workspaceFolder": "/cheeper",
+  "name": "Java 11 + Maven Dev Env",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dev",
+  "workspaceFolder": "/workspace",
+
+  "runServices": ["db", "tomcat", "dev"],
+  "overrideCommand": false,
+
   "customizations": {
     "vscode": {
       "extensions": [
-        "vscjava.vscode-java-pack",   // Java devtools & debugger
-        "vscjava.vscode-maven"       // Maven explorer
-        //"redhat.vscode-community-server-connector" // Community Server Connector to connect to Tomcat
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-maven"
       ]
     }
   },
-  "forwardPorts": [8080, 5432],
+
+  "forwardPorts": [8080, 3306],
   "portsAttributes": {
-    "8080": {
-      "label": "Tomcat server (cheeper)",
-      "onAutoForward": "openBrowser" 
-    }
+    "8080": { "label": "Tomcat server",       
+              "onAutoForward": "openBrowser" },
+    "3306": { "label": "MySQL Database" }
   },
+
   "postCreateCommand": "mvn clean package -DskipTests"
 }

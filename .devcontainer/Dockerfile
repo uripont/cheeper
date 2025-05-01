@@ -1,17 +1,16 @@
+# .devcontainer/Dockerfile
 FROM eclipse-temurin:21-jdk-jammy
 
-# install Maven (Java project management) + git/curl/unzip
 USER root
 RUN apt-get update \
  && apt-get install -y --no-install-recommends git maven curl unzip \
  && rm -rf /var/lib/apt/lists/*
 
-# (Re)create the 'vscode' user with UID 1000 and GID 1000 (default for VS Code)
+# create the vscode user with UID/GID 1000 (matches VS Code default)
 RUN groupadd -g 1000 vscode \
  && useradd -m -u 1000 -g 1000 -s /bin/bash vscode
 
-# Switch into that user for all subsequent operations
-RUN mkdir -p /cheeper \
-&& chown -R vscode:vscode /cheeper
 USER vscode
-WORKDIR /cheeper
+WORKDIR /workspace
+# keep the container alive when VS Code isn't running a task
+CMD ["tail", "-f", "/dev/null"]

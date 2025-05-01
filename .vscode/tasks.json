@@ -1,14 +1,22 @@
-// .vscode/tasks.json
 {
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build & Deploy",
+      "label": "Build & Hot-Deploy",
       "type": "shell",
-      "command": "mvn clean package",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "rm -rf target/webapps/ROOT && mvn clean package && cp target/cheeper.war tomcat-webapps/ROOT.war && echo '✅ Deployed new ROOT.war — http://localhost:8080/'",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "problemMatcher": [],
-      "group": { "kind": "build", "isDefault": true }
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
   ]
 }
