@@ -1,9 +1,7 @@
--- Enable environment variable substitution in this script
+-- Enable environment variable substitution
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
--- Database creation
-DROP DATABASE IF EXISTS ${DB_NAME};
-CREATE DATABASE ${DB_NAME};
+-- Use the database (already created by Docker)
 USE ${DB_NAME};
