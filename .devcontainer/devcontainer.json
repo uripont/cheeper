@@ -4,7 +4,7 @@
   "service": "dev",
   "workspaceFolder": "/workspace",
 
-  "runServices": ["db", "tomcat", "dev"],
+  "runServices": ["tomcat", "dev"],
   "overrideCommand": false,
 
   "customizations": {
@@ -19,9 +19,8 @@
   "forwardPorts": [8080, 3306],
   "portsAttributes": {
     "8080": { "label": "Tomcat server",       
-              "onAutoForward": "openBrowser" },
-    "3306": { "label": "MySQL Database" }
-  },
+              "onAutoForward": "openBrowser" }
+  }
 
-  "postCreateCommand": "mvn clean package -DskipTests"
+  //"postCreateCommand": "mvn clean package -DskipTests"
 }

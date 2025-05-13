@@ -12,7 +12,6 @@ services:
       - ..:/workspace:cached
     depends_on:
       - tomcat
-      - db
 
   tomcat:
     build:
@@ -23,21 +22,4 @@ services:
       - ../tomcat-webapps:/usr/local/tomcat/webapps:cached
     ports:
       - "8080:8080"
-    depends_on:
-      - db
 
-  db:
-    image: mysql:8.0
-    env_file:
-      - ../.env
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${DB_NAME}
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-      - ./mysql/init:/docker-entrypoint-initdb.d # Adding init/ scripts as the entrypoint, so that the database is created on startup
-
-volumes:
-  mysql-data:
