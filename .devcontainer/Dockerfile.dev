@@ -3,7 +3,7 @@ FROM eclipse-temurin:21-jdk-jammy
 
 USER root
 RUN apt-get update \
- && apt-get install -y --no-install-recommends git maven curl unzip \
+ && apt-get install -y --no-install-recommends git maven curl unzip default-mysql-client \
  && rm -rf /var/lib/apt/lists/*
 
 # create the vscode user with UID/GID 1000 (matches VS Code default)

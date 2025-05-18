@@ -4,23 +4,30 @@
   "service": "dev",
   "workspaceFolder": "/workspace",
 
-  "runServices": ["tomcat", "dev"],
+  "runServices": ["tomcat", "mysql", "dev"],
   "overrideCommand": false,
 
   "customizations": {
     "vscode": {
       "extensions": [
         "vscjava.vscode-java-pack",
-        "vscjava.vscode-maven"
+        "vscjava.vscode-maven",
+        "cweijan.vscode-mysql-client2" // Useful for MySQL database management
       ]
     }
   },
 
-  "forwardPorts": [8080, 3306],
+  //"forwardPorts": [8080, 3306], // Removed, so that forwarding is done in the docker-compose.yml file
   "portsAttributes": {
-    "8080": { "label": "Tomcat server",       
-              "onAutoForward": "openBrowser" }
+    "8080": {
+      "label": "Tomcat server",
+      "onAutoForward": "openBrowser"
+    },
+    "3306": {
+      "label": "MySQL",
+      "onAutoForward": "notify"
+    }
   }
 
-  //"postCreateCommand": "mvn clean package -DskipTests"
+  /* "postCreateCommand": "mvn clean package -DskipTests" */
 }
