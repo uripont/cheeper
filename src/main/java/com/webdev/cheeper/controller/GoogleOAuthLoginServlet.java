@@ -5,7 +5,6 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import io.github.cdimascio.dotenv.Dotenv;
 
 import com.webdev.cheeper.util.OAuthUtils;
 
@@ -13,8 +12,7 @@ import com.webdev.cheeper.util.OAuthUtils;
 @WebServlet("/auth/google-login")
 public class GoogleOAuthLoginServlet extends HttpServlet {
 
-    private static final Dotenv dotenv = Dotenv.load(); 
-    private static final String CLIENT_ID = dotenv.get("GOOGLE_CLIENT_ID");
+    private static final String CLIENT_ID = System.getenv("GOOGLE_CLIENT_ID");
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
