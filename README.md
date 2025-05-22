@@ -80,3 +80,17 @@ To verify that the MySQL service is up and reachable from all three layers:
 
    * **200 OK** with a green “Connected to …” message means it worked.
    * **500** and an error page if the JDBC (client library to establish a connection to the database) connection failed.
+
+### Using Environment Variables Outside Containers
+
+When deploying to different environments outside the compose's dev containers, the environment variables that the code uses need to be set up on the machine that runs it. The `.env` file contains all necessary configuration, but these variables need to be exported to the local environment.
+
+We've provided a script to streamline this process: `setup-env.sh`:
+
+```bash
+# Make the script executable
+chmod +x setup-env.sh
+
+# Source the script to export variables to your current shell
+source setup-env.sh
+```
