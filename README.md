@@ -5,15 +5,12 @@
 ### Motivation
 We spent a *non-negligible* amount of time setting up with local Java/Tomcat/Maven setups and interiorizing IDE-specific GUI flows. We wanted to let every teammate use **any IDE** (VS Code, IntelliJ,...) against a single, reproducible environment, with the minimum amount of local installs.
 
-### Dev Container approach
-We settled on using a devcontainer, which is an open standard for defining a development environment in a Docker container. We just have to set up a single Dockerfile, and then we can use it in any IDE that supports devcontainers: they can "mount" the local filesystem into the container and integrate the whole IDE experience, providing a transparent experience as if it was running locally on the host machine.
+### Architecture Overview
+Our project uses Docker Compose to orchestrate three separate services. The first service, `dev`, is our development environment container. We settled on using a devcontainer, which is an open standard for defining a development environment in a Docker container. We just have to set up a single Dockerfile, and then we can use it in any IDE that supports devcontainers: they can "mount" the local filesystem into the container and integrate the whole IDE experience, providing a transparent experience as if it was running locally on the host machine. It includes OpenJDK 21, the Maven CLI, Git, and other essential devtools for our Java EE2 stack.
 
-For our setup (web development using Java), we created a Dev Container that bundles:
-- **OpenJDK 21**  
-- **Maven CLI**  
-- **Tomcat 11**  
+The second service, `tomcat`, runs the official Tomcat 11 server. We extend the base image with a small customization so that Tomcat rescans the deployment directory every second, allowing faster "hot-deploy" when a new WAR file is built. Deployments happen automatically: when a fresh `ROOT.war` is placed into a shared `webapps` folder, Tomcat detects the change and reloads the application. Note that there is a bit of edge-case handling using a container-bind mount directory (`tomcat-webapps`) to ensure that the `webapps` folder on the server is always empty before a new deployment, to trigger the reload.
 
-Everything lives in a small Dockerfile and a config file under `.devcontainer/`. If using VSCode and the Dev Containers extension (recommended approach), the IDE prompts “Reopens in Container” and instantly has the exact JDK/Maven/Tomcat stack we tested.
+The third service, `db`, runs MySQL 8 to host the application’s database. All credentials and configuration values are stored in a single `.env` file at the repository root for simplicity and consistency. This file is then used to configure the system environment variables for all three services. For simplicity, and given that we have control over the three containers, we set up all environment variables from the `.env` file on all three containers.
 
 ### Getting Started
 
@@ -24,4 +21,76 @@ Everything lives in a small Dockerfile and a config file under `.devcontainer/`.
 
 ### Running the Application
 
-Can easily be done using the VSCode build task we created for it, that can be run using the Command Palette (Ctrl+Shift+P) and selecting **Tasks: Run Build Task**, or with the shortcut **Ctrl+Shift+B** (Windows/Linux)/**Cmd+Shift+B** (Mac). It automatically builds the project into a `.war` file and runs it on the Tomcat server. The application will be available at `http://localhost:8080/`, which is automatically opened in the browser on your local machine.
+Can easily be done using the VSCode build task we created for it, that can be run using the Command Palette (Ctrl+Shift+P) and selecting **Tasks: Run Build Task**, or with the shortcut **Ctrl+Shift+B** (Windows/Linux)/**Cmd+Shift+B** (Mac). It automatically builds the project into a `.war` file under `/target`, and runs it on the Tomcat server. The application will be available at `http://localhost:8080/` after a few seconds (enough for Tomcat to detect the new `.war` file, explode it into a folder, and start serving from it).
+
+### Connecting to the Database
+
+To verify that the MySQL service is up and reachable from all three layers:
+
+1. **From the Host computer running the containers (CLI)**
+   Use the server credentials to connect over TCP to `127.0.0.1:3306`:
+
+   ```bash
+   mysql \
+     --protocol=TCP \
+     --host=127.0.0.1 \
+     --port=3306 \
+     --user="${DB_DEV_USER}" \
+     --password="${DB_DEV_PASS}" \
+     "${MYSQL_DATABASE}"
+   ```
+
+   Manually write the user and password values that we want to test against, as found on the `.env` file. Using the `${VAR}` syntax will not work here if these variables haven't been previously exported to the host's system environment.
+
+2. **From inside the "Dev" service Container**
+
+   * **Via VS Code’s MySQL Extension**
+
+     1. Open the **Database Explorer** (cylinder icon).
+     2. Select **+ Add Connection**, then enter:
+
+        * **Host**: `${DB_HOST}`
+        * **Port**: `3306`
+        * **Username**: `${DB_DEV_USER}`
+        * **Password**: `${DB_DEV_PASS}`
+        * **Database**: `${MYSQL_DATABASE}`
+     3. Click **Connect**, and wait for the connection to be established.
+
+    Again, manually write the values as found on the `.env` file. Using the `${VAR}` syntax will not work here since we are on an extension config window inside VS Code.
+
+   * **Via CLI**
+
+     ```bash
+     mysql \
+       --host=${DB_HOST} \
+       --port=3306 \
+       --user="${DB_DEV_USER}" \
+       --password="${DB_DEV_PASS}" \
+       "${MYSQL_DATABASE}"
+     ```
+    
+    In this case, the `${VAR}` syntax will work, as we are inside the container and the variables are set in the environment.
+
+3. **From the Tomcat Server (Health-Check Servlet)**
+   Hit the health endpoint from the browser or using `curl`:
+
+   ```bash
+   curl -i http://localhost:8080/health
+   ```
+
+   * **200 OK** with a green “Connected to …” message means it worked.
+   * **500** and an error page if the JDBC (client library to establish a connection to the database) connection failed.
+
+### Using Environment Variables Outside Containers
+
+When deploying to different environments outside the compose's dev containers, the environment variables that the code uses need to be set up on the machine that runs it. The `.env` file contains all necessary configuration, but these variables need to be exported to the local environment.
+
+We've provided a script to streamline this process: `setup-env.sh`:
+
+```bash
+# Make the script executable
+chmod +x setup-env.sh
+
+# Source the script to export variables to your current shell
+source setup-env.sh
+```

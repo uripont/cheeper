@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ../.env
+    command: tail -f /dev/null
+    volumes:
+      - ..:/workspace:cached
+    depends_on:
+      - tomcat
+      - mysql
+
+  tomcat:
+    build:
+      context: .
+      dockerfile: Dockerfile.tomcat
+    env_file:
+      - ../.env
+    volumes:
+      # host's ./tomcat-webapps (will be created if missing)
+      - ../tomcat-webapps:/usr/local/tomcat/webapps:cached
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8
+    env_file:
+      - ../.env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d:ro   # Runs the .sh script that checks for environment and creates users
+
+volumes:
+  mysql-data:
