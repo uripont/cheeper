@@ -235,7 +235,7 @@
         }
     </script>
     
-    <%-- <!-- Load validation scripts -->
+    <!-- Load validation scripts -->
     <script src="${pageContext.request.contextPath}/static/js/user-validation.js"></script>
     <script src="${pageContext.request.contextPath}/static/js/student-validation.js"></script>
     
@@ -279,7 +279,7 @@
                     }
                 }
             }
-        }); --%>
+        });
     </script>
 </body>
 </html>
