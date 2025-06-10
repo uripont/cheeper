@@ -15,7 +15,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 
 
-@WebServlet("/auth")
+@WebServlet("/")
 public class AuthServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L; // Serial version UID for serialization
@@ -23,6 +23,8 @@ public class AuthServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.getRequestDispatcher("WEB-INF/views/auth/login-with-google.jsp").forward(request, response);
 	}
+
+
 
 	// TODO: Move onboarding/registration forms after OAuth login to separate logic according to detected user type
 	/* 
