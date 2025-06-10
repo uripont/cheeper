@@ -15,7 +15,11 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Map<String, String> validate(User user) {
+    public boolean emailExists(String email) {
+        return userRepository.emailExists(email);
+    }
+
+    public Map<String, String> validateBaseUser(User user) {
         Map<String, String> errors = new HashMap<>();
 
         // Validate username
@@ -52,7 +56,7 @@ public class UserService {
     }
 
     public Map<String, String> register(User user) {
-        Map<String, String> errors = validate(user);
+        Map<String, String> errors = validateBaseUser(user);
         if (errors.isEmpty()) {
             userRepository.save(user);
         }
@@ -62,5 +66,4 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
-
 }
