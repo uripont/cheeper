@@ -1,32 +1,29 @@
 package com.webdev.cheeper.model;
 
 import java.io.Serializable;
+import java.sql.Date;
 
 public class User implements Serializable {
-	
-	private int id;
+    private int id;
     private String fullName;
     private String email;
     private String username;
-    private java.sql.Date birthdate;
+    private Date birthdate;
     private String biography;
-
-    // We are doing data validation in the service layer, so we don't need to validate here.
-    // This is a simple POJO (Plain Old Java Object) class.
-    // Any client can't register a user in the database without going through the service layer, that 
-    // takes care of the validation of a populated User object.
+    private String picture;
+    private RoleType roleType;
 
     public User() {
-		super();
-	}    
+        super();
+    }    
     
     public Integer getId() {
-		return this.id;
-	}
+        return this.id;
+    }
     
     public void setId(Integer id) {
-		this.id = id;
-	}
+        this.id = id;
+    }
 
     public String getFullName() {
         return fullName;
@@ -52,15 +49,13 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    // LocalDate getter/setter (recommended for Java 8+)
-    public java.sql.Date getBirthdate() {
+    public Date getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(java.sql.Date date) {
+    public void setBirthdate(Date date) {
         this.birthdate = date;
     }
-
 
     public String getBiography() {
         return biography;
@@ -70,16 +65,33 @@ public class User implements Serializable {
         this.biography = biography;
     }
 
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+
+    public RoleType getRoleType() {
+        return roleType;
+    }
+
+    public void setRoleType(RoleType roleType) {
+        this.roleType = roleType;
+    }
+
     @Override
     public String toString() {
         return "User {" +
-                "fullName='" + fullName + '\'' +
+                "id=" + id +
+                ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
                 ", birthdate=" + birthdate +
                 ", biography='" + biography + '\'' +
+                ", picture='" + picture + '\'' +
+                ", roleType=" + roleType +
                 '}';
     }
-
-	
 }
