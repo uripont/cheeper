@@ -106,7 +106,7 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
     public RoleType assignRoleFromEmail(String email) {
         if (email.endsWith("@estudiant.upf.edu")) {
             return RoleType.STUDENT;
-        } else if (email.endsWith("@upf.edu")) {
+        } else if (email.endsWith("@upf.edu")) { //Can be changed for testing
         	return RoleType.ENTITY;
         } else {
         	return RoleType.ENTITY;
