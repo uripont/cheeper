@@ -7,7 +7,6 @@ import java.util.Optional;
 import jakarta.servlet.http.Part;
 
 import com.webdev.cheeper.model.Student;
-import com.webdev.cheeper.model.User;
 import com.webdev.cheeper.repository.StudentRepository;
 import com.webdev.cheeper.repository.UserRepository;
 

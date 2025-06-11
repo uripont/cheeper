@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import jakarta.servlet.http.Part;
 
 import com.webdev.cheeper.model.User;
@@ -18,7 +17,7 @@ import com.webdev.cheeper.repository.UserRepository;
 
 public class UserService {
     protected final UserRepository userRepository;
-    private static final String UPLOAD_DIRECTORY = "/Users/martapuigmolina/eclipse-workspace/images";
+    private static final String UPLOAD_DIRECTORY = "/usr/local/tomcat/webapps/uploads";
     
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
