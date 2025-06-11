@@ -1,25 +1,75 @@
 package com.webdev.cheeper.service;
 
-import java.time.LocalDate;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import jakarta.servlet.http.Part;
 
 import com.webdev.cheeper.model.User;
 import com.webdev.cheeper.repository.UserRepository;
 
 public class UserService {
-    private final UserRepository userRepository;
-
+    protected final UserRepository userRepository;
+    private static final String UPLOAD_DIRECTORY = "/Users/martapuigmolina/eclipse-workspace/images";
+    
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
+    
+    public boolean usernameExists(String username) {
+    	return userRepository.usernameExists(username);
+    }
     public boolean emailExists(String email) {
-        return userRepository.emailExists(email);
+    	return userRepository.emailExists(email);
+    }
+    
+    public void savePicture(User user, Part filePart) throws IOException {
+        if (filePart == null || filePart.getSize() == 0) {
+            user.setPicture("default.png");
+            return;
+        }
+        
+        String originalName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+		String extension = "";
+		String repositoryName = "";
+	    int dotIndex = originalName.lastIndexOf('.');
+	    if (dotIndex > 0) {
+	        extension = originalName.substring(dotIndex);
+	        repositoryName = user.getUsername() + extension;
+	    }     
+	    
+        // Ensure upload directory exists
+        File uploadDir = new File(UPLOAD_DIRECTORY);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+        
+        // Save file
+        File file = new File(uploadDir, repositoryName);
+        try (InputStream fileContent = filePart.getInputStream()) {
+            Files.copy(fileContent, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            user.setPicture(repositoryName);
+        }
+    }
+    
+    public String getPicture(String username) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isPresent()) {
+            return userOpt.get().getPicture();
+        }
+        return "default.png";
     }
 
-    public Map<String, String> validateBaseUser(User user) {
+
+    public Map<String, String> validate(User user) {
         Map<String, String> errors = new HashMap<>();
 
         // Validate username
@@ -40,14 +90,7 @@ public class UserService {
             errors.put("email", "Email already registered");
         }
 
-        // Validate birthdate
-        if (user.getBirthdate() == null) {
-            errors.put("birthdate", "Birthdate is required");
-        } else if (user.getBirthdate().toLocalDate().isAfter(LocalDate.now())) {
-            errors.put("birthdate", "Birthdate cannot be in the future");
-        }
-
-        // Validate biography (optional)
+        // Validate biography
         if (user.getBiography() != null && user.getBiography().length() > 500) {
             errors.put("biography", "Biography cannot exceed 500 characters");
         }
@@ -55,15 +98,21 @@ public class UserService {
         return errors;
     }
 
-    public Map<String, String> register(User user) {
-        Map<String, String> errors = validateBaseUser(user);
+    public Map<String, String> register(User user, Part filePart) throws IOException{
+        Map<String, String> errors = validate(user);
         if (errors.isEmpty()) {
+        	savePicture(user, filePart);
             userRepository.save(user);
         }
         return errors;
     }
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    
+    public Integer getUserIdByEmail(String email) {
+    	return userRepository.findUserIdByEmail(email);
     }
-}
+    
+    public List<User> getRandomUsers(int limit, int excludeUserId){
+    	return userRepository.findRandomUsers(limit, excludeUserId);
+    }
+   
+ }

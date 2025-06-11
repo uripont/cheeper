@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>    
- 
- <!DOCTYPE html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -236,8 +236,8 @@
     </script>
     
     <!-- Load validation scripts -->
-    <script src="${pageContext.request.contextPath}/static/js/user-validation.js"></script>
-    <script src="${pageContext.request.contextPath}/static/js/student-validation.js"></script>
+    <script src="${pageContext.request.contextPath}/js/user-validation.js"></script>
+    <script src="${pageContext.request.contextPath}/js/student-validation.js"></script>
     
     <!-- Initialize validation -->
     <script>

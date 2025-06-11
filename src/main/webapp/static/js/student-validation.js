@@ -166,8 +166,8 @@ function initStudentValidation(form) {
                     validator();
                 }
             });
-
-            container.addEventListener('blur', function(e) {
+			
+			container.addEventListener('blur', function(e) {
                 if (e.target.name === keyName || e.target.name === valueName) {
                     validator();
                 }
@@ -180,24 +180,27 @@ function initStudentValidation(form) {
     setupDynamicFieldValidation('subjectsContainer', 'subjectKey', 'subjectValue', validateSubjects);
 
     // Return async validation function for student form
-    return async function validateStudent() {
-        let isValid = true;
+    
+	return async function validateStudent() {
+	        let isValid = true;
 
-        // Clear custom validity for all inputs
-        form.querySelectorAll('input, textarea').forEach(i => i.setCustomValidity(''));
+	        // Clear custom validity for all inputs
+	        form.querySelectorAll('input, textarea').forEach(i => i.setCustomValidity(''));
 
-        // Await user validation
-        if (validateUser) {
-            const userValid = await validateUser();
-            if (!userValid) isValid = false;
-        }
+	        // Await user validation
+	        if (validateUser) {
+	            const userValid = await validateUser();
+	            if (!userValid) isValid = false;
+	        }
 
-        // Run other validations
-        if (!validateSocialLinks()) isValid = false;
-        if (!validateDegrees()) isValid = false;
-        if (!validateSubjects()) isValid = false;
-        if (!validateBirthdate()) isValid = false;
+	        // Run other validations
+	        if (!validateSocialLinks()) isValid = false;
+	        if (!validateDegrees()) isValid = false;
+	        if (!validateSubjects()) isValid = false;
+	        if (!validateBirthdate()) isValid = false;
 
-        return isValid;
-    };
+	        return isValid;
+	    };
 }
+
+
