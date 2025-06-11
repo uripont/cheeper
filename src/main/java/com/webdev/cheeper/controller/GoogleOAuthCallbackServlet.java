@@ -86,11 +86,11 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
             	UserService userService = new UserService(userRepository);
                 if (!userService.emailExists(email)) {
                     if (role == RoleType.STUDENT) {
-                    	request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
                     } else if (role == RoleType.ENTITY) {
-                    	request.getRequestDispatcher("/WEB-INF/views/onboarding/entity-form.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/views/onboarding/entity-form.jsp").forward(request, response);
                     } else {
-                    	request.getRequestDispatcher("/WEB-INF/views/onboarding/association-form.jsp").forward(request, response);
+                        request.getRequestDispatcher("/WEB-INF/views/onboarding/association-form.jsp").forward(request, response);
                     }
                 } else {
                     response.sendRedirect(request.getContextPath() + "/main-page.html");
