@@ -77,7 +77,7 @@ public class StudentForm extends HttpServlet {
                 Map<String, String> validationErrors = studentService.register(student, filePart);
                 
                 if (validationErrors.isEmpty()) {
-                    request.getRequestDispatcher("/WEB-INF/views/auth/login-with-google.jsp").forward(request, response);
+                    response.sendRedirect(request.getContextPath() + "/main-page.html");
                 } else {
                     request.setAttribute("student", student);
                     request.setAttribute("errors", validationErrors);
