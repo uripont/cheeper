@@ -1,0 +1,396 @@
+@charset "UTF-8";
+
+/* Container */
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+  width: 100%;
+  max-width: 100%;
+  padding: 30px 40px;
+  font-family: "Helvetica Neue";
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Header: image + info horizontal layout */
+.profile-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+/* Profile image */
+.profile-picture-frame {
+  width: 150px;
+  height: 150px;
+  border-radius: var(--border-radius);
+  border: 3px solid var(--accent);
+  padding: 3px;
+  background: #000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.profile-picture {
+  width: 100%;
+  height: 100%;
+  border-radius: calc(var(--border-radius) - 3px);
+  object-fit: cover;
+  display: block;
+}
+
+/* Info next to picture */
+.profile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  min-width: 0; /* prevents overflow */
+  box-sizing: border-box;
+}
+
+.profile-name {
+  font-size: 1.8rem;
+  margin: 0 0 10px 0;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.profile-detail-item {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  flex-wrap: wrap;
+}
+
+.profile-detail-item.biography {
+  display: block;
+  width: 100%;            /* takes full width */
+  flex-basis: 100%;       /* required if parent is flex */
+  font-size: 1.1rem;
+}
+
+
+.profile-detail-label {
+  font-weight: 600;
+  color: var(--text);
+  min-width: 100px;
+  margin-right: 10px;
+}
+
+.profile-detail-value {
+  color: var(--secondary-text);
+  font-weight: 400;
+  word-break: break-word;
+}
+
+/* Section: Other details like email, role, etc. */
+.profile-details {
+  margin-top: 20px;
+  overflow-x: hidden;
+}
+
+/* Lists for degrees, subjects, social links */
+.student-extra-info {
+  margin-top: 30px;
+  overflow-x: hidden;
+}
+
+.student-extra-info h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: var(--accent);
+}
+
+.student-extra-info ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.student-extra-info li {
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+  word-wrap: break-word;
+}
+
+.student-extra-info a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.student-extra-info a:hover {
+  text-decoration: underline;
+}
+
+/* Inline list styling for horizontal lists */
+.inline-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.inline-list li {
+  margin-bottom: 4px;
+  color: var(--secondary-text);
+}
+
+.inline-list a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.inline-list a:hover {
+  text-decoration: underline;
+}
+/* Follow stats */
+.follow-stats {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+
+
+.follow-stat-btn {
+  background: var(--bg-secondary);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 8px 15px;
+  border-radius: 20px;
+  transition: all 0.2s;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.follow-stat-btn:hover {
+  background-color: white;
+  border: 2px solid var(--accent); /* optional, reinforces the red border */
+  color: var(--accent); /* ensure red text stays */
+}
+
+.follow-stat-btn.active {
+  background-color: var(--accent);
+  color: white;
+}
+/*
+
+.follow-stat-count {
+  font-weight: bold;
+  font-size: 1.1rem;
+}*/
+
+/* Back button */
+.back-to-suggested {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s;
+}
+
+.back-to-suggested:hover {
+  background-color: rgba(var(--accent-rgb), 0.1);
+}
+
+/* Profile items in followers/following list */
+.profile-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: var(--bg);
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s;
+}
+
+.profile-item:hover {
+  background-color: var(--bg-secondary);
+}
+
+.profile-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.profile-item-info {
+  flex: 1;
+}
+
+.profile-item-name {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.profile-item-username {
+  color: var(--secondary-text);
+  font-size: 0.9rem;
+}
+
+.unfollow-btn {
+  background: var(--error);
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.unfollow-btn:hover {
+  background: var(--error-dark);
+}
+
+/* Back to suggestions button */
+.back-to-suggested {
+  background: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 5px 10px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-left: 10px;
+  transition: all 0.2s;
+}
+
+.back-to-suggested:hover {
+  background-color: rgba(var(--accent-rgb), 0.1);
+}
+
+/* Unfollow button in suggested profiles style */
+.unfollow-btn {
+  background: var(--error);
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-left: auto;
+}
+
+.unfollow-btn:hover {
+  background: var(--error-dark);
+}
+
+/* Suggested profiles container 
+.suggested-profiles-container {
+  margin-top: 20px;
+}*/
+
+/* Profiles list styling 
+.profiles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+/* Suggested profile item 
+.suggested-profile {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  margin: 10px 0;
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s;
+}
+
+.suggested-profile:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.suggested-profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+}
+
+.suggested-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.suggested-profile-name {
+  font-weight: 600;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggested-profile-username {
+  color: var(--secondary-text);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggested-profile-role {
+  color: var(--secondary-text);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+*/
+/* Follow/Unfollow buttons */
+.follow-btn, .unfollow-btn {
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  margin-left: 10px;
+}
+
+.follow-btn {
+  background-color: var(--accent);
+  color: #000;
+}
+
+.follow-btn:hover {
+  opacity: 0.9;
+}
+
+.unfollow-btn {
+  background-color: var(--error);
+  color: white;
+}
+
+.unfollow-btn:hover {
+  background-color: var(--error-dark);
+}
+
+/* No profiles message */
+.no-profiles {
+  color: var(--secondary-text);
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}
