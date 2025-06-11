@@ -68,7 +68,7 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
             String email = userInfo.optString("email");
 
             if (name == null || email == null || name.isEmpty() || email.isEmpty()) {
-                response.sendRedirect("WEB-INF/views/auth/auth-error.jsp");
+                request.getRequestDispatcher("/WEB-INF/views/auth/auth-error.jsp").forward(request, response);
                 return;
             }
 
@@ -86,16 +86,14 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
             	UserService userService = new UserService(userRepository);
                 if (!userService.emailExists(email)) {
                     if (role == RoleType.STUDENT) {
-                    request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
+                    	request.getRequestDispatcher("/WEB-INF/views/auth/student-form.jsp").forward(request, response);
                     } else if (role == RoleType.ENTITY) {
-                        //TODO
-                    	//request.getRequestDispatcher("entity-form.jsp").forward(request, response);
+                    	request.getRequestDispatcher("/WEB-INF/views/auth/entity-form.jsp").forward(request, response);
                     } else {
-                        //TODO
-                    	//request.getRequestDispatcher("association-form.jsp").forward(request, response);
+                    	request.getRequestDispatcher("/WEB-INF/views/auth/association-form.jsp").forward(request, response);
                     }
                 } else {
-                    request.getRequestDispatcher("/WEB-INF/views/main-page.html");
+                    request.getRequestDispatcher("/main-page.html").forward(request, response);
                 }
             }
 
