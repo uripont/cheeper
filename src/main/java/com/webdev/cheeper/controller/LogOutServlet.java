@@ -17,6 +17,6 @@ public class LogOutServlet extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        response.sendRedirect("WEB-INF/views/auth/login-with-google.jsp");
+        request.getRequestDispatcher("/WEB-INF/views/auth/login-with-google.jsp").forward(request, response);
     }
 }
