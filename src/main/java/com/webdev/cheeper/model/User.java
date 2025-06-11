@@ -2,31 +2,33 @@ package com.webdev.cheeper.model;
 
 import java.io.Serializable;
 
+
 public class User implements Serializable {
-	
-	private int id;
+    private static final long serialVersionUID = 1L;
+    private int id;
     private String fullName;
     private String email;
     private String username;
-    private java.sql.Date birthdate;
     private String biography;
-
-    // We are doing data validation in the service layer, so we don't need to validate here.
-    // This is a simple POJO (Plain Old Java Object) class.
-    // Any client can't register a user in the database without going through the service layer, that 
-    // takes care of the validation of a populated User object.
+    private String picture;
+    private RoleType role;
 
     public User() {
-		super();
-	}    
-    
+        super();
+    }
+
+    public RoleType getUserType() {
+        return RoleType.GENERIC;
+    }
+
+    // Getters and Setters
     public Integer getId() {
-		return this.id;
-	}
+        return this.id;
+    }
     
     public void setId(Integer id) {
-		this.id = id;
-	}
+        this.id = id;
+    }
 
     public String getFullName() {
         return fullName;
@@ -52,16 +54,6 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    // LocalDate getter/setter (recommended for Java 8+)
-    public java.sql.Date getBirthdate() {
-        return birthdate;
-    }
-
-    public void setBirthdate(java.sql.Date date) {
-        this.birthdate = date;
-    }
-
-
     public String getBiography() {
         return biography;
     }
@@ -70,16 +62,31 @@ public class User implements Serializable {
         this.biography = biography;
     }
 
-    @Override
-    public String toString() {
-        return "User {" +
-                "fullName='" + fullName + '\'' +
-                ", email='" + email + '\'' +
-                ", username='" + username + '\'' +
-                ", birthdate=" + birthdate +
-                ", biography='" + biography + '\'' +
-                '}';
+    public String getPicture() {
+		return picture;
+	}
+
+	public void setPicture(String picture) {
+		this.picture = picture;
+	}
+
+    public RoleType getRoleType() {
+        return role;
     }
 
-	
+    public void setRoleType(RoleType role) {
+        this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", fullName='" + fullName + '\'' +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", biography='" + biography + '\'' +
+                ", role=" + role +
+                '}';
+    }
 }

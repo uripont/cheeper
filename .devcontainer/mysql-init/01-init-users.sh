@@ -15,7 +15,7 @@ mysql --user=root --password="$MYSQL_ROOT_PASSWORD" <<-EOSQL
   CREATE DATABASE \`${MYSQL_DATABASE}\`;
 EOSQL
 
-# 2) Create your two users & grants
+# 2) Create two users & grants
 mysql --user=root --password="$MYSQL_ROOT_PASSWORD" <<-EOSQL
   -- server user (minimal DML)
   CREATE USER IF NOT EXISTS '${DB_SERVER_USER}'@'%' 

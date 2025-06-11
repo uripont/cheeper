@@ -21,7 +21,16 @@ The third service, `db`, runs MySQL 8 to host the application’s database. All
 
 ### Running the Application
 
-Can easily be done using the VSCode build task we created for it, that can be run using the Command Palette (Ctrl+Shift+P) and selecting **Tasks: Run Build Task**, or with the shortcut **Ctrl+Shift+B** (Windows/Linux)/**Cmd+Shift+B** (Mac). It automatically builds the project into a `.war` file under `/target`, and runs it on the Tomcat server. The application will be available at `http://localhost:8080/` after a few seconds (enough for Tomcat to detect the new `.war` file, explode it into a folder, and start serving from it).
+The build and deploy process can be run in two ways:
+
+1. **Using VSCode Build Task**: 
+   - Open Command Palette (Ctrl+Shift+P) and select **Tasks: Run Build Task**
+   - Or use the shortcut **Ctrl+Shift+B** (Windows/Linux)/**Cmd+Shift+B** (Mac)
+
+2. **Using Terminal**:
+   - Run the build script directly: `./build.sh`
+
+Both methods will build the project into a `.war` file under `/target` and deploy it to the Tomcat server. The application will be available at `http://localhost:8080/` after a few seconds (enough for Tomcat to detect the new `.war` file, explode it into a folder, and start serving from it).
 
 ### Connecting to the Database
 

@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
@@ -22,7 +24,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import com.webdev.cheeper.model.RoleType; // Enum to define user roles based on email domain
 import com.webdev.cheeper.repository.UserRepository; // Used to verify if the user already exists on db
+import com.webdev.cheeper.service.UserService;
 import com.webdev.cheeper.util.OAuthUtils; // Utility class to build redirect URI
 
 import org.json.JSONObject; 
@@ -60,33 +64,53 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
 
             // Parse the response
             JSONObject userInfo = new JSONObject(responseUserInfo.body());
-            String name = userInfo.getString("name");
-            String email = userInfo.getString("email");
+            String name = userInfo.optString("name");
+            String email = userInfo.optString("email");
 
-            // Check if the user data is missing
-            if (name == null || email == null) {
-                response.sendRedirect("WEB-INF/views/auth/auth-error.jsp");
+            if (name == null || email == null || name.isEmpty() || email.isEmpty()) {
+                request.getRequestDispatcher("/WEB-INF/views/auth/auth-error.jsp").forward(request, response);
                 return;
             }
+
+            // Assign role
+            RoleType role = assignRoleFromEmail(email);
             
-            // Store user info in the session
-            request.getSession().setAttribute("name", name);
-            request.getSession().setAttribute("email", email);
+            // Store user info in session
+            HttpSession session = request.getSession();
+            session.setAttribute("name", name);
+            session.setAttribute("email", email);
+            session.setAttribute("role", role);
             
-            // Redirect to appropriate page based on user existence
-            try (UserRepository userRepository = new UserRepository()) {
-                if(!userRepository.emailExists(email)) {
-                    response.sendRedirect("WEB-INF/views/auth/login-with-google.jsp"); // TODO: Check desired behavior here
+            // Redirect to the appropriate form based on the role
+            try (UserRepository userRepository = new UserRepository();) {
+            	UserService userService = new UserService(userRepository);
+                if (!userService.emailExists(email)) {
+                    if (role == RoleType.STUDENT) {
+                        request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
+                    } else if (role == RoleType.ENTITY) {
+                        request.getRequestDispatcher("/WEB-INF/views/onboarding/entity-form.jsp").forward(request, response);
+                    } else {
+                        request.getRequestDispatcher("/WEB-INF/views/onboarding/association-form.jsp").forward(request, response);
+                    }
                 } else {
-                    response.sendRedirect("WEB-INF/views/onboarding/welcome.jsp");
+                    response.sendRedirect(request.getContextPath() + "/main-page.html");
                 }
             }
-            
-        } catch (GeneralSecurityException | IOException | InterruptedException e ) {
+
+        } catch (GeneralSecurityException | IOException | InterruptedException e) {
             e.printStackTrace();
-            response.sendRedirect("WEB-INF/views/auth/auth-error.jsp");
-  
-		}
+            request.getRequestDispatcher("/WEB-INF/views/auth/auth-error.jsp").forward(request, response);
+        }
+    }
+
+    public RoleType assignRoleFromEmail(String email) {
+        if (email.endsWith("@estudiant.upf.edu")) {
+            return RoleType.STUDENT;
+        } else if (email.endsWith("@upf.edu")) { //Can be changed for testing
+        	return RoleType.ENTITY;
+        } else {
+        	return RoleType.ENTITY;
+        	//return RoleType.ASSOCIATION;
+        }
     }
 }
-

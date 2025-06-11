@@ -1,0 +1,253 @@
+/* === Form Elements with Validation Indicators === */
+#registerForm input[type="text"],
+#registerForm input[type="date"],
+#registerForm input[type="url"] {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+  font-family: "Helvetica Neue";
+  position: relative;
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px 20px;
+  padding-right: 35px;
+  transition: border-color 0.3s ease;
+}
+
+/* Valid state */
+#registerForm input:valid:not(:placeholder-shown):not(:focus),
+#registerForm input[aria-invalid="false"]:not(:focus) {
+  border-color: #4CAF50;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234CAF50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='20 6 9 17 4 12'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+/* Invalid state - including server-side validation */
+#registerForm input:invalid:not(:placeholder-shown):not(:focus),
+#registerForm input[aria-invalid="true"]:not(:focus) {
+  border-color: #f44336;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23f44336' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cline x1='18' y1='6' x2='6' y2='18'%3e%3c/line%3e%3cline x1='6' y1='6' x2='18' y2='18'%3e%3c/line%3e%3c/svg%3e");
+}
+
+/* Focus styles - no indicators when focused */
+#registerForm input:focus,
+#registerForm textarea:focus {
+  outline: none;
+  border-color: #B41C18;
+  box-shadow: 0 0 0 2px rgba(180, 28, 24, 0.2);
+  background-image: none;
+}
+
+/* Empty state - no indicators */
+#registerForm input:placeholder-shown {
+  background-image: none;
+  border-color: #ccc;
+}
+
+/* Date input special case */
+#registerForm input[type="date"]:not(:placeholder-shown) {
+  color: #333;
+}
+
+/* File input exclusion */
+#registerForm input[type="file"] {
+  padding-right: 12px;
+  background-image: none;
+}
+
+/* Dynamic fields spacing */
+.dynamic-field input {
+  margin-bottom: 0 !important;
+}
+
+/* Biography textarea - no validation indicators */
+#registerForm textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+  font-family: "Helvetica Neue";
+  resize: none;
+  height: 120px;
+  overflow-y: auto;
+  background-image: none !important;
+  padding-right: 12px !important;
+}
+
+/* Error message styling */
+#biography-error {
+  color: #f44336;
+  font-size: 14px;
+  margin: -5px 0 15px 0;
+  display: none;
+}
+
+/* === Base Setup === */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #B41C18; /* UPF Red */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #333; /* Default text color */
+}
+
+/* === Form Container === */
+.form-container {
+  background-color: #fff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+  margin: 20px auto; /* Ensures proper centering */
+}
+
+/* === Heading Styles === */
+.form-container h1 {
+  font-size: 28px;
+  color: #B41C18;
+  margin-bottom: 30px;
+  font-weight: bold; /* Ensures boldness */
+}
+
+.form-container h2 {
+  font-size: 22px; /* Larger than before */
+  color: #555;
+  margin-bottom: 30px;
+  font-weight: bold; /* Makes it bold like before */
+}
+
+/* === Form Elements === */
+#registerForm {
+  text-align: left;
+}
+
+#registerForm label {
+  display: block;
+  font-size: 16px;
+  margin: 15px 0 8px 0;
+  color: #333;
+  font-weight: 500;
+}
+
+/* === Submit Button === */
+#registerForm button[type="submit"] {
+  width: 100%;
+  padding: 14px;
+  border-radius: 4px;
+  background-color: #B41C18;
+  color: white;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+  font-weight: 500;
+  font-family: 'Roboto', sans-serif;
+}
+
+#registerForm button[type="submit"]:hover {
+  background-color: #9a1611;
+}
+
+/* === Dynamic Fields Container === */
+.dynamic-field-container {
+  margin-bottom: 20px;
+}
+
+.dynamic-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+/* First input in dynamic field (e.g., Platform) */
+.dynamic-field input:first-of-type {
+  flex: 0 0 100%;
+}
+
+/* Second input in dynamic field (e.g., URL) */
+.dynamic-field input:last-of-type {
+  flex: 1;
+  min-width: 150px;
+}
+
+/* === Buttons (Add & Remove) === */
+.add-btn {
+  padding: 10px 14px;
+  background-color: #B41C18;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Roboto', sans-serif;
+  margin-bottom: 10px;
+}
+
+.remove-btn {
+  padding: 10px 14px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Roboto', sans-serif;
+  width: 100px;
+}
+
+.remove-btn:hover {
+  background-color: #5a6268;
+}
+
+/* Cropper container styling */
+#image-cropper-container {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+/* Button styling */
+#crop-button, #cancel-crop {
+    padding: 8px 15px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#crop-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#cancel-crop {
+    background-color: #f44336;
+    color: white;
+}
+
+#crop-button:hover {
+    background-color: #45a049;
+}
+
+#cancel-crop:hover {
+    background-color: #d32f2f;
+}
+

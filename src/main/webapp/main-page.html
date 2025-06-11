@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cheeper</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="static/css/main-page.css" />
+  <link rel="stylesheet" href="static/css/profile.css" />
+  <link rel="icon" href="static/images/upf.jpg" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar" id="navigation">
+    <a href="home" class="menu active"><img src="static/images/house.fill.png" alt="Home" /></a>
+    <a href="explore" class="menu"><img src="static/images/magnifyingglass.png" alt="Explore" /></a>
+    <a href="create" class="menu"><img src="static/images/plus.png" alt="Create" /></a>
+    <!--  <a href="news" class="menu"><img src="images/newspaper.png" alt="News" /></a> -->
+    <a href="profile" class="menu"><img src="static/images/person.png" alt="Profile" /></a>
+  </div>
+
+  <!-- Main layout container -->
+  <div class="main-layout">
+    <!-- Feed area -->
+    <div class="main-content">
+      <div class="choose-view" id="chooseView">
+        <p class="selected" data-view="for-you">For You</p>
+        <p class="not-selected" data-view="following">Following</p>
+      </div>
+      <div id="feed" class="feed">
+      </div>
+    </div>
+
+    <!-- Suggested profiles column -->
+    <div class="suggested-column" id="rightColumn">
+      <div id="suggestedProfilesContainer"></div>
+    </div>
+  </div>
+
+  <script>
+    const App = {};
+
+    App.init = function () {
+      $.ajaxSetup({ cache: false });
+      $('#feed').load('/feed-for-you');
+      App.loadSuggestedProfiles();
+      App.bindEvents();
+    };
+
+    App.loadSuggestedProfiles = function () {
+      $.get('/Cheeper/suggested-profiles', function (data) {
+        const container = $('#suggestedProfilesContainer');
+        container.empty();
+
+        const header = `
+          <div class="suggested-header-row">
+            <h2>Suggested Profiles</h2>
+            <button class="shuffle-btn" onclick="shuffleSuggestedProfiles()">🎲</button>
+          </div>
+        `;
+
+        if (!data || data.length === 0) {
+          container.append(header);
+          container.append('<p class="no-profiles">No profiles to suggest</p>');
+          return;
+        }
+
+        container.append(header);
+
+        data.forEach(profile => {
+       	  const basePath = window.location.origin + '/Cheeper/local-images/';
+       	  const imagePath = profile.picture
+       	    ? basePath + profile.picture
+       	    : basePath + 'default.png';
+
+       	container.append(`
+       		  <div class="suggested-profile" data-user-id="${profile.id}">
+       		    <img src="${imagePath}" alt="${profile.fullName}" class="clickable-profile" data-username="${profile.username}">
+       		    <div class="suggested-profile-info clickable-profile" data-username="${profile.username}">
+       		      <div class="suggested-profile-name">${profile.fullName}</div>
+       		      <div class="suggested-profile-username">@${profile.username}</div>
+       		      <div class="suggested-profile-role">${profile.role || ''}</div>  
+       		    </div>
+       		    <button class="follow-standard-btn">Follow</button>
+       		  </div>
+       		`);
+
+       		$(document).on('click', '.clickable-profile', function () {
+       		  const username = $(this).data('username');
+       		  $.get(`/Cheeper/suggested-profile?username=${username}`, function (data) {
+       		    $('#feed').html(data); // Feed is a container where you show profile preview
+       		  });
+       		});
+       	});
+
+      });
+    };
+
+    // Load followers or following into right sidebar with back button and dynamic title
+    App.loadFollowList = function (viewType, userId) {
+	  const url = `/Cheeper/${viewType}?userId=${userId}`;
+	  $.get(url, function (html) {
+	    const title = viewType.charAt(0).toUpperCase() + viewType.slice(1); // Followers or Following
+	    
+	    const backButtonHtml = `<button class="standard-btn back-to-suggestions-btn">Back to Suggestions</button>`;
+	    
+	    $('#suggestedProfilesContainer').html(`
+	      <div class="${viewType}-section">
+	        <div class="suggested-header-row">
+	          <h2>${title}</h2>
+	          ${backButtonHtml}
+	        </div>
+	        <div class="profiles-list">
+	          ${html}
+	        </div>
+	      </div>
+	    `);
+	  }).fail(function () {
+	    $('#suggestedProfilesContainer').html('<p class="error">Could not load user list.</p>');
+	  });
+	};
+	
+	App.updateFollowCounts = function(userId) {
+		  $.get(`/Cheeper/profile-counts?userId=${userId}`, function(data) {
+		    $('#followersCount').text(data.followers);
+		    $('#followingCount').text(data.following);
+		  }).fail(function() {
+		    console.warn('Failed to update follow counts');
+		  });
+		};
+
+
+
+    App.bindEvents = function () {
+      $(document).on('click', '.menu', function (event) {
+        event.preventDefault();
+        const url = $(this).attr('href');
+        $('.menu').removeClass('active');
+        $(this).addClass('active');
+        $('#chooseView').toggle(url === 'home');
+        $('#feed').load(url, function () {
+          if (url === 'profile') {
+            const currentUserId = $('#feed .profile-container').data('user-id');
+            if (currentUserId) {
+              App.loadFollowList('followers', currentUserId);
+            } else {
+              $('#suggestedProfilesContainer').html('<p class="error">User ID not found.</p>');
+            }
+          } else {
+            App.loadSuggestedProfiles();
+          }
+        });
+      });
+
+      $(document).on('click', '.choose-view p', function () {
+        $('.choose-view p').removeClass('selected').addClass('not-selected');
+        $(this).addClass('selected').removeClass('not-selected');
+        const view = $(this).data('view');
+        $('#feed').load(view === 'for-you' ? '/feed-for-you' : '/feed-following');
+      });
+
+      $(document).on('click', '.follow-standard-btn', function () {
+    	  const button = $(this);
+    	  const profileElement = button.closest('.suggested-profile');
+    	  const userId = profileElement.data('user-id');
+    	  const action = button.text().trim().toLowerCase(); // 'follow' or 'unfollow'
+    	  const url = action === 'unfollow' ? '/Cheeper/unfollow' : '/Cheeper/follow';
+
+    	  $.post(url, { followingId: userId })
+    	    .done(function () {
+    	      if (action === 'unfollow') {
+    	        profileElement.remove();
+    	      } else {
+    	        button.text('Unfollow');
+    	      }
+
+    	      const currentProfileUserId = $('#followersCount').closest('.follow-stats').find('.follow-stat-btn').first().attr('onclick').match(/\d+/)[0];
+
+    	      if (currentProfileUserId) {
+    	        App.updateFollowCounts(currentProfileUserId);
+    	      }
+    	    })
+    	    .fail(function () {
+    	      alert('Failed to ' + action + ' user.');
+    	    });
+    	});
+
+
+      // Back to Suggestions button
+      $(document).on('click', '.back-to-suggestions-btn', function () {
+        App.loadSuggestedProfiles();
+      });
+
+      $(document).on('submit', 'form', function (event) {
+        event.preventDefault();
+        const form = this;
+        const data = new FormData(form);
+        $.ajax({
+          type: 'POST',
+          enctype: 'multipart/form-data',
+          url: $(form).attr('action'),
+          data: data,
+          processData: false,
+          contentType: false
+        }).done(function (html) {
+          $('#feed').html(html);
+        });
+      });
+    };
+
+    function shuffleSuggestedProfiles() {
+      App.loadSuggestedProfiles();
+    }
+
+    $(document).ready(App.init);
+  </script>
+</body>
+</html>
+

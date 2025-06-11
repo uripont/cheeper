@@ -8,7 +8,7 @@
 <head>
     <title>Login | Cheep UPF</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
- 	<link rel="stylesheet" href="<%= contextPath %>/css/login-style.css">
+ 	<link rel="stylesheet" href="<%= contextPath %>/static/css/login-style.css">
 </head>
 </head>
 <body>
@@ -16,7 +16,7 @@
         <h1>Welcome to Cheep UPF</h1>
         <a href="<%= contextPath %>/auth/google-login">
             <button class="google-btn">
-                <img class="google-icon" src="<%= contextPath %>/images/google-icon.png" width="18" height="18" alt="Google logo">
+                <img class="google-icon" src="<%= contextPath %>/static/images/google-icon.png" width="18" height="18" alt="Google logo">
                 Sign in with Google
             </button>
         </a>
