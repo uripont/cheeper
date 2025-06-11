@@ -49,7 +49,7 @@
     };
 
     App.loadSuggestedProfiles = function () {
-      $.get('/Cheeper/suggested-profiles', function (data) {
+      $.get('/suggested-profiles', function (data) {
         const container = $('#suggestedProfilesContainer');
         container.empty();
 
@@ -69,7 +69,7 @@
         container.append(header);
 
         data.forEach(profile => {
-       	  const basePath = window.location.origin + '/Cheeper/local-images/';
+         const basePath = window.location.origin + '/local-images/';
        	  const imagePath = profile.picture
        	    ? basePath + profile.picture
        	    : basePath + 'default.png';
@@ -88,7 +88,7 @@
 
        		$(document).on('click', '.clickable-profile', function () {
        		  const username = $(this).data('username');
-       		  $.get(`/Cheeper/suggested-profile?username=${username}`, function (data) {
+         $.get(`/suggested-profile?username=${username}`, function (data) {
        		    $('#feed').html(data); // Feed is a container where you show profile preview
        		  });
        		});
@@ -99,7 +99,7 @@
 
     // Load followers or following into right sidebar with back button and dynamic title
     App.loadFollowList = function (viewType, userId) {
-	  const url = `/Cheeper/${viewType}?userId=${userId}`;
+	  const url = `/${viewType}?userId=${userId}`;
 	  $.get(url, function (html) {
 	    const title = viewType.charAt(0).toUpperCase() + viewType.slice(1); // Followers or Following
 	    
@@ -122,7 +122,7 @@
 	};
 	
 	App.updateFollowCounts = function(userId) {
-		  $.get(`/Cheeper/profile-counts?userId=${userId}`, function(data) {
+		  $.get(`/profile-counts?userId=${userId}`, function(data) {
 		    $('#followersCount').text(data.followers);
 		    $('#followingCount').text(data.following);
 		  }).fail(function() {
@@ -165,7 +165,7 @@
     	  const profileElement = button.closest('.suggested-profile');
     	  const userId = profileElement.data('user-id');
     	  const action = button.text().trim().toLowerCase(); // 'follow' or 'unfollow'
-    	  const url = action === 'unfollow' ? '/Cheeper/unfollow' : '/Cheeper/follow';
+      const url = action === 'unfollow' ? '/unfollow' : '/follow';
 
     	  $.post(url, { followingId: userId })
     	    .done(function () {
@@ -217,4 +217,3 @@
   </script>
 </body>
 </html>
-

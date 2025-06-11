@@ -183,8 +183,8 @@ public class FollowController extends HttpServlet {
 
     private String buildProfileHtml(User user, boolean isFollowing) {
         String imagePath = user.getPicture() != null && !user.getPicture().isEmpty()
-            ? "/Cheeper/local-images/" + user.getPicture()
-            : "/Cheeper/local-images/default.png";
+            ? "/local-images/" + user.getPicture()
+            : "/local-images/default.png";
 
         String role = user.getRoleType() != null ? user.getRoleType().toString() : "";
 
@@ -200,7 +200,7 @@ public class FollowController extends HttpServlet {
         return String.format(
             "<div class='suggested-profile' data-user-id='%d'>" +
                 "<img src='%s' alt='%s' class='clickable-profile' data-username='%s' " +
-                "onerror=\"this.onerror=null;this.src='/Cheeper/local-images/default.png';\">" +
+                "onerror=\"this.onerror=null;this.src='/local-images/default.png';\">" +
                 "<div class='suggested-profile-info clickable-profile' data-username='%s'>" +
                     "<div class='suggested-profile-name'>%s</div>" +
                     "<div class='suggested-profile-username'>@%s</div>" +
