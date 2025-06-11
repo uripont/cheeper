@@ -1,5 +1,26 @@
 # Cheeper WebApp
 
+## Directory Overview
+
+```
+src/
+├── main/
+    ├── java/com/webdev/cheeper/
+    │   ├── controller/    # Servlet classes for handling requests
+    │   ├── model/         # Domain entities
+    │   ├── repository/    # Data access layer
+    │   ├── service/       # Business logic layer
+    │   └── util/          # Helper classes
+    └── webapp/
+        ├── static/       # Publicly accessible static resources
+        │   ├── css/
+        │   ├── js/
+        │   └── images/
+        └── WEB-INF/      # Protected web resources, redirected from servlets
+            ├── views/    # JSP view templates
+            └── web.xml   # Web application config
+```
+
 ## Dev Container setup for Java/Tomcat/Maven
 
 ### Motivation
