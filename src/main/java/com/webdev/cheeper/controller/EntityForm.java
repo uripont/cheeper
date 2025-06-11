@@ -16,6 +16,7 @@ import com.webdev.cheeper.service.EntityService;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.HashMap; // Import HashMap for handleException
 
 
 @MultipartConfig
@@ -41,12 +42,24 @@ public class EntityForm extends HttpServlet {
         Map<String, String> validationErrors = studentService.register(entity, filePart);
         
         if (validationErrors.isEmpty()) {
-            response.sendRedirect("main-page.html");
+            response.sendRedirect(request.getContextPath() + "/main-page.html");
         } else {
             request.setAttribute("entity", entity);
             request.setAttribute("errors", validationErrors);
-            request.getRequestDispatcher("entity-form.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/onboarding/entity-form.jsp").forward(request, response);
         }
-	 }
+	 } catch (Exception e) {
+         handleException(request, response, entity, e);
+     }
+ }
+
+ private void handleException(HttpServletRequest request, HttpServletResponse response,
+                                Entity entity, Exception e) throws ServletException, IOException {
+     e.printStackTrace();
+     request.setAttribute("entity", entity);
+     Map<String, String> errors = new HashMap<>();
+     errors.put("general", "Registration failed: " + e.getMessage());
+     request.setAttribute("errors", errors);
+     request.getRequestDispatcher("/WEB-INF/views/onboarding/entity-form.jsp").forward(request, response);
  }
 }

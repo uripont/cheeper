@@ -17,6 +17,7 @@ import com.webdev.cheeper.service.AssociationService;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.HashMap; // Import HashMap for handleException
 
 /**
  * Servlet implementation class AssociationForm
@@ -52,12 +53,24 @@ public class AssociationForm extends HttpServlet {
             Map<String, String> validationErrors = associationService.register(association, filePart);
 
             if (validationErrors.isEmpty()) {
-                response.sendRedirect("main-page.html");
+                response.sendRedirect(request.getContextPath() + "/main-page.html");
             } else {
                 request.setAttribute("association", association);
                 request.setAttribute("errors", validationErrors);
-                request.getRequestDispatcher("association-form.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/views/onboarding/association-form.jsp").forward(request, response);
             }
+        } catch (Exception e) {
+            handleException(request, response, association, e);
         }
+    }
+
+    private void handleException(HttpServletRequest request, HttpServletResponse response,
+                                Association association, Exception e) throws ServletException, IOException {
+        e.printStackTrace();
+        request.setAttribute("association", association);
+        Map<String, String> errors = new HashMap<>();
+        errors.put("general", "Registration failed: " + e.getMessage());
+        request.setAttribute("errors", errors);
+        request.getRequestDispatcher("/WEB-INF/views/onboarding/association-form.jsp").forward(request, response);
     }
 }
