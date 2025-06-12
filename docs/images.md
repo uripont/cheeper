@@ -11,3 +11,11 @@ This centralizes image rendering logic, eliminating code duplication and ensurin
 ## Image service
 
 The `ImageService` provides image management with configurable storage paths (`/var/lib/cheeper/images`), serve paths (`/local-images`), maximum file size (5MB), and allowed types (JPEG, PNG, GIF). The directory structure includes folders for profiles, defaults, and temporary storage. It is a centralized service for image handling, ensuring consistent behavior across the application.
+
+## Image Serving
+
+Cheeper serves all images through a single `/local-images/*` endpoint. The `ImageServlet` handles these requests, automatically routing default images from `/static/images/` and user uploads from the configured storage path.
+
+**JSP:** `<cheeper:profileImage picture="${profile.picture}" cssClass="profile-picture" />`
+
+**JavaScript:** `const imagePath = '/local-images/profiles/username.jpg'`
