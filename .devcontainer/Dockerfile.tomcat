@@ -8,14 +8,11 @@ RUN mkdir -p /var/lib/cheeper/images/profiles \
 # Copy default profile picture
 COPY src/main/webapp/static/images/default.png /var/lib/cheeper/images/defaults/
 
-# Set proper permissions for tomcat user
-RUN chown -R tomcat:tomcat /var/lib/cheeper \
-    && chmod -R 755 /var/lib/cheeper
-
 # backgroundProcessorDelay from 10s to 1s, faster "hot reload" on redeployment of .war
 RUN sed -i \
     's/backgroundProcessorDelay="10"/backgroundProcessorDelay="1"/' \
     /usr/local/tomcat/conf/server.xml
 
-# Create symlink for serving images
-RUN ln -s /var/lib/cheeper/images /usr/local/tomcat/webapps/ROOT/local-images
+# Create ROOT directory and symlink for serving images
+RUN mkdir -p /usr/local/tomcat/webapps/ROOT && \
+    ln -s /var/lib/cheeper/images /usr/local/tomcat/webapps/ROOT/local-images
