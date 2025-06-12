@@ -2,6 +2,7 @@
 <%@ page import="com.webdev.cheeper.model.User, com.webdev.cheeper.model.Student" %>
 <%@ page import="com.webdev.cheeper.model.User, com.webdev.cheeper.model.Entity" %>
 <%@ page import="com.webdev.cheeper.model.User, com.webdev.cheeper.model.Association" %>
+<%@ taglib prefix="cheeper" uri="http://cheeper.webdev/tags" %>
 
 <%
     User profile = (User) request.getAttribute("profile");
@@ -22,9 +23,7 @@
 
   <div class="profile-header">
     <div class="profile-picture-frame">
-      <img src="<%= request.getContextPath() + "/local-images/" + (profile.getPicture() != null ? profile.getPicture() : "default.png") %>"
-           alt="Profile Picture" class="profile-picture"
-           onerror="this.onerror=null;this.src='<%= request.getContextPath() %>/local-images/default.png';" />
+      <cheeper:profileImage picture="${profile.picture}" cssClass="profile-picture" />
     </div>
 
     <div class="profile-info">
@@ -112,4 +111,3 @@
   </div>
 
 </div>
-

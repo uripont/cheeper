@@ -37,6 +37,14 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- Jakarta JSP API -->
+    <dependency>
+        <groupId>jakarta.servlet.jsp</groupId>
+        <artifactId>jakarta.servlet.jsp-api</artifactId>
+        <version>3.1.1</version>
+        <scope>provided</scope>
+    </dependency>
+
     <!-- Jakarta JSTL -->
     <dependency>
         <groupId>jakarta.servlet.jsp.jstl</groupId>
