@@ -23,11 +23,7 @@ public class ProfileController extends HttpServlet {
     private StudentService studentService;
     private EntityService entityService;
     private AssociationService associationService;
-
-    // Configuration for images
-    //TODO: Change across files and centralize on a file
-    private static final String IMAGE_DIRECTORY = "/Users/martapuigmolina/eclipse-workspace/images"; 
-    private static final String DEFAULT_IMAGE = "default.png";
+    private ImageService imageService;
 
     @Override
     public void init() throws ServletException {
@@ -35,8 +31,7 @@ public class ProfileController extends HttpServlet {
         studentService = new StudentService(userRepository, new StudentRepository());
         entityService = new EntityService(userRepository, new EntityRepository());
         associationService = new AssociationService(userRepository, new AssociationRepository());
-
-        ensureImageDirectoryExists();
+        imageService = new ImageService();
     }
 
     @Override
@@ -90,8 +85,11 @@ public class ProfileController extends HttpServlet {
                 User p = profile.get();
                 
                 // Ensure picture is set or fallback to default
-                if (p.getPicture() == null || p.getPicture().trim().isEmpty()) {
-                    p.setPicture(DEFAULT_IMAGE);
+                // Handle the image path using ImageService
+                String imagePath = p.getPicture();
+                if (imagePath == null || imagePath.trim().isEmpty()) {
+                    imagePath = imageService.getImagePath(null); // Will return default image path
+                    p.setPicture(imagePath);
                 }
                 
                 // Get follower counts
@@ -146,8 +144,11 @@ public class ProfileController extends HttpServlet {
             if (profile.isPresent()) {
                 User p = profile.get();
 
-                if (p.getPicture() == null || p.getPicture().trim().isEmpty()) {
-                    p.setPicture(DEFAULT_IMAGE);
+                // Handle the image path using ImageService
+                String imagePath = p.getPicture();
+                if (imagePath == null || imagePath.trim().isEmpty()) {
+                    imagePath = imageService.getImagePath(null); // Will return default image path
+                    p.setPicture(imagePath);
                 }
 
                 FollowRepository followRepo = new FollowRepository();
@@ -166,10 +167,4 @@ public class ProfileController extends HttpServlet {
         }
     }
 
-    private void ensureImageDirectoryExists() {
-        File imageDir = new File(IMAGE_DIRECTORY);
-        if (!imageDir.exists()) {
-            imageDir.mkdirs();
-        }
-    }
 }

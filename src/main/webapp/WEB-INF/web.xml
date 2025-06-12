@@ -18,15 +18,9 @@
         <url-pattern>*.html</url-pattern>
     </servlet-mapping>
 
-    <!-- Root URL Configuration -->
-    <servlet-mapping>
-        <servlet-name>default</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
-
-    <!-- Welcome File Configuration -->
+    <!-- Welcome File Configuration (root index servlet) -->
     <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file>/</welcome-file>
     </welcome-file-list>
 
 </web-app>

@@ -10,6 +10,7 @@ import com.webdev.cheeper.repository.FollowRepository;
 import com.webdev.cheeper.repository.UserRepository;
 import com.webdev.cheeper.service.FollowService;
 import com.webdev.cheeper.service.UserService;
+import com.webdev.cheeper.service.ImageService;
 
 import java.util.List;
 import java.util.Set;
@@ -19,11 +20,13 @@ public class FollowController extends HttpServlet {
 
     private FollowRepository followRepository;
     private FollowService followService;
+    private ImageService imageService;
 
     @Override
     public void init() throws ServletException {
         followRepository = new FollowRepository();
         followService = new FollowService(followRepository);
+        imageService = new ImageService();
     }
 
     @Override
@@ -182,12 +185,8 @@ public class FollowController extends HttpServlet {
     }
 
     private String buildProfileHtml(User user, boolean isFollowing) {
-        String imagePath = user.getPicture() != null && !user.getPicture().isEmpty()
-            ? "/Cheeper/local-images/" + user.getPicture()
-            : "/Cheeper/local-images/default.png";
-
+        String imagePath = imageService.getImagePath(user.getPicture());
         String role = user.getRoleType() != null ? user.getRoleType().toString() : "";
-
         String followButtonHtml = "";
 
         if (isFollowing) {
@@ -199,8 +198,7 @@ public class FollowController extends HttpServlet {
         // The div with clickable-profile class on image and info div, with data-username attribute
         return String.format(
             "<div class='suggested-profile' data-user-id='%d'>" +
-                "<img src='%s' alt='%s' class='clickable-profile' data-username='%s' " +
-                "onerror=\"this.onerror=null;this.src='/Cheeper/local-images/default.png';\">" +
+                "<img src='%s' alt='%s' class='clickable-profile' data-username='%s'>" +
                 "<div class='suggested-profile-info clickable-profile' data-username='%s'>" +
                     "<div class='suggested-profile-name'>%s</div>" +
                     "<div class='suggested-profile-username'>@%s</div>" +

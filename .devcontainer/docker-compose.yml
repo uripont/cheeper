@@ -16,8 +16,8 @@ services:
 
   tomcat:
     build:
-      context: .
-      dockerfile: Dockerfile.tomcat
+      context: ..
+      dockerfile: .devcontainer/Dockerfile.tomcat
     env_file:
       - ../.env
     volumes:
