@@ -17,10 +17,11 @@ import com.webdev.cheeper.repository.UserRepository;
 
 public class UserService {
     protected final UserRepository userRepository;
-    private static final String UPLOAD_DIRECTORY = "/usr/local/tomcat/webapps/uploads";
+    private final ImageService imageService;
     
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.imageService = new ImageService();
     }
     
     public boolean usernameExists(String username) {
@@ -31,40 +32,14 @@ public class UserService {
     }
     
     public void savePicture(User user, Part filePart) throws IOException {
-        if (filePart == null || filePart.getSize() == 0) {
-            user.setPicture("default.png");
-            return;
-        }
-        
-        String originalName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-		String extension = "";
-		String repositoryName = "";
-	    int dotIndex = originalName.lastIndexOf('.');
-	    if (dotIndex > 0) {
-	        extension = originalName.substring(dotIndex);
-	        repositoryName = user.getUsername() + extension;
-	    }     
-	    
-        // Ensure upload directory exists
-        File uploadDir = new File(UPLOAD_DIRECTORY);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
-        }
-        
-        // Save file
-        File file = new File(uploadDir, repositoryName);
-        try (InputStream fileContent = filePart.getInputStream()) {
-            Files.copy(fileContent, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            user.setPicture(repositoryName);
-        }
+        String fileName = imageService.storeImage(filePart, user.getUsername());
+        user.setPicture(fileName);
     }
     
     public String getPicture(String username) {
         Optional<User> userOpt = userRepository.findByUsername(username);
-        if (userOpt.isPresent()) {
-            return userOpt.get().getPicture();
-        }
-        return "default.png";
+        String fileName = userOpt.map(User::getPicture).orElse(null);
+        return imageService.getImagePath(fileName);
     }
 
 
