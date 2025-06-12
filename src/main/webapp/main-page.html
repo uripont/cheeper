@@ -12,13 +12,13 @@
 
 <body>
   <!-- Sidebar -->
-  <div class="sidebar" id="navigation">
-    <a href="home" class="menu active"><img src="static/images/house.fill.png" alt="Home" /></a>
-    <a href="explore" class="menu"><img src="static/images/magnifyingglass.png" alt="Explore" /></a>
-    <a href="create" class="menu"><img src="static/images/plus.png" alt="Create" /></a>
-    <!--  <a href="news" class="menu"><img src="images/newspaper.png" alt="News" /></a> -->
-    <a href="profile" class="menu"><img src="static/images/person.png" alt="Profile" /></a>
-  </div>
+    <div class="sidebar" id="navigation">
+      <a href="home" class="menu active"><img src="static/images/house.fill.png" alt="Home" /></a>
+      <a href="explore" class="menu"><img src="static/images/magnifyingglass.png" alt="Explore" /></a>
+      <a href="create" class="menu"><img src="static/images/plus.png" alt="Create" /></a>
+      <!--  <a href="news" class="menu"><img src="images/newspaper.png" alt="News" /></a> -->
+      <a href="profile" class="menu"><img src="static/images/person.png" alt="Profile" /></a>
+    </div>
 
   <!-- Main layout container -->
   <div class="main-layout">
@@ -69,10 +69,10 @@
         container.append(header);
 
         data.forEach(profile => {
-         const basePath = window.location.origin + '/local-images/';
-       	  const imagePath = profile.picture
-       	    ? basePath + profile.picture
-       	    : basePath + 'default.png';
+         const basePath = window.location.origin + '/local-images';
+         const imagePath = profile.picture && profile.picture !== 'default.png'
+           ? basePath + '/profiles/' + profile.picture
+           : basePath + '/default.png';
 
        	container.append(`
        		  <div class="suggested-profile" data-user-id="${profile.id}">

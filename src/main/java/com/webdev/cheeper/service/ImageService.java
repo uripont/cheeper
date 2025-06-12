@@ -83,7 +83,7 @@ public class ImageService {
     }
     
     public String getImagePath(String filename) {
-        if (filename == null || filename.trim().isEmpty()) {
+        if (filename == null || filename.trim().isEmpty() || filename.equals(DEFAULT_IMAGE)) {
             return serveBasePath + "/defaults/" + DEFAULT_IMAGE;
         }
         return serveBasePath + "/profiles/" + filename;
@@ -101,8 +101,6 @@ public class ImageService {
     public void ensureStorageExists() {
         createDirectoryIfNotExists(storageBasePath);
         createDirectoryIfNotExists(storageBasePath + "/profiles");
-        createDirectoryIfNotExists(storageBasePath + "/defaults");
-        createDirectoryIfNotExists(storageBasePath + "/temp");
     }
     
     private void createDirectoryIfNotExists(String path) {
