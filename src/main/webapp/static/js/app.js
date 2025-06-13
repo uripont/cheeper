@@ -1,43 +1,55 @@
 const App = (function() {
-  function handleNavigation() {
-    $(document).on('click', '.menu', function(event) {
-      event.preventDefault();
-      const url = $(this).attr('href');
-      $('.menu').removeClass('active');
-      $(this).addClass('active');
-      $('#chooseView').toggle(url === 'home');
-      $('#feed').load(url, function() {
-        if (url === 'profile') {
-          const currentUserId = $('#feed .profile-container').data('user-id');
-          if (currentUserId) {
-            ProfileManager.loadFollowList('followers', currentUserId);
-          } else {
-            $('#suggestedProfilesContainer').html('<p class="error">User ID not found.</p>');
-          }
-        } else {
-          ProfileManager.loadSuggestedProfiles();
-        }
-      });
-    });
-  }
+    // Handle client-side navigation
+    function handleNavigation() {
+        $(document).on('click', '.menu', function(event) {
+            event.preventDefault();
 
-  function init() {
-    $.ajaxSetup({ cache: false });
-    $('#feed').load('/feed-for-you');
-    
-    // Initialize all modules
-    FeedManager.init();
-    ProfileManager.init();
-    FormHandler.init();
-    
-    // Setup main navigation
-    handleNavigation();
-    
-    // Load initial suggested profiles
-    ProfileManager.loadSuggestedProfiles();
-  }
+            const url = $(this).attr('href');
+            
+            // Update active menu item
+            $('.menu').removeClass('active');
+            $(this).addClass('active');
+            
+            // Update browser URL without reload
+            window.history.pushState({}, '', url);
 
-  return {
-    init: init
-  };
+            // Clear dynamic areas
+            $('#main-panel').empty();
+            $('#rightSidebar').empty();
+
+            // Load appropriate views based on the route
+            // TODO Views will be implemented later
+        });
+    }
+
+    // Handle browser back/forward buttons
+    function handlePopState() {
+        window.addEventListener('popstate', function() {
+            // Get current path from URL
+            const path = window.location.pathname;
+            
+            // Update active menu item
+            $('.menu').removeClass('active');
+            $(`a[href="${path}"]`).addClass('active');
+            
+            // Clear dynamic areas
+            $('#main-panel').empty();
+            $('#rightSidebar').empty();
+
+            // Load appropriate views based on the route
+            // (Views will be implemented later)
+        });
+    }
+
+    function init() {
+      
+        
+        // Setup navigation handling
+        handleNavigation();
+        handlePopState();
+    }
+
+    return {
+        init: init
+    };
 })();

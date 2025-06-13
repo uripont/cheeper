@@ -7,13 +7,9 @@
     <title>Cheeper</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/main-page.css" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/profile.css" />
     <link rel="icon" href="${pageContext.request.contextPath}/static/images/upf.jpg" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="${pageContext.request.contextPath}/static/js/feed-manager.js"></script>
-    <script src="${pageContext.request.contextPath}/static/js/profile-manager.js"></script>
-    <script src="${pageContext.request.contextPath}/static/js/form-handler.js"></script>
-    <script src="${pageContext.request.contextPath}/static/js/app.js"></script>
+    <script src="${pageContext.request.contextPath}/static/js/app.js" defer></script>
 </head>
 
 <body>
@@ -35,26 +31,26 @@
 
     <!-- Main layout container -->
     <div class="main-layout">
-        <!-- Dynamic main content area -->
+        <!-- Main content area -->
         <div class="main-content">
-            <div id="main-panel">
-                <!-- Dynamic content loaded here via AJAX -->
-                <c:if test="${view == 'feed'}">
-                    <div class="choose-view" id="chooseView">
-                        <p class="selected" data-view="for-you">For You</p>
-                        <p class="not-selected" data-view="following">Following</p>
-                    </div>
-                    <div id="feed" class="feed">
-                        <!-- Timeline content loaded here -->
-                    </div>
-                </c:if>
+            <div id="main-panel" class="feed">
+                <!-- Temporary content for testing -->
+                <h1>Main Content Area</h1>
+                <p>This is where dynamic content will be loaded.</p>
+                <p>The layout should maintain proper spacing and responsiveness.</p>
             </div>
         </div>
 
-        <!-- Dynamic right sidebar -->
+        <!-- Right sidebar -->
         <div class="right-sidebar" id="rightSidebar">
-            <!-- Dynamic content loaded here via AJAX -->
-            <div id="suggestedProfilesContainer"></div>
+            <!-- Temporary content for testing -->
+            <h2>Right Sidebar</h2>
+            <p>This sidebar should:</p>
+            <ul>
+                <li>Stay visible above 1000px width</li>
+                <li>Hide below 1000px</li>
+                <li>Maintain fixed width</li>
+            </ul>
         </div>
     </div>
 
@@ -62,8 +58,7 @@
         $(document).ready(function() {
             App.init();
             
-            // Set active menu item based on current view
-            $('.menu').removeClass('active');
+            // Initialize layout with active menu item
             $('[data-view="${view}"]').addClass('active');
         });
     </script>
