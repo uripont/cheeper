@@ -40,26 +40,35 @@ sequenceDiagram
 stateDiagram
     [*] --> RegistrationStart
     RegistrationStart --> TypeSelect
-    
+
     TypeSelect --> StudentForm: Student
     TypeSelect --> EntityForm: Entity
-    
+    TypeSelect --> AssociationForm: Association
+
     state StudentForm {
         [*] --> StudentFormJSP: /onboarding/student-form.jsp
         StudentFormJSP --> StudentController: StudentForm.java
         StudentController --> StudentService: validate()
         StudentService --> StudentRepository: save()
     }
-    
+
     state EntityForm {
         [*] --> EntityFormJSP: /onboarding/entity-form.jsp
         EntityFormJSP --> EntityController: EntityForm.java
         EntityController --> EntityService: validate()
         EntityService --> EntityRepository: save()
     }
-    
+
+    state AssociationForm {
+        [*] --> AssociationFormJSP: /onboarding/association-form.jsp
+        AssociationFormJSP --> AssociationController: AssociationForm.java
+        AssociationController --> AssociationService: validate()
+        AssociationService --> AssociationRepository: save()
+    }
+
     StudentForm --> MainPage: Success
     EntityForm --> MainPage: Success
+    AssociationForm --> MainPage: Success
     MainPage --> [*]
 ```
 
