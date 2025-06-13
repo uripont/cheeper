@@ -1,4 +1,21 @@
 const App = (function() {
+    // Load a view into the main panel
+    function loadView(view) {
+        // Make AJAX request to get the view content
+        $.ajax({
+            url: `/views/${view}`,
+            method: 'GET',
+            success: function(response) {
+                // Update main panel with the received content
+                $('#main-panel').html(response);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading view:', error);
+                $('#main-panel').html('<p>Error loading content.</p>');
+            }
+        });
+    }
+
     // Handle client-side navigation
     function handleNavigation() {
         $(document).on('click', '.menu', function(event) {
@@ -17,8 +34,11 @@ const App = (function() {
             $('#main-panel').empty();
             $('#rightSidebar').empty();
 
-            // Load appropriate views based on the route
-            // TODO Views will be implemented later
+            // Load appropriate view based on data-view attribute
+            const view = $(this).data('view');
+            if (view) {
+                loadView(view);
+            }
         });
     }
 
@@ -36,8 +56,11 @@ const App = (function() {
             $('#main-panel').empty();
             $('#rightSidebar').empty();
 
-            // Load appropriate views based on the route
-            // (Views will be implemented later)
+            // Extract view name from path and load it
+            const view = path.split('/').pop();
+            if (view) {
+                loadView(view);
+            }
         });
     }
 
@@ -50,6 +73,7 @@ const App = (function() {
     }
 
     return {
-        init: init
+        init: init,
+        loadView: loadView
     };
 })();
