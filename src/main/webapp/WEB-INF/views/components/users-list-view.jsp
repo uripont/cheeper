@@ -3,41 +3,29 @@
 
 <div class="users-list-view">
     <div class="users-list-header">
-        <c:choose>
-            <c:when test="${param.context eq 'search'}">
-                <div class="search-container">
-                    <h2>Search Users</h2>
-                    <input type="text" class="search-input" placeholder="Search users...">
-                </div>
-            </c:when>
-            <c:when test="${param.context eq 'suggestions'}">
-                <h2>Suggested Users</h2>
-            </c:when>
-            <c:otherwise>
-                <h2>Users</h2>
-            </c:otherwise>
-        </c:choose>
+        <h3>Users</h3>
+        <p class="users-context">Context: ${param.context}</p>
+        <c:if test="${param.context eq 'search'}">
+            <div class="search-input-container">
+                <input type="text" class="search-input" placeholder="Search users...">
+            </div>
+        </c:if>
     </div>
 
     <div class="users-container">
-        <!-- Placeholder content -->
+        <!-- Universal placeholder for all contexts -->
         <div class="placeholder-message">
-            <p>This is a placeholder for the users list.</p>
-            <p>This view will show:</p>
+            <h4>User List Content</h4>
+            <p>This unified users list will show:</p>
             <ul>
-                <c:choose>
-                    <c:when test="${param.context eq 'search'}">
-                        <li>Search input field</li>
-                        <li>Search results</li>
-                        <li>User cards with follow buttons</li>
-                    </c:when>
-                    <c:when test="${param.context eq 'suggestions'}">
-                        <li>Suggested users to follow</li>
-                        <li>Based on your interests</li>
-                        <li>Follow buttons</li>
-                    </c:when>
-                </c:choose>
+                <li>✦ User avatar</li>
+                <li>✦ User name and handle</li>
+                <li>✦ Follow/Message button</li>
+                <li>✦ Brief user info</li>
             </ul>
+            <div class="list-info">
+                <p><strong>Current Context:</strong> ${param.context}</p>
+            </div>
         </div>
     </div>
 </div>
