@@ -20,16 +20,16 @@
                 </div>
 
                 <div class="follow-stats">
-                    <button class="follow-stat-btn" onclick="App.loadFollowList('followers', ${profile.id})">
+                    <button class="follow-stat-btn">
                         <span id="followersCount">${followersCount}</span> Followers
                     </button>
-                    <button class="follow-stat-btn" onclick="App.loadFollowList('following', ${profile.id})">
+                    <button class="follow-stat-btn">
                         <span id="followingCount">${followingCount}</span> Following
                     </button>
                 </div>
 
                 <c:if test="${readOnly}">
-                    <button class="follow-standard-btn" data-userid="${profile.id}">
+                    <button class="follow-standard-btn" data-userid="${profile.id}" ${isFollowing ? 'data-following="true"' : ''}>
                         ${isFollowing ? 'Unfollow' : 'Follow'}
                     </button>
                 </c:if>
@@ -111,6 +111,20 @@
 </div>
 
 <script>
+    // Handle follower/following button clicks with App.loadView
+    $('.follow-stat-btn').first().on('click', function() {
+        App.loadView('users', { 
+            context: 'followers',
+            userId: '${profile.id}'
+        }, '#main-panel');
+    });
+    
+    $('.follow-stat-btn').last().on('click', function() {
+        App.loadView('users', { 
+            context: 'following',
+            userId: '${profile.id}'
+        }, '#main-panel');
+    });
     $(document).ready(function() {
         // Load user's timeline
         App.loadView('timeline', { 
@@ -120,14 +134,16 @@
 
         // Handle follow button clicks
         $('.follow-standard-btn').on('click', function() {
-            const userId = $(this).data('userid');
-            const action = $(this).text().trim().toLowerCase();
             const button = $(this);
+            const userId = button.data('userid');
+            const isFollowing = button.attr('data-following') === 'true';
+            const action = isFollowing ? 'unfollow' : 'follow';
 
             $.post(`/${action}`, { followingId: userId })
                 .done(function() {
-                    // Toggle button text
-                    button.text(action === 'follow' ? 'Unfollow' : 'Follow');
+                    // Toggle button state
+                    button.attr('data-following', (!isFollowing).toString());
+                    button.text(isFollowing ? 'Follow' : 'Unfollow');
                     
                     // Update follower count
                     $.get(`/profile-counts?userId=${userId}`, function(data) {
