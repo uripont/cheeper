@@ -15,7 +15,7 @@ sequenceDiagram
     B->>IS: Access /
     IS->>IS: Check session
     alt Valid Session
-        IS->>B: Redirect to main-page.html
+        IS->>B: Redirect to /app/home
     else No Valid Session
         IS->>LG: Redirect to /auth
         LG->>B: Display login page
@@ -29,7 +29,7 @@ sequenceDiagram
         alt New User
             GOCS->>B: Redirect to registration
         else Existing User
-            GOCS->>B: Redirect to main-page.html
+            GOCS->>B: Redirect to /app/home
         end
     end
 ```

@@ -18,7 +18,7 @@ public class IndexServlet extends HttpServlet {
         
         if (session != null && session.getAttribute("email") != null) {
             // Valid session exists, redirect to main page
-            response.sendRedirect(request.getContextPath() + "/main-page.html");
+            response.sendRedirect(request.getContextPath() + "/app/home");
         } else {
             // No valid session, redirect to auth
             response.sendRedirect(request.getContextPath() + "/auth");

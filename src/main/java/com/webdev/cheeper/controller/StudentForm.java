@@ -77,7 +77,7 @@ public class StudentForm extends HttpServlet {
                 Map<String, String> validationErrors = studentService.register(student, filePart);
                 
                 if (validationErrors.isEmpty()) {
-                    response.sendRedirect(request.getContextPath() + "/main-page.html");
+                    response.sendRedirect(request.getContextPath() + "/app/home");
                 } else {
                     request.setAttribute("student", student);
                     request.setAttribute("errors", validationErrors);

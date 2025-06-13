@@ -7,8 +7,7 @@ import jakarta.servlet.http.*;
 import com.webdev.cheeper.model.*;
 import com.webdev.cheeper.service.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Optional;
 
 import com.webdev.cheeper.repository.AssociationRepository;
@@ -17,7 +16,7 @@ import com.webdev.cheeper.repository.FollowRepository;
 import com.webdev.cheeper.repository.StudentRepository;
 import com.webdev.cheeper.repository.UserRepository;
 
-@WebServlet({"/profile", "/suggested-profile"})
+@WebServlet({"/profile", "/suggested-profile", "/views/profile"})
 public class ProfileController extends HttpServlet {
 
     private StudentService studentService;
@@ -36,12 +35,15 @@ public class ProfileController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    	if (req.getServletPath().equals("/profile")) {
+        if (req.getServletPath().equals("/profile")) {
             getProfile(req,resp);
         } else if (req.getServletPath().equals("/suggested-profile")) {
-        	getSuggestedProfile(req,resp);
+            getSuggestedProfile(req,resp);
+        } else if (req.getServletPath().equals("/views/profile")) {
+            // For AJAX requests, return only the content without the layout
+            resp.setContentType("text/html;charset=UTF-8");
+            req.getRequestDispatcher("/WEB-INF/views/components/profile-view.jsp").forward(req, resp);
         }
-        
     }
     
     private void getProfile(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

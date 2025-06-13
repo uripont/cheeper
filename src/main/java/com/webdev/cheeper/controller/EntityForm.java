@@ -42,7 +42,7 @@ public class EntityForm extends HttpServlet {
         Map<String, String> validationErrors = studentService.register(entity, filePart);
         
         if (validationErrors.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/main-page.html");
+            response.sendRedirect(request.getContextPath() + "/app/home");
         } else {
             request.setAttribute("entity", entity);
             request.setAttribute("errors", validationErrors);

@@ -53,7 +53,7 @@ public class AssociationForm extends HttpServlet {
             Map<String, String> validationErrors = associationService.register(association, filePart);
 
             if (validationErrors.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/main-page.html");
+                response.sendRedirect(request.getContextPath() + "/app/home");
             } else {
                 request.setAttribute("association", association);
                 request.setAttribute("errors", validationErrors);
