@@ -3,37 +3,29 @@
 
 <div class="timeline-view">
     <div class="timeline-header">
-        <c:choose>
-            <c:when test="${param.type eq 'for-you'}">
-                <h3>For You Timeline</h3>
-            </c:when>
-            <c:when test="${param.type eq 'following'}">
-                <h3>Following Timeline</h3>
-            </c:when>
-            <c:when test="${param.type eq 'profile'}">
-                <h3>User Posts</h3>
-            </c:when>
-            <c:when test="${param.type eq 'comments'}">
-                <h3>Comments</h3>
-            </c:when>
-            <c:otherwise>
-                <h3>Timeline</h3>
-            </c:otherwise>
-        </c:choose>
+        <h3>Timeline</h3>
+        <p class="timeline-context">Context: ${param.type}</p>
     </div>
 
-    <div class="posts-container">
-        <!-- Placeholder for posts -->
+    <div class="timeline-content">
+        <!-- Universal placeholder for all contexts -->
         <div class="placeholder-message">
-            <p>This is a placeholder for the ${param.type} timeline.</p>
+            <h4>Timeline Content</h4>
+            <p>This unified timeline view will show:</p>
             <ul>
-                <li>Each post will show:</li>
-                <li>- Author info and avatar</li>
-                <li>- Post content</li>
-                <li>- Media attachments</li>
-                <li>- Engagement metrics</li>
-                <li>- Action buttons</li>
+                <li>✦ Posts list with consistent styling</li>
+                <li>✦ Same structure for all contexts</li>
+                <li>✦ Only data will change based on type</li>
             </ul>
+            <div class="timeline-info">
+                <p><strong>Current View:</strong> ${param.type}</p>
+                <c:if test="${not empty param.userId}">
+                    <p><strong>User ID:</strong> ${param.userId}</p>
+                </c:if>
+                <c:if test="${not empty param.postId}">
+                    <p><strong>Post ID:</strong> ${param.postId}</p>
+                </c:if>
+            </div>
         </div>
     </div>
 </div>
