@@ -1,0 +1,25 @@
+.timeline-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.timeline-view__header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e1e8ed;
+}
+
+.timeline-view__posts {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.timeline-view__empty {
+    text-align: center;
+    color: #657786;
+    padding: 2rem 0;
+}

@@ -18,138 +18,64 @@ graph TD
 ```
 src/main/webapp/WEB-INF/views/
 ├── components/             # Reusable view templates
-│   ├── feed-view.jsp      # Feed container with tabs
-│   ├── profile-view.jsp   # Profile display
-│   ├── timeline-view.jsp  # Universal timeline
-│   ├── users-list-view.jsp# User listings
-│   ├── create-post-view.jsp# Post creation form
-│   ├── post-view.jsp      # Individual post display
-│   └── chats-view.jsp     # Chat interface
+│   ├── profile-view.jsp
+│   ├── timeline-view.jsp
+│   ├── users-list-view.jsp
+│   ├── create-post-view.jsp
+│   ├── post-view.jsp
+│   └── chats-view.jsp
 └── layouts/
-    └── main-layout.jsp    # SPA container
+    └── main-layout.jsp
+
+src/main/webapp/static/css/  # Component-specific styles
+├── main-page.css
+├── profile.css
+└── ...
+
+src/main/java/com/webdev/cheeper/controller/views/
+├── ProfileViewController.java
+├── TimelineViewController.java
+└── ...
 ```
 
-## View Templates
 
-All views are served through the `/views/*` endpoint by ViewsController, with components designed for reuse and composition.
+## Component Architecture
 
-### Timeline View Component
-The timeline-view.jsp is a universal component for displaying posts that gets reused across different contexts:
-- Within feed-view.jsp for showing For You/Following feeds
-- Within profile-view.jsp for showing a user's posts
-- Within post-view.jsp for showing comments
-- Each context passes appropriate parameters to configure the timeline's behavior
+Each view template "component" in Cheeper follows a modular architecture:
 
-### Feed View
-- **Template**: `feed-view.jsp`
-- **Endpoint**: `GET /views/feed`
-- **Responsibility**: Displays feed tabs and embeds timeline
-- **Composition**: Loads timeline-view with appropriate context
+1. **View Template (JSP)**
+   - Located in `components/`
+   - Contains only markup and basic display logic
+   - Uses class names for styling
+   - Focuses on presentation
 
-### Profile View
-- **Template**: `profile-view.jsp`
-- **Endpoint**: `GET /views/profile`
-- **Responsibility**: Displays user profile with timeline
-- **Composition**: Embeds timeline-view for user's posts
+2. **View Controller**
+   - Located in `controller/views/`
+   - Handles business logic for its specific view
+   - Manages authentication and authorization
+   - Prepares data for the view
+   - Sets view state based on context, to be rendered by the JSP template
 
-### Timeline View
-- **Template**: `timeline-view.jsp`
-- **Endpoint**: `GET /views/timeline`
-- **Parameters**:
-  - `type`: for-you | following | profile | comments
-  - `userId`: (optional) for profile timeline
-  - `postId`: (optional) for comments timeline
-- **Responsibility**: Universal post listing component
+3. **Component CSS**
+   - Located in `static/css/`
+   - Component-specific styles
+   - Loaded once on main-layout.jsp
+   - Scoped to component's root class
+   - Available client-side for dynamic content
 
-### Users List View
-- **Template**: `users-list-view.jsp`
-- **Endpoint**: `GET /views/users`
-- **Parameters**: 
-  - `context`: search | suggestions | chats
-- **Responsibility**: Displays user lists for various contexts
+### Example: Profile view Ccmponent
 
-### Create Post View
-- **Template**: `create-post-view.jsp`
-- **Endpoint**: `GET /views/create`
-- **Responsibility**: Post creation form
-
-### Post View
-- **Template**: `post-view.jsp`
-- **Endpoint**: `GET /views/post`
-- **Parameters**: 
-  - `id`: post identifier
-- **Responsibility**: Single post with comments
-- **Composition**: Embeds timeline-view for comments
-
-### Chats View
-- **Template**: `chats-view.jsp`
-- **Endpoint**: `GET /views/chats`
-- **Responsibility**: Chat interface split into conversations list and message area
-- **Composition**: Works with users-list-view for contacts list
-
-## View Loading and Composition
-
-### Client-Side Navigation
-```mermaid
-sequenceDiagram
-    participant B as Browser
-    participant C as Client (app.js)
-    participant S as Server
-    participant V as View Template
-    
-    B->>C: Click navigation item
-    C->>C: Update URL & active state
-    C->>C: Clear dynamic areas
-    
-    alt Home/Profile/Chats
-        C->>S: GET /views/(feed/profile/chats)
-        S->>C: Return main view
-        C->>S: GET /views/users?context=(suggestions/chats)
-        S->>C: Return sidebar content
-    else Explore
-        C->>S: GET /views/users?context=search
-        S->>C: Return search view
-    else Create Post
-        C->>S: GET /views/create
-        S->>C: Return create form
-    end
+```
+profile-view.jsp             # Markup template
+profile.css                  # Scoped styles (.profile-view {})
+ProfileViewController.java   # Business logic & data preparation
 ```
 
-### View Composition
-```mermaid
-graph TD
-    A[Main Layout] -->|Fixed| B[Left Sidebar]
-    A -->|Dynamic| C[Main Panel]
-    A -->|Dynamic| D[Right Sidebar]
-    
-    C -->|Can Load| E[Feed View]
-    C -->|Can Load| F[Profile View]
-    C -->|Can Load| G[Users List]
-    C -->|Can Load| H[Create Post]
-    C -->|Can Load| I[Post View]
-    C -->|Can Load| J[Chats View]
-    
-    E -->|Embeds| K[Timeline View]
-    F -->|Embeds| K
-    I -->|Embeds| K
-    
-    D -->|Shows| G[Users List]
-    G -->|Context| L[Search/Suggestions/Chats]
-```
-
-Views are loaded dynamically via AJAX calls through app.js's loadView function:
-```javascript
-function loadView(view, params = {}, targetContainer = '#main-panel') {
-    // Construct query string from params
-    const queryString = Object.keys(params)
-        .map(key => `${key}=${params[key]}`)
-        .join('&');
-        
-    $.ajax({
-        url: `/views/${view}${queryString ? '?' + queryString : ''}`,
-        method: 'GET',
-        success: function(response) {
-            $(targetContainer).html(response);
-        }
-    });
-}
+When a profile is requested:
+1. Client requests `/views/profile`
+2. ProfileViewController:
+   - Validates session
+   - Loads appropriate profile data
+   - Sets view attributes
+3. profile-view.jsp renders with data, returned to the client to be displayed on the `main-layout.jsp`'s main panel/side panel
+4. Styles from profile.css (already loaded) apply
