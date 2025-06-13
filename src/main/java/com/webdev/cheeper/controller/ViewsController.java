@@ -42,6 +42,9 @@ public class ViewsController extends HttpServlet {
             case "profile":
                 jspPath = "/WEB-INF/views/components/profile-view.jsp";
                 break;
+            case "chats":
+                jspPath = "/WEB-INF/views/components/chats-view.jsp";
+                break;
             default:
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;

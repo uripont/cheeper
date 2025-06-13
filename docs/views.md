@@ -23,7 +23,8 @@ src/main/webapp/WEB-INF/views/
 │   ├── timeline-view.jsp  # Universal timeline
 │   ├── users-list-view.jsp# User listings
 │   ├── create-post-view.jsp# Post creation form
-│   └── post-view.jsp      # Individual post display
+│   ├── post-view.jsp      # Individual post display
+│   └── chats-view.jsp     # Chat interface
 └── layouts/
     └── main-layout.jsp    # SPA container
 ```
@@ -31,6 +32,13 @@ src/main/webapp/WEB-INF/views/
 ## View Templates
 
 All views are served through the `/views/*` endpoint by ViewsController, with components designed for reuse and composition.
+
+### Timeline View Component
+The timeline-view.jsp is a universal component for displaying posts that gets reused across different contexts:
+- Within feed-view.jsp for showing For You/Following feeds
+- Within profile-view.jsp for showing a user's posts
+- Within post-view.jsp for showing comments
+- Each context passes appropriate parameters to configure the timeline's behavior
 
 ### Feed View
 - **Template**: `feed-view.jsp`
@@ -57,8 +65,8 @@ All views are served through the `/views/*` endpoint by ViewsController, with co
 - **Template**: `users-list-view.jsp`
 - **Endpoint**: `GET /views/users`
 - **Parameters**: 
-  - `context`: search | suggestions
-- **Responsibility**: Displays user lists for search/suggestions
+  - `context`: search | suggestions | chats
+- **Responsibility**: Displays user lists for various contexts
 
 ### Create Post View
 - **Template**: `create-post-view.jsp`
@@ -72,6 +80,12 @@ All views are served through the `/views/*` endpoint by ViewsController, with co
   - `id`: post identifier
 - **Responsibility**: Single post with comments
 - **Composition**: Embeds timeline-view for comments
+
+### Chats View
+- **Template**: `chats-view.jsp`
+- **Endpoint**: `GET /views/chats`
+- **Responsibility**: Chat interface split into conversations list and message area
+- **Composition**: Works with users-list-view for contacts list
 
 ## View Loading and Composition
 
@@ -87,10 +101,10 @@ sequenceDiagram
     C->>C: Update URL & active state
     C->>C: Clear dynamic areas
     
-    alt Home/Profile
-        C->>S: GET /views/feed or /views/profile
+    alt Home/Profile/Chats
+        C->>S: GET /views/(feed/profile/chats)
         S->>C: Return main view
-        C->>S: GET /views/users?context=suggestions
+        C->>S: GET /views/users?context=(suggestions/chats)
         S->>C: Return sidebar content
     else Explore
         C->>S: GET /views/users?context=search
@@ -100,3 +114,42 @@ sequenceDiagram
         S->>C: Return create form
     end
 ```
+
+### View Composition
+```mermaid
+graph TD
+    A[Main Layout] -->|Fixed| B[Left Sidebar]
+    A -->|Dynamic| C[Main Panel]
+    A -->|Dynamic| D[Right Sidebar]
+    
+    C -->|Can Load| E[Feed View]
+    C -->|Can Load| F[Profile View]
+    C -->|Can Load| G[Users List]
+    C -->|Can Load| H[Create Post]
+    C -->|Can Load| I[Post View]
+    C -->|Can Load| J[Chats View]
+    
+    E -->|Embeds| K[Timeline View]
+    F -->|Embeds| K
+    I -->|Embeds| K
+    
+    D -->|Shows| G[Users List]
+    G -->|Context| L[Search/Suggestions/Chats]
+```
+
+Views are loaded dynamically via AJAX calls through app.js's loadView function:
+```javascript
+function loadView(view, params = {}, targetContainer = '#main-panel') {
+    // Construct query string from params
+    const queryString = Object.keys(params)
+        .map(key => `${key}=${params[key]}`)
+        .join('&');
+        
+    $.ajax({
+        url: `/views/${view}${queryString ? '?' + queryString : ''}`,
+        method: 'GET',
+        success: function(response) {
+            $(targetContainer).html(response);
+        }
+    });
+}

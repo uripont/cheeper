@@ -61,6 +61,11 @@ const App = (function() {
                         loadView('profile');
                         loadView('users', { context: 'suggestions' }, '#rightSidebar');
                         break;
+                    case 'chats':
+                        // Load chats view and users list
+                        loadView('chats');
+                        loadView('users', { context: 'chats' }, '#rightSidebar');
+                        break;
                     default:
                         loadView(view);
                 }
@@ -103,6 +108,11 @@ const App = (function() {
                         // Load profile view and suggested users
                         loadView('profile');
                         loadView('users', { context: 'suggestions' }, '#rightSidebar');
+                        break;
+                    case 'chats':
+                        // Load chats view and users list
+                        loadView('chats');
+                        loadView('users', { context: 'chats' }, '#rightSidebar');
                         break;
                     default:
                         loadView(view);

@@ -21,7 +21,7 @@
     </div>
 
     <!-- Timeline Section -->
-    <div class="profile-timeline">
+    <div class="profile-posts">
         <h2>Posts</h2>
         <div id="profile-timeline-container" class="timeline-container">
             <!-- Timeline will be loaded here -->
@@ -31,7 +31,13 @@
 
 <script>
     $(document).ready(function() {
-        // Load the timeline placeholder
-        App.loadView('timeline', { type: 'profile' }, '#profile-timeline-container');
+        // Load user's posts timeline and suggested users
+        App.loadView('timeline', { 
+            type: 'profile',
+            userId: '${profile.id}'
+        }, '#profile-timeline-container');
+        
+        // Load suggested users in right sidebar
+        App.loadView('users', { context: 'suggestions' }, '#rightSidebar');
     });
 </script>
