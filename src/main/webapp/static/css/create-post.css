@@ -1,0 +1,30 @@
+.create-post-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.create-post-view__form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.create-post-view__textarea {
+    resize: vertical;
+    min-height: 100px;
+    padding: 0.5rem;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
+}
+
+.create-post-view__submit {
+    align-self: flex-end;
+    padding: 0.5rem 1rem;
+    background-color: #1da1f2;
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+}

@@ -1,0 +1,28 @@
+.post-view {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-bottom: 1px solid #e1e8ed;
+}
+
+.post-view__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.post-view__user {
+    font-weight: bold;
+}
+
+.post-view__content {
+    margin-top: 0.5rem;
+    line-height: 1.5;
+}
+
+.post-view__actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
