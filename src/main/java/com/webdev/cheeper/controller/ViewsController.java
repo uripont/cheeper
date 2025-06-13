@@ -11,7 +11,6 @@ import java.io.IOException;
 @WebServlet({
     "/views/feed",
     "/views/timeline",
-    "/views/users",
     "/views/create",
     "/views/post",
     "/views/chats"
@@ -29,9 +28,6 @@ public class ViewsController extends HttpServlet {
                 break;
             case "/views/timeline":
                 jspPath = "/WEB-INF/views/components/timeline-view.jsp";
-                break;
-            case "/views/users":
-                jspPath = "/WEB-INF/views/components/users-list-view.jsp";
                 break;
             case "/views/create":
                 jspPath = "/WEB-INF/views/components/create-post-view.jsp";

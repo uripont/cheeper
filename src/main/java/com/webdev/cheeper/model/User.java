@@ -12,6 +12,7 @@ public class User implements Serializable {
     private String biography;
     private String picture;
     private RoleType role;
+    private boolean isFollowed;
 
     public User() {
         super();
@@ -76,6 +77,14 @@ public class User implements Serializable {
 
     public void setRoleType(RoleType role) {
         this.role = role;
+    }
+
+    public boolean isFollowed() {
+        return isFollowed;
+    }
+
+    public void setFollowed(boolean isFollowed) {
+        this.isFollowed = isFollowed;
     }
 
     @Override
