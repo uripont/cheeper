@@ -47,9 +47,8 @@
 </div>
 
 <script>
-let searchTimeout;
-
 function handleSearch(query) {
+    let searchTimeout;
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
         window.location.href = '/views/users?context=search&q=' + encodeURIComponent(query);

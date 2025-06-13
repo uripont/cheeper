@@ -3,18 +3,19 @@
     max-width: 600px;
     margin: 0 auto;
     padding: 1rem;
+    color: var(--text);
 }
 
 .users-list-header {
     padding: 1rem 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
     margin-bottom: 1rem;
 }
 
 .users-list-header h3 {
     font-size: 1.5rem;
     font-weight: 600;
-    color: #333;
+    color: #FFFFFF;
     margin: 0;
 }
 
@@ -25,15 +26,17 @@
 .search-input {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 20px;
+    border: none;
+    border-radius: var(--border-radius);
     font-size: 1rem;
     outline: none;
-    transition: border-color 0.2s;
+    transition: background-color 0.2s;
+    background-color: var(--feed-bg);
+    color: #FFFFFF;
 }
 
 .search-input:focus {
-    border-color: #1da1f2;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .users-container {
@@ -45,13 +48,14 @@
 .user-item {
     display: flex;
     padding: 1rem;
-    border: 1px solid #eee;
-    border-radius: 8px;
+    border: none;
+    border-radius: var(--border-radius);
     transition: background-color 0.2s;
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .user-item:hover {
-    background-color: #f8f9fa;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .user-avatar {
@@ -70,18 +74,20 @@
     margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
-    color: #333;
+    color: #FFFFFF;
 }
 
 .user-info .username {
-    color: #536471;
+    color: #FFFFFF;
+    opacity: 0.7;
     font-size: 0.9rem;
     margin-top: 0.2rem;
 }
 
 .user-info .biography {
     margin-top: 0.5rem;
-    color: #536471;
+    color: #FFFFFF;
+    opacity: 0.7;
     font-size: 0.95rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -97,36 +103,36 @@
 
 .follow-button {
     padding: 0.5rem 1rem;
-    border-radius: 20px;
+    border-radius: var(--border-radius);
     font-weight: 600;
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s;
+    color: #FFFFFF;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .follow-button:not(.following) {
-    background-color: #0f1419;
-    color: #fff;
-    border: none;
+    background-color: var(--hover);
 }
 
 .follow-button.following {
-    background-color: transparent;
-    border: 1px solid #cfd9de;
-    color: #0f1419;
+    background-color: rgba(255, 255, 255, 0.15);
 }
 
 .follow-button:hover:not(.following) {
-    background-color: #272c30;
+    opacity: 0.9;
 }
 
 .follow-button.following:hover {
-    border-color: #f4212e;
+    background-color: rgba(244, 33, 46, 0.1);
     color: #f4212e;
 }
 
 .placeholder-message {
     text-align: center;
     padding: 2rem;
-    color: #536471;
+    color: #FFFFFF;
+    opacity: 0.7;
 }
