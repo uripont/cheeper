@@ -8,27 +8,37 @@
             <h2>Post Details</h2>
         </div>
 
-        <!-- Placeholder for post content -->
+        <!-- Post placeholder -->
         <div class="placeholder-message">
-            <p>This is a placeholder for the post view.</p>
-            <p>Will display:</p>
+            <p>This is a placeholder for the post details.</p>
+            <p>Will include:</p>
             <ul>
-                <li>Author information</li>
+                <li>Author information and avatar</li>
+                <li>Post timestamp</li>
                 <li>Post content</li>
-                <li>Engagement metrics</li>
+                <li>Media attachments (if any)</li>
+                <li>Engagement metrics (likes, replies, etc.)</li>
                 <li>Action buttons (like, share, etc.)</li>
             </ul>
         </div>
     </div>
 
-    <!-- Comments timeline -->
+    <!-- Reply form -->
+    <div class="reply-form-container">
+        <div class="placeholder-message">
+            <p>Reply form will be here</p>
+            <ul>
+                <li>Text input for reply</li>
+                <li>Submit button</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Comments section -->
     <div class="comments-section">
         <h3>Comments</h3>
         <div id="comments-timeline" class="timeline-container">
-            <!-- Timeline view for comments will be loaded here -->
-            <div class="placeholder-message">
-                <p>Comments will be loaded using the timeline-view component</p>
-            </div>
+            <!-- Comments timeline will be loaded here -->
         </div>
     </div>
 </div>
@@ -38,7 +48,10 @@
         // Load comments timeline
         const postId = new URLSearchParams(window.location.search).get('id');
         if (postId) {
-            App.loadView('timeline', { type: 'comments', postId: postId });
+            App.loadView('timeline', { 
+                type: 'comments',
+                postId: postId 
+            }, '#comments-timeline');
         }
     });
 </script>

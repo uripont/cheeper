@@ -1,17 +1,22 @@
 const App = (function() {
-    // Load a view into the main panel
-    function loadView(view) {
+    // Load a view into a target container
+    function loadView(view, params = {}, targetContainer = '#main-panel') {
+        // Construct query string from params
+        const queryString = Object.keys(params)
+            .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+            .join('&');
+            
         // Make AJAX request to get the view content
         $.ajax({
-            url: `/views/${view}`,
+            url: `/views/${view}${queryString ? '?' + queryString : ''}`,
             method: 'GET',
             success: function(response) {
-                // Update main panel with the received content
-                $('#main-panel').html(response);
+                // Update target container with the received content
+                $(targetContainer).html(response);
             },
             error: function(xhr, status, error) {
                 console.error('Error loading view:', error);
-                $('#main-panel').html('<p>Error loading content.</p>');
+                $(targetContainer).html('<p>Error loading content.</p>');
             }
         });
     }
@@ -22,6 +27,7 @@ const App = (function() {
             event.preventDefault();
 
             const url = $(this).attr('href');
+            const view = $(this).data('view');
             
             // Update active menu item
             $('.menu').removeClass('active');
@@ -35,9 +41,29 @@ const App = (function() {
             $('#rightSidebar').empty();
 
             // Load appropriate view based on data-view attribute
-            const view = $(this).data('view');
             if (view) {
-                loadView(view);
+                switch(view) {
+                    case 'home':
+                        // Load feed and suggested users
+                        loadView('feed');
+                        loadView('users', { context: 'suggestions' }, '#rightSidebar');
+                        break;
+                    case 'explore':
+                        // Load users search view
+                        loadView('users', { context: 'search' });
+                        break;
+                    case 'create':
+                        // Load post creation view
+                        loadView('create');
+                        break;
+                    case 'profile':
+                        // Load profile view and suggested users
+                        loadView('profile');
+                        loadView('users', { context: 'suggestions' }, '#rightSidebar');
+                        break;
+                    default:
+                        loadView(view);
+                }
             }
         });
     }
@@ -59,21 +85,54 @@ const App = (function() {
             // Extract view name from path and load it
             const view = path.split('/').pop();
             if (view) {
-                loadView(view);
+                switch(view) {
+                    case 'home':
+                        // Load feed and suggested users
+                        loadView('feed');
+                        loadView('users', { context: 'suggestions' }, '#rightSidebar');
+                        break;
+                    case 'explore':
+                        // Load users search view
+                        loadView('users', { context: 'search' });
+                        break;
+                    case 'create':
+                        // Load post creation view
+                        loadView('create');
+                        break;
+                    case 'profile':
+                        // Load profile view and suggested users
+                        loadView('profile');
+                        loadView('users', { context: 'suggestions' }, '#rightSidebar');
+                        break;
+                    default:
+                        loadView(view);
+                }
             }
         });
     }
 
+    // Function to load the feed with its components
+    function loadFeed() {
+        // Load main feed view
+        loadView('feed');
+        // Load suggested users in right sidebar
+        loadView('users', { context: 'suggestions' }, '#rightSidebar');
+    }
+
     function init() {
-      
-        
         // Setup navigation handling
         handleNavigation();
         handlePopState();
+
+        // Load initial feed if we're on the home page
+        if (window.location.pathname === '/app/home') {
+            loadFeed();
+        }
     }
 
     return {
         init: init,
-        loadView: loadView
+        loadView: loadView,
+        loadFeed: loadFeed
     };
 })();

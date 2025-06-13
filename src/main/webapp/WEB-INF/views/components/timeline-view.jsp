@@ -1,20 +1,23 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<div class="timeline">
+<div class="timeline-view">
     <div class="timeline-header">
         <c:choose>
             <c:when test="${param.type eq 'for-you'}">
-                <h2>For You</h2>
+                <h3>For You Timeline</h3>
             </c:when>
             <c:when test="${param.type eq 'following'}">
-                <h2>Following</h2>
+                <h3>Following Timeline</h3>
             </c:when>
             <c:when test="${param.type eq 'profile'}">
-                <h2>Posts</h2>
+                <h3>User Posts</h3>
+            </c:when>
+            <c:when test="${param.type eq 'comments'}">
+                <h3>Comments</h3>
             </c:when>
             <c:otherwise>
-                <h2>Timeline</h2>
+                <h3>Timeline</h3>
             </c:otherwise>
         </c:choose>
     </div>
@@ -22,13 +25,14 @@
     <div class="posts-container">
         <!-- Placeholder for posts -->
         <div class="placeholder-message">
-            <p>This is a placeholder for the timeline view.</p>
-            <p>Posts will be loaded here based on the context:</p>
+            <p>This is a placeholder for the ${param.type} timeline.</p>
             <ul>
-                <li>For You: Global feed</li>
-                <li>Following: Posts from followed users</li>
-                <li>Profile: User's posts</li>
-                <li>Post: Comments/replies</li>
+                <li>Each post will show:</li>
+                <li>- Author info and avatar</li>
+                <li>- Post content</li>
+                <li>- Media attachments</li>
+                <li>- Engagement metrics</li>
+                <li>- Action buttons</li>
             </ul>
         </div>
     </div>

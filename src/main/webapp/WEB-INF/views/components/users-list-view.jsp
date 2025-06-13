@@ -1,11 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<div class="users-list">
+<div class="users-list-view">
     <div class="users-list-header">
         <c:choose>
             <c:when test="${param.context eq 'search'}">
-                <h2>Search Results</h2>
+                <div class="search-container">
+                    <h2>Search Users</h2>
+                    <input type="text" class="search-input" placeholder="Search users...">
+                </div>
             </c:when>
             <c:when test="${param.context eq 'suggestions'}">
                 <h2>Suggested Users</h2>
@@ -17,13 +20,23 @@
     </div>
 
     <div class="users-container">
-        <!-- Placeholder for user list -->
+        <!-- Placeholder content -->
         <div class="placeholder-message">
-            <p>This is a placeholder for the users list view.</p>
-            <p>Users will be displayed here based on context:</p>
+            <p>This is a placeholder for the users list.</p>
+            <p>This view will show:</p>
             <ul>
-                <li>Search Results: Users matching search query</li>
-                <li>Suggestions: Recommended users to follow</li>
+                <c:choose>
+                    <c:when test="${param.context eq 'search'}">
+                        <li>Search input field</li>
+                        <li>Search results</li>
+                        <li>User cards with follow buttons</li>
+                    </c:when>
+                    <c:when test="${param.context eq 'suggestions'}">
+                        <li>Suggested users to follow</li>
+                        <li>Based on your interests</li>
+                        <li>Follow buttons</li>
+                    </c:when>
+                </c:choose>
             </ul>
         </div>
     </div>

@@ -17,48 +17,86 @@ graph TD
 ## Directory Structure
 ```
 src/main/webapp/WEB-INF/views/
-├── components/        # Reusable view templates
+├── components/             # Reusable view templates
+│   ├── feed-view.jsp      # Feed container with tabs
 │   ├── profile-view.jsp   # Profile display
-│   └── timeline-view.jsp  # Universal timeline
+│   ├── timeline-view.jsp  # Universal timeline
+│   ├── users-list-view.jsp# User listings
+│   ├── create-post-view.jsp# Post creation form
+│   └── post-view.jsp      # Individual post display
 └── layouts/
     └── main-layout.jsp    # SPA container
 ```
 
 ## View Templates
 
+All views are served through the `/views/*` endpoint by ViewsController, with components designed for reuse and composition.
+
+### Feed View
+- **Template**: `feed-view.jsp`
+- **Endpoint**: `GET /views/feed`
+- **Responsibility**: Displays feed tabs and embeds timeline
+- **Composition**: Loads timeline-view with appropriate context
+
 ### Profile View
 - **Template**: `profile-view.jsp`
-- **Endpoint**: `GET /views/profile?username=X`
-- **Responsibility**: Displays user profile information
+- **Endpoint**: `GET /views/profile`
+- **Responsibility**: Displays user profile with timeline
+- **Composition**: Embeds timeline-view for user's posts
 
 ### Timeline View
-A universal template for displaying post collections with different data sources.
-
 - **Template**: `timeline-view.jsp`
-- **Multiple Endpoints**:
-  ```
-  GET /feed/for-you        → Global feed
-  GET /feed/following      → Following feed
-  GET /profile/timeline    → User's posts, to be used in profile view
-  ```
+- **Endpoint**: `GET /views/timeline`
+- **Parameters**:
+  - `type`: for-you | following | profile | comments
+  - `userId`: (optional) for profile timeline
+  - `postId`: (optional) for comments timeline
+- **Responsibility**: Universal post listing component
 
-## View Loading
+### Users List View
+- **Template**: `users-list-view.jsp`
+- **Endpoint**: `GET /views/users`
+- **Parameters**: 
+  - `context`: search | suggestions
+- **Responsibility**: Displays user lists for search/suggestions
 
+### Create Post View
+- **Template**: `create-post-view.jsp`
+- **Endpoint**: `GET /views/create`
+- **Responsibility**: Post creation form
+
+### Post View
+- **Template**: `post-view.jsp`
+- **Endpoint**: `GET /views/post`
+- **Parameters**: 
+  - `id`: post identifier
+- **Responsibility**: Single post with comments
+- **Composition**: Embeds timeline-view for comments
+
+## View Loading and Composition
+
+### Client-Side Navigation
 ```mermaid
 sequenceDiagram
     participant B as Browser
-    participant M as Main Layout
+    participant C as Client (app.js)
     participant S as Server
     participant V as View Template
     
-    B->>M: Initial page load
-    M->>B: Return SPA shell
+    B->>C: Click navigation item
+    C->>C: Update URL & active state
+    C->>C: Clear dynamic areas
     
-    Note over B,M: User interacts
-    
-    B->>S: AJAX request to view endpoint
-    S->>V: Process request
-    V->>S: Generate view HTML
-    S->>B: Return view content
-    B->>B: Update dynamic areas
+    alt Home/Profile
+        C->>S: GET /views/feed or /views/profile
+        S->>C: Return main view
+        C->>S: GET /views/users?context=suggestions
+        S->>C: Return sidebar content
+    else Explore
+        C->>S: GET /views/users?context=search
+        S->>C: Return search view
+    else Create Post
+        C->>S: GET /views/create
+        S->>C: Return create form
+    end
 ```
