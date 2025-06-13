@@ -59,9 +59,10 @@ public class UsersListViewController extends HttpServlet {
         List<User> users;
         String contextTitle;
         
-        if (contextLower.equals("suggestions") || contextLower.equals("suggested")) {
+        // TODO: Implement proper chats users list functionality
+        if (contextLower.equals("suggestions") || contextLower.equals("suggested") || contextLower.equals("chats")) {
             users = userRepository.findRandomUsers(10, currentUser.getId());
-            contextTitle = "Suggested Users";
+            contextTitle = contextLower.equals("chats") ? "Chat Users" : "Suggested Users";
         } else if (contextLower.equals("search")) {
             // For now, show all users if no query, later implement search
             users = userRepository.findAll();
