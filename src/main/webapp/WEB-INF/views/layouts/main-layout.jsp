@@ -27,7 +27,7 @@
             <img src="${pageContext.request.contextPath}/static/images/plus.png" alt="Create" />
         </a>
         <a href="${pageContext.request.contextPath}/app/chats" class="menu" data-view="chats">
-            <img src="${pageContext.request.contextPath}/static/images/person.fill.png" alt="Chats" />
+            <img src="${pageContext.request.contextPath}/static/images/text.bubble.png" alt="Chats" />
         </a>
         <a href="${pageContext.request.contextPath}/app/profile" class="menu" data-view="profile">
             <img src="${pageContext.request.contextPath}/static/images/person.png" alt="Profile" />
