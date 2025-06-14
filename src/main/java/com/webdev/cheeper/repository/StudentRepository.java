@@ -35,12 +35,13 @@ public class StudentRepository extends UserRepository {
 
     public void update(Student student) {
         // Update user data
-        String userQuery = "UPDATE users SET full_name = ?, email = ?, biography = ? WHERE id = ?";
+        String userQuery = "UPDATE users SET full_name = ?, email = ?, biography = ?, username = ? WHERE id = ?";
         try (PreparedStatement stmt = db.prepareStatement(userQuery)) {
             stmt.setString(1, student.getFullName());
             stmt.setString(2, student.getEmail());
             stmt.setString(3, student.getBiography());
-            stmt.setInt(4, student.getId());
+            stmt.setString(4, student.getUsername());
+            stmt.setInt(5, student.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

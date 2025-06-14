@@ -6,9 +6,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 
 import com.webdev.cheeper.model.RoleType;
+import com.webdev.cheeper.model.User;
 import com.webdev.cheeper.model.Student;
 import com.webdev.cheeper.repository.StudentRepository;
 import com.webdev.cheeper.repository.UserRepository;
@@ -19,19 +21,96 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 
 @MultipartConfig
 @WebServlet("/auth/student-form")
 public class StudentForm extends HttpServlet {
-	
+
     private static final long serialVersionUID = 1L;
+    private UserRepository userRepository;
+    private StudentRepository studentRepository;
+    private StudentService studentService;
+
+    @Override
+    public void init() throws ServletException {
+        this.userRepository = new UserRepository();
+        this.studentRepository = new StudentRepository();
+        this.studentService = new StudentService(userRepository, studentRepository);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        String mode = request.getParameter("mode");
+        
+        if ("edit".equals(mode)) {
+            // Get current user from session
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("email") == null) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            
+            String email = (String) session.getAttribute("email");
+            Optional<User> userOpt = userRepository.findByEmail(email);
+            
+            if (userOpt.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
+                return;
+            }
+            
+            // Get full student profile
+            Optional<Student> studentOpt = studentService.getProfile(userOpt.get().getId());
+            
+            if (studentOpt.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Student profile not found");
+                return;
+            }
+            
+            // Pre-populate form with student data
+            Student student = studentOpt.get();
+            request.setAttribute("student", student);
+            request.setAttribute("mode", "edit");
+        }
+        
+        // Forward to form view
+        request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
+    }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-    	Student student = new Student();
-	    Map<String, String> errors = new HashMap<>();
+        String mode = request.getParameter("mode");
+        Student student;
+        
+        if ("edit".equals(mode)) {
+            // Get existing student for update
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("email") == null) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            
+            String email = (String) session.getAttribute("email");
+            Optional<Student> existingStudent = studentService.getProfile(
+                userRepository.findByEmail(email).get().getId()
+            );
+            
+            if (existingStudent.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Student profile not found");
+                return;
+            }
+            
+            student = existingStudent.get();
+        } else {
+            // Create new student
+            student = new Student();
+        }
+        
+        Map<String, String> errors = new HashMap<>();
 	   
 	    try {
 	        // Manually decode and populate fields (simpler approach)
@@ -70,19 +149,21 @@ public class StudentForm extends HttpServlet {
                 return;
             }
             
-            try (StudentRepository studentRepository = new StudentRepository();
-                 UserRepository userRepository = new UserRepository()) {
-                
-                StudentService studentService = new StudentService(userRepository, studentRepository);
-                Map<String, String> validationErrors = studentService.register(student, filePart);
-                
-                if (validationErrors.isEmpty()) {
-                    response.sendRedirect(request.getContextPath() + "/app/home");
-                } else {
-                    request.setAttribute("student", student);
-                    request.setAttribute("errors", validationErrors);
-                    request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
-                }
+            Map<String, String> validationErrors;
+            
+            if ("edit".equals(mode)) {
+                validationErrors = studentService.update(student, filePart);
+            } else {
+                validationErrors = studentService.register(student, filePart);
+            }
+            
+            if (validationErrors.isEmpty()) {
+                response.sendRedirect(request.getContextPath() + "/app/home");
+            } else {
+                request.setAttribute("student", student);
+                request.setAttribute("errors", validationErrors);
+                request.setAttribute("mode", mode);
+                request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
             }
             
         } catch (Exception e) {
