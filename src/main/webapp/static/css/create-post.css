@@ -28,3 +28,71 @@
     border-radius: 9999px;
     cursor: pointer;
 }
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    text-align: center;
+    color: #777777;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+textarea {
+    height: 120px;
+    padding: 16px;
+    font-size: 16px;
+    color:#fff;
+    border-radius: 12px;
+    border: 1px solid #2e2e2e;
+    resize: none;
+    outline: none;
+    background:#303030;
+}
+
+textarea:focus {
+    border-color: #111;
+}
+
+input[type="file"] {
+    font-size: 14px;
+}
+
+button {
+    background-color: #111;
+    color: #fff;
+    border: none;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+}
+
+button:hover {
+    background-color: #e10531;
+}
+
+.cancel-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #888;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.cancel-link:hover {
+    color: #444;
+}
+

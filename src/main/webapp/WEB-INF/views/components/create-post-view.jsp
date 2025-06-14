@@ -1,37 +1,37 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
 
-<div class="create-post-view">
-    <div class="create-post-header">
-        <h2>Create Post</h2>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Post</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/create-post.css">
+</head>
+<body>
 
-    <div class="create-post-form">
-        <!-- Form placeholder -->
-        <div class="form-placeholder">
-            <p>This is a placeholder for the post creation form</p>
-            <ul>
-                <li>Text area for post content</li>
-                <li>Character counter</li>
-                <li>Media upload buttons</li>
-                <li>Visibility options</li>
-                <li>Post button</li>
-            </ul>
+<div class="form-container">
+    <h1>Create a new post</h1>
+
+    <form id="createPostForm" action="${pageContext.request.contextPath}/post" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="fullName" value="<%= session.getAttribute("name") != null ? session.getAttribute("name") : "" %>">
+
+        <label for="content">What’s on your mind?</label>
+        <textarea id="content" name="content" rows="4" required
+                  placeholder="Share your thoughts here...">${param.content}</textarea>
+
+        <!-- Optional: Image upload for future enhancement -->
+        <!-- <input type="file" id="picture" name="picture" accept="image/*" /> -->
+
+        <div class="error-message">
+            <c:if test="${not empty error}">
+                <p style="color: red">${error}</p>
+            </c:if>
         </div>
 
-        <!-- Visual representation of the form -->
-        <div class="form-preview">
-            <div class="input-placeholder" style="height: 120px; background: #f5f5f5; margin: 10px 0; border-radius: 8px;">
-                <p style="color: #999; padding: 10px;">What's on your mind?</p>
-            </div>
-            
-            <div class="actions-placeholder" style="display: flex; justify-content: space-between; padding: 10px 0;">
-                <div>
-                    <button disabled style="opacity: 0.5;">Add Media</button>
-                    <button disabled style="opacity: 0.5;">Visibility</button>
-                </div>
-                <button disabled style="opacity: 0.5;">Post</button>
-            </div>
-        </div>
-    </div>
+        <button type="submit">Post</button>
+    </form>
 </div>
+
+</body>
+</html>
