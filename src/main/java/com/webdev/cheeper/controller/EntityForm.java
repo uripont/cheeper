@@ -110,6 +110,9 @@ public class EntityForm extends HttpServlet {
         Map<String, String> errors = new HashMap<>();
    
         try {
+            // Store the ID if in edit mode
+            int entityId = "edit".equals(mode) ? entity.getId() : 0;
+            
             // Manually decode and populate fields
             entity.setFullName(request.getParameter("fullName"));
             entity.setEmail(request.getParameter("email"));
@@ -117,6 +120,11 @@ public class EntityForm extends HttpServlet {
             entity.setBiography(request.getParameter("biography"));
             entity.setDepartment(request.getParameter("department"));
             entity.setRoleType(RoleType.ENTITY);
+            
+            // Restore the ID if in edit mode
+            if ("edit".equals(mode)) {
+                entity.setId(entityId);
+            }
             
             Part filePart = request.getPart("picture");
             Map<String, String> validationErrors;

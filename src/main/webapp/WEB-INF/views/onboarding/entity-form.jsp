@@ -28,7 +28,9 @@
             <input type="hidden" name="role" value="ENTITY">
             
             <label for="username">Username:</label> 
-            <input type="text" id="username" name="username" required minlength="3" maxlength="20" value="${entity.username}" 
+            <input type="text" id="username" name="username" required minlength="3" maxlength="20" 
+                   value="${entity.username}" data-original="${entity.username}"
+                   data-user-id="${entity.id}"
                    title="Username must be between 3 and 20 characters."/> 
             
             <label for="department">Department:</label>
@@ -155,6 +157,9 @@
     
     <!-- Initialize validation -->
     <script>
+        // Make context path available to validation scripts
+        window.contextPath = '${pageContext.request.contextPath}';
+        
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('registerForm');
             
