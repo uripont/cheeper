@@ -27,6 +27,9 @@
                         <span id="followingCount">${followingCount}</span> Following
                     </button>
                     <c:if test="${not readOnly}">
+                        <a href="${pageContext.request.contextPath}/edit-profile" class="follow-standard-btn" style="color: white; text-decoration: none; display: inline-block; margin-left: 10px;">
+                            Edit Profile
+                        </a>
                         <a href="${pageContext.request.contextPath}/logout" class="follow-standard-btn logout-btn" style="color: white; text-decoration: none; display: inline-block; margin-left: 10px;">
                             Logout
                         </a>
@@ -138,7 +141,7 @@
         }, '#profile-timeline-container');
 
         // Handle follow button clicks
-        $('.follow-standard-btn:not(.logout-btn)').on('click', function() {
+        $('.follow-standard-btn[data-userid]').on('click', function() {
             const button = $(this);
             const userId = button.data('userid');
             const isFollowing = button.attr('data-following') === 'true';

@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Entity Registration</title>
+    <title>${param.mode eq 'edit' ? 'Edit Profile' : 'Entity Registration'}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/register-style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -14,20 +14,21 @@
 <body>
 
     <div class="form-container">
-        <h1>Welcome to Cheeper <br>
-            <%= session.getAttribute("name") != null ? session.getAttribute("name") : "Unknown User" %>!
-        </h1>
-        <h2> 
-            <%= session.getAttribute("role") != null ? session.getAttribute("role") : "Unknown Role" %>
-        </h2>
+        <h1>${param.mode eq 'edit' ? 'Edit Your Profile' : 'Welcome to Cheeper'}</h1>
+        <c:if test="${param.mode ne 'edit'}">
+            <h2> 
+                <%= session.getAttribute("role") != null ? session.getAttribute("role") : "Unknown Role" %>
+            </h2>
+        </c:if>
         
-        <form id="registerForm" action="entity-form" method="POST" enctype="multipart/form-data">
+        <form id="registerForm" action="entity-form?mode=${param.mode}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="mode" value="${param.mode}">
             <input type="hidden" name="fullName" value="<%= session.getAttribute("name") != null ? session.getAttribute("name") : "" %>">
             <input type="hidden" name="email" value="<%= session.getAttribute("email") != null ? session.getAttribute("email") : "" %>">
             <input type="hidden" name="role" value="ENTITY">
             
             <label for="username">Username:</label> 
-            <input type="text" id="username" name="username" required minlength="3" maxlength="20" value="${user.username}" 
+            <input type="text" id="username" name="username" required minlength="3" maxlength="20" value="${entity.username}" 
                    title="Username must be between 3 and 20 characters."/> 
             
             <label for="department">Department:</label>
@@ -63,7 +64,7 @@
                 </div>
             </div>
 
-            <button type="submit">Register</button>
+            <button type="submit">${param.mode eq 'edit' ? 'Save Changes' : 'Register'}</button>
         </form>
     </div>
     
@@ -149,8 +150,8 @@
     </script>
     
     <!-- Load validation scripts -->
-    <script src="${pageContext.request.contextPath}/js/user-validation.js"></script>
-    <script src="${pageContext.request.contextPath}/js/entity-validation.js"></script>
+    <script src="${pageContext.request.contextPath}/static/js/user-validation.js"></script>
+    <script src="${pageContext.request.contextPath}/static/js/entity-validation.js"></script>
     
     <!-- Initialize validation -->
     <script>
