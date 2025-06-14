@@ -119,14 +119,6 @@ public class EntityForm extends HttpServlet {
             entity.setRoleType(RoleType.ENTITY);
             
             Part filePart = request.getPart("picture");
-            
-            if (!errors.isEmpty()) {
-                request.setAttribute("entity", entity);
-                request.setAttribute("errors", errors);
-                request.getRequestDispatcher("/WEB-INF/views/onboarding/entity-form.jsp").forward(request, response);
-                return;
-            }
-            
             Map<String, String> validationErrors;
             
             if ("edit".equals(mode)) {
