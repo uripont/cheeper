@@ -50,17 +50,29 @@ public class UsersListViewController extends HttpServlet {
         // Convert to lowercase for case-insensitive comparison
         String contextLower = context.toLowerCase();
 
-        // Require authentication for all contexts except search
-        if (currentUser == null && !contextLower.equals("search")) {
+        // Require authentication only for suggestions and chats
+        if (currentUser == null && 
+            (contextLower.equals("suggestions") || 
+             contextLower.equals("suggested") || 
+             contextLower.equals("chats"))) {
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         List<User> users;
         String contextTitle;
+        String userIdStr = req.getParameter("userId");
         
-        // TODO: Implement proper chats users list functionality
-        if (contextLower.equals("suggestions") || contextLower.equals("suggested") || contextLower.equals("chats")) {
+        if ((contextLower.equals("followers") || contextLower.equals("following")) && userIdStr != null) {
+            int userId = Integer.parseInt(userIdStr);
+            if (contextLower.equals("followers")) {
+                users = followRepository.getFollowers(userId);
+                contextTitle = "Followers";
+            } else {
+                users = followRepository.getFollowing(userId);
+                contextTitle = "Following";
+            }
+        } else if (contextLower.equals("suggestions") || contextLower.equals("suggested") || contextLower.equals("chats")) {
             users = userRepository.findRandomUsers(10, currentUser.getId());
             contextTitle = contextLower.equals("chats") ? "Chat Users" : "Suggested Users";
         } else if (contextLower.equals("search")) {

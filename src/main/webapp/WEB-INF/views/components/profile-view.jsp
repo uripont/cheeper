@@ -116,14 +116,14 @@
         App.loadView('users', { 
             context: 'followers',
             userId: '${profile.id}'
-        }, '#main-panel');
+        }, '#rightSidebar');
     });
     
     $('.follow-stat-btn').last().on('click', function() {
         App.loadView('users', { 
             context: 'following',
             userId: '${profile.id}'
-        }, '#main-panel');
+        }, '#rightSidebar');
     });
     $(document).ready(function() {
         // Load user's timeline
