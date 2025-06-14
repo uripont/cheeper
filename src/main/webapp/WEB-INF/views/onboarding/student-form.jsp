@@ -60,9 +60,11 @@
                     </div>
                 </div>
                 
-                <div id="cropped-preview" style="margin-top: 15px; display: none;">
-                    <p>Preview:</p>
-                    <img id="cropped-result" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; background-color: black;">
+                <div id="cropped-preview" style="margin-top: 15px; display: block;">
+                    <p>${student.picture != null ? 'Current Profile Picture:' : 'Preview:'}</p>
+                    <img id="cropped-result" 
+                         src="${student.picture != null ? pageContext.request.contextPath.concat('/local-images/profiles/').concat(student.picture) : pageContext.request.contextPath.concat('/local-images/default.png')}" 
+                         style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; background-color: black;">
                     <input type="hidden" id="cropped-image-data" name="croppedImageData">
                 </div>
             </div>
@@ -121,6 +123,12 @@
         $(document).ready(function() {
             let cropper;
             const TARGET_SIZE = 400;
+            
+            // Store original image source if it exists
+            const originalSrc = $('#cropped-result').attr('src');
+            if (originalSrc) {
+                $('#cropped-result').attr('data-original-src', originalSrc);
+            }
             
             $('#picture').on('change', function(e) {
                 if (this.files && this.files.length) {
@@ -182,6 +190,11 @@
                 $('#picture').val('');
                 if (cropper) {
                     cropper.destroy();
+                }
+                // Restore original preview if it exists
+                const originalSrc = $('#cropped-result').attr('data-original-src');
+                if (originalSrc) {
+                    $('#cropped-result').attr('src', originalSrc);
                 }
             });
             
