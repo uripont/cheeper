@@ -29,7 +29,8 @@
                         <div class="user-actions">
                             <c:if test="${currentUser != null && currentUser.id != user.id}">
                                 <button class="follow-button ${user.followed ? 'following' : ''}" 
-                                        onclick="toggleFollow(${user.id}, this)">
+                                        onclick="toggleFollow(${user.id}, this)"
+                                        data-hover-text="Unfollow">
                                     ${user.followed ? 'Following' : 'Follow'}
                                 </button>
                             </c:if>
@@ -56,19 +57,69 @@ function handleSearch(query) {
 }
 
 function toggleFollow(userId, button) {
-    fetch('/follow', {
+    // Prevent multiple clicks while processing
+    if (button.disabled) return;
+    button.disabled = true;
+    
+    const isFollowing = button.classList.contains('following');
+    const endpoint = isFollowing ? '/unfollow' : '/follow';
+    
+    // Save original text
+    const originalText = button.textContent;
+    button.textContent = 'Loading...';
+    
+    fetch(endpoint, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'userId=' + userId
+        body: 'followingId=' + userId
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
-            button.classList.toggle('following');
-            button.textContent = button.classList.contains('following') ? 'Following' : 'Follow';
+            const newIsFollowing = !isFollowing;
+            button.classList.toggle('following', newIsFollowing);
+            button.textContent = newIsFollowing ? 'Following' : 'Follow';
+        } else {
+            console.error('Error:', data.message);
+            // Revert button state if operation failed
+            button.classList.toggle('following', isFollowing);
+            button.textContent = originalText;
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        // Revert button state on error
+        button.classList.toggle('following', isFollowing);
+        button.textContent = originalText;
+    })
+    .finally(() => {
+        button.disabled = false;
+    });
 }
+
+// Handle hover effects for follow buttons
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.follow-button.following').forEach(button => {
+        const originalText = button.textContent;
+        const hoverText = button.dataset.hoverText;
+        
+        button.addEventListener('mouseenter', () => {
+            if (button.classList.contains('following') && !button.disabled) {
+                button.textContent = hoverText;
+            }
+        });
+        
+        button.addEventListener('mouseleave', () => {
+            if (button.classList.contains('following') && !button.disabled) {
+                button.textContent = originalText;
+            }
+        });
+    });
+});
