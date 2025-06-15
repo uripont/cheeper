@@ -17,19 +17,19 @@
 <body>
     <!-- Left/Icon Sidebar -->
     <div class="sidebar" id="navigation">
-        <a href="${pageContext.request.contextPath}/app/home" class="menu" data-view="home">
+        <a href="${pageContext.request.contextPath}/home" class="menu" data-view="home">
             <img src="${pageContext.request.contextPath}/static/images/house.fill.png" alt="Home" />
         </a>
-        <a href="${pageContext.request.contextPath}/app/explore" class="menu" data-view="explore">
+        <a href="${pageContext.request.contextPath}/explore" class="menu" data-view="explore">
             <img src="${pageContext.request.contextPath}/static/images/magnifyingglass.png" alt="Explore" />
         </a>
-        <a href="${pageContext.request.contextPath}/app/create" class="menu" data-view="create">
+        <a href="${pageContext.request.contextPath}/create" class="menu" data-view="create">
             <img src="${pageContext.request.contextPath}/static/images/plus.png" alt="Create" />
         </a>
-        <a href="${pageContext.request.contextPath}/app/chats" class="menu" data-view="chats">
+        <a href="${pageContext.request.contextPath}/chats" class="menu" data-view="chats">
             <img src="${pageContext.request.contextPath}/static/images/person.fill.png" alt="Chats" />
         </a>
-        <a href="${pageContext.request.contextPath}/app/profile" class="menu" data-view="profile">
+        <a href="${pageContext.request.contextPath}/profile" class="menu" data-view="profile">
             <img src="${pageContext.request.contextPath}/static/images/person.png" alt="Profile" />
         </a>
     </div>
