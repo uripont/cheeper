@@ -7,11 +7,8 @@
     <meta charset="UTF-8" />
     <title>${param.mode eq 'edit' ? 'Edit Profile' : 'Student Registration'}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/register-style.css">
-    <!-- Cropper.js CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
-    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Cropper.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 </head>
 <body>
@@ -26,7 +23,6 @@
         
         <form id="registerForm" action="student-form?mode=${param.mode}" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="mode" value="${param.mode}">
-            <!-- Hidden fields for data from session -->
             <input type="hidden" name="fullName" value="<%= session.getAttribute("name") != null ? session.getAttribute("name") : "" %>">
             <input type="hidden" name="email" value="<%= session.getAttribute("email") != null ? session.getAttribute("email") : "" %>">
             
@@ -63,7 +59,7 @@
                 <div id="cropped-preview" style="margin-top: 15px; display: block;">
                     <p>${student.picture != null ? 'Current Profile Picture:' : 'Preview:'}</p>
                     <img id="cropped-result" 
-                         src="${student.picture != null ? pageContext.request.contextPath.concat('/local-images/profiles/').concat(student.picture) : pageContext.request.contextPath.concat('/local-images/default.png')}" 
+                         src="${pageContext.request.contextPath}/local-images/${student.picture != null ? 'profile/'.concat(student.picture) : 'default.png'}" 
                          style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; background-color: black;">
                     <input type="hidden" id="cropped-image-data" name="croppedImageData">
                 </div>
@@ -119,7 +115,7 @@
     </div>
     
     <script>
-        // Image Cropper functionality
+        // Picture upload and cropping functionality
         $(document).ready(function() {
             let cropper;
             const TARGET_SIZE = 400;

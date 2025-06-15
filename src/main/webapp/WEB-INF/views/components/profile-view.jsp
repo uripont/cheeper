@@ -9,7 +9,9 @@
     <div class="profile-container" data-user-id="${profile.id}">
         <div class="profile-header">
             <div class="profile-picture-frame">
-                <cheeper:profileImage picture="${profile.picture}" cssClass="profile-picture" />
+                <img class="profile-picture" 
+                     src="${pageContext.request.contextPath}/local-images/${profile.picture != null ? 'profile/'.concat(profile.picture) : 'default.png'}" 
+                     alt="Profile Picture" />
             </div>
 
             <div class="profile-info">

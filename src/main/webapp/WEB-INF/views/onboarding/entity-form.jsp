@@ -62,7 +62,7 @@
                 <div id="cropped-preview" style="margin-top: 15px; display: block;">
                     <p>${entity.picture != null ? 'Current Profile Picture:' : 'Preview:'}</p>
                     <img id="cropped-result" 
-                         src="${entity.picture != null ? pageContext.request.contextPath.concat('/local-images/profiles/').concat(entity.picture) : pageContext.request.contextPath.concat('/local-images/default.png')}" 
+                         src="${pageContext.request.contextPath}/local-images/${entity.picture != null ? 'profile/'.concat(entity.picture) : 'default.png'}" 
                          style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; background-color: black;">
                     <input type="hidden" id="cropped-image-data" name="croppedImageData">
                 </div>

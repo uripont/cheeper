@@ -2,6 +2,7 @@ package com.webdev.cheeper.tags;
 
 import jakarta.servlet.jsp.JspException;
 import jakarta.servlet.jsp.tagext.SimpleTagSupport;
+import jakarta.servlet.jsp.PageContext;
 import java.io.IOException;
 import com.webdev.cheeper.service.ImageService;
 
@@ -10,6 +11,7 @@ public class ProfileImageTag extends SimpleTagSupport {
     private String cssClass;
     private String username;
     private boolean clickable = false;
+    private final ImageService imageService = new ImageService();
 
     public void setPicture(String picture) {
         this.picture = picture;
@@ -29,8 +31,11 @@ public class ProfileImageTag extends SimpleTagSupport {
 
     @Override
     public void doTag() throws JspException, IOException {
-        ImageService imageService = new ImageService();
+        PageContext pageContext = (PageContext) getJspContext();
         String imagePath = imageService.getImagePath(picture);
+        if (!imagePath.startsWith("http")) {
+            imagePath = pageContext.getServletContext().getContextPath() + imagePath;
+        }
         
         StringBuilder html = new StringBuilder();
         html.append("<img src=\"").append(imagePath).append("\"");

@@ -31,7 +31,11 @@ public class ImageServlet extends HttpServlet {
 
         // Remove leading slash and handle both direct default.png and defaults/default.png paths
         String imagePath = pathInfo.substring(1);
-        if (imagePath.equals("default.png")) {
+        
+        // Handle profile pictures with a simple path
+        if (imagePath.startsWith("profile/")) {
+            imagePath = "profiles/" + imagePath.substring("profile/".length());
+        } else if (imagePath.equals("default.png")) {
             imagePath = "defaults/default.png";
         }
         
