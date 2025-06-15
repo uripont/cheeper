@@ -59,7 +59,7 @@ public class ProfileViewController extends HttpServlet {
                     return;
                 }
                 targetUser = userOpt.get();
-                isReadOnly = true; // Viewing someone else's profile
+                isReadOnly = currentUser == null || !targetUser.getId().equals(currentUser.getId()); // Only editable if it's your own profile
             } catch (NumberFormatException e) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID");
                 return;
@@ -73,7 +73,7 @@ public class ProfileViewController extends HttpServlet {
                 return;
             }
             targetUser = userOpt.get();
-            isReadOnly = true; // Viewing someone else's profile
+            isReadOnly = currentUser == null || !targetUser.getId().equals(currentUser.getId()); // Only editable if it's your own profile
         }
         // Finally fall back to current user's profile
         else {
