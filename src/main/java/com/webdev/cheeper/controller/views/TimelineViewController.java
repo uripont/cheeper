@@ -9,20 +9,21 @@ import com.webdev.cheeper.service.*;
 import com.webdev.cheeper.repository.*;
 
 import java.io.*;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @WebServlet("/views/timeline")
 public class TimelineViewController extends HttpServlet {
 
     private UserRepository userRepository;
     private PostRepository postRepository;
+    private LikeService likeService;
 
     @Override
     public void init() throws ServletException {
         this.userRepository = new UserRepository();
         this.postRepository = new PostRepository();
+        LikeRepository likeRepository = new LikeRepository();
+        this.likeService = new LikeService(likeRepository);
     }
 
     @Override
@@ -88,6 +89,21 @@ public class TimelineViewController extends HttpServlet {
             System.out.println("Timeline type: " + timeline_type);
             System.out.println("Current user ID: " + currentUser.getId());
             System.out.println("Posts found: " + posts.size());
+
+            // Create a map of post likes for the current user
+            Map<Integer, Boolean> userLikes = new HashMap<>();
+            Map<Integer, Integer> likeCounts = new HashMap<>();
+            
+            for (Post post : posts) {
+                boolean isLiked = likeService.isLikedByUser(post.getId(), currentUser.getId());
+                int likeCount = likeService.getLikesForPost(post.getId()).size();
+                
+                userLikes.put(post.getId(), isLiked);
+                likeCounts.put(post.getId(), likeCount);
+            }
+
+            req.setAttribute("userLikes", userLikes);
+            req.setAttribute("likeCounts", likeCounts);
 
         } catch (Exception e) {
             System.err.println("Error loading posts: " + e.getMessage());

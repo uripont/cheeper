@@ -6,6 +6,7 @@ import jakarta.servlet.http.*;
 
 import com.webdev.cheeper.model.*;
 import com.webdev.cheeper.repository.*;
+import com.webdev.cheeper.service.*;
 
 import java.io.*;
 import java.util.*;
@@ -14,12 +15,16 @@ import java.util.*;
 public class PostViewController extends HttpServlet {
 
     private UserRepository userRepository;
-    private PostRepository postRepository;
+    private PostService postService;
+    private LikeService likeService;
 
     @Override
     public void init() throws ServletException {
         this.userRepository = new UserRepository();
-        this.postRepository = new PostRepository();
+        PostRepository postRepository = new PostRepository();
+        this.postService = new PostService(postRepository);
+        LikeRepository likeRepository = new LikeRepository();
+        this.likeService = new LikeService(likeRepository);
     }
 
     @Override
@@ -33,22 +38,25 @@ public class PostViewController extends HttpServlet {
         HttpSession session = req.getSession(false);
         if (session != null && session.getAttribute("email") != null) {
             String email = (String) session.getAttribute("email");
-            Optional<User> currentUserOpt = userRepository.findByEmail(email);
-            if (currentUserOpt.isPresent()) {
-                currentUser = currentUserOpt.get();
-                System.out.println("[PostView] Authenticated as user ID: " + currentUser.getId());
+            try {
+                Optional<User> currentUserOpt = userRepository.findByEmail(email);
+                if (currentUserOpt.isPresent()) {
+                    currentUser = currentUserOpt.get();
+                }
+            } catch (Exception e) {
+                System.err.println("Error finding user: " + e.getMessage());
+                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
             }
         }
 
         if (currentUser == null) {
-            System.err.println("[PostView] Unauthorized access attempt.");
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         // Post ID required
         if (postIdParam == null || postIdParam.trim().isEmpty()) {
-            System.err.println("[PostView] No post ID provided.");
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Post ID is required");
             return;
         }
@@ -57,42 +65,36 @@ public class PostViewController extends HttpServlet {
         try {
             postId = Integer.parseInt(postIdParam);
         } catch (NumberFormatException e) {
-            System.err.println("[PostView] Invalid post ID format: " + postIdParam);
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid post ID");
             return;
         }
 
-        // Fetch main post
-        Optional<Post> postOpt = postRepository.findById(postId);
-        if (postOpt.isEmpty()) {
-            System.err.println("[PostView] Post not found with ID: " + postId);
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Post not found");
-            return;
+        try {
+            // Fetch main post using service
+            Post post = postService.getPostById(postId);
+            if (post == null) {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Post not found");
+                return;
+            }
+            
+            // Get like information for this post
+            boolean isLikedByUser = likeService.isLikedByUser(postId, currentUser.getId());
+            int likeCount = likeService.getLikesForPost(postId).size();
+
+            // Set attributes
+            req.setAttribute("post", post);
+            req.setAttribute("postId", postId);
+            req.setAttribute("currentUser", currentUser);
+            req.setAttribute("isLikedByUser", isLikedByUser);
+            req.setAttribute("likeCount", likeCount);
+
+            resp.setContentType("text/html;charset=UTF-8");
+            req.getRequestDispatcher("/WEB-INF/views/components/post-view.jsp").forward(req, resp);
+            
+        } catch (Exception e) {
+            System.err.println("Error loading post: " + e.getMessage());
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading post");
         }
-        Post post = postOpt.get();
-
-        System.out.println("[PostView] Loaded post ID: " + post.getId() +
-                           ", User ID: " + post.getUserId() +
-                           ", Content: " + post.getContent());
-
-        // Fetch replies (source_id = current post's ID)
-        List<Post> replies = postRepository.findBySourceId(postId);
-        System.out.println("[PostView] Replies found: " + replies.size());
-
-        for (Post reply : replies) {
-            System.out.println("- Reply ID: " + reply.getId() +
-                               ", User ID: " + reply.getUserId() +
-                               ", Content: " + reply.getContent() +
-                               ", Created: " + reply.getCreatedAt());
-        }
-
-        // Set attributes for JSP
-        req.setAttribute("currentUser", currentUser);
-        req.setAttribute("post", post);
-        req.setAttribute("replies", replies);
-
-        // Forward to JSP
-        resp.setContentType("text/html;charset=UTF-8");
-        req.getRequestDispatcher("/WEB-INF/views/components/post-view.jsp").forward(req, resp);
     }
 }
