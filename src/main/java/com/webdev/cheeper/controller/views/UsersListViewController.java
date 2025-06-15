@@ -60,6 +60,7 @@ public class UsersListViewController extends HttpServlet {
         String contextTitle;
         
         // TODO: Implement proper chats users list functionality
+        
         if (contextLower.equals("suggestions") || contextLower.equals("suggested") || contextLower.equals("chats")) {
             users = userRepository.findRandomUsers(10, currentUser.getId());
             contextTitle = contextLower.equals("chats") ? "Chat Users" : "Suggested Users";

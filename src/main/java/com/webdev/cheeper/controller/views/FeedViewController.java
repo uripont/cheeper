@@ -43,6 +43,9 @@ public class FeedViewController extends HttpServlet {
 
         // TODO: Implement feed loading logic
         
+        
+
+        
         // Set attributes for JSP
         req.setAttribute("currentUser", currentUser);
 

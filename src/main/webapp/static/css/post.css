@@ -1,28 +1,64 @@
-.post-view {
+.post-item {
+    color: #fff;
+    padding: 10px 12px 8px; 
+    margin-bottom: 14px;    
+    border-radius: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    border-bottom: 1px solid #222;
+  }
+  
+  .post-header {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1rem;
-    border-bottom: 1px solid #e1e8ed;
-}
-
-.post-view__header {
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;  
+  }
+  
+  .user-info {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-}
-
-.post-view__user {
-    font-weight: bold;
-}
-
-.post-view__content {
-    margin-top: 0.5rem;
-    line-height: 1.5;
-}
-
-.post-view__actions {
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+  }
+  
+  .user-info strong {
+    color: #fff;
+    font-weight: 600;
+  }
+  
+  .user-info span {
+    font-size: 13px;
+    color: #777;
+  }
+  
+  .post-content {
+    color: #f1f1f1;
+    font-size: 15px;
+    margin-bottom: 8px;  
+    word-break: break-word;
+  }
+  
+  .post-actions {
     display: flex;
-    gap: 1rem;
-    margin-top: 0.5rem;
-}
+    align-items: center;
+    gap: 16px;          
+    padding-top: 4px;  
+  }
+  
+  .action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+  }
+  
+  .action-btn img {
+    filter: brightness(0.6);
+    width: 18px;
+    height: 18px;
+    transition: opacity
+  
