@@ -4,6 +4,7 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/timeline.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/post.css">
+
 <div class="timeline-view">
     <div class="timeline-view__header">
         Timeline - ${timeline_type}
@@ -29,9 +30,17 @@
                     <div class="post-item" data-post-id="${post.id}">
                         <div class="post-header">
                             <div class="user-info">
-                                <strong>User ${post.userId}</strong>
-        
-                                <span>
+                                <c:set var="author" value="${postAuthors[post.id]}" />
+                                <c:choose>
+                                    <c:when test="${not empty author}">
+                                        <strong>${author.fullName}</strong>
+                                        <span class="username">@${author.username}</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <strong>Unknown User</strong>
+                                    </c:otherwise>
+                                </c:choose>
+                                <span class="timestamp">
                                     <fmt:formatDate value="${post.createdAt}" pattern="MMM dd, yyyy HH:mm"/>
                                 </span>
                             </div>
@@ -49,7 +58,9 @@
                                         <img src="${pageContext.request.contextPath}/static/images/heart.png" alt="Like" width="18" height="18">
                                     </c:otherwise>
                                 </c:choose>
-                                <span class="like-count">${likeCounts[post.id]}</span>
+                                <c:if test="${likeCounts[post.id] > 0}">
+                                    <span class="like-count">${likeCounts[post.id]}</span>
+                                </c:if>
                             </button>
                             <button class="action-btn reply-btn" title="Reply">
                                 <img src="${pageContext.request.contextPath}/static/images/reply.png" alt="Reply" width="18" height="18">
@@ -61,20 +72,20 @@
         </c:otherwise>
     </c:choose>
 </div>
+
 <script>
     $(document).ready(function () {
-        // Manejar clic en botón Like
+        // Like button logic
         $('.timeline-view').on('click', '.like-btn', function () {
             const postElement = $(this).closest('.post-item');
             const postId = postElement.data('post-id');
             const likeBtn = $(this);
             const likeImg = likeBtn.find('img');
-            const likeCount = likeBtn.find('.like-count');
-    
+            const likeCountEl = likeBtn.find('.like-count');
+
             if (postId) {
                 $.post('/like', { postId: postId })
-                    .done(function(response) {
-                        // Update like button image and count
+                    .done(function (response) {
                         if (response.liked) {
                             likeImg.attr('src', '${pageContext.request.contextPath}/static/images/heart.fill.red.png');
                             likeImg.attr('alt', 'Liked');
@@ -82,15 +93,15 @@
                             likeImg.attr('src', '${pageContext.request.contextPath}/static/images/heart.png');
                             likeImg.attr('alt', 'Like');
                         }
-                        likeCount.text(response.likeCount);
+                        likeCountEl.text(response.likeCount);
                     })
-                    .fail(function() {
+                    .fail(function () {
                         console.error('Error toggling like');
                     });
             }
         });
-    
-        // Manejar clic en botón Reply
+
+        // Reply button logic
         $('.timeline-view').on('click', '.reply-btn', function () {
             const postId = $(this).closest('.post-item').data('post-id');
             if (postId) {
@@ -98,6 +109,4 @@
             }
         });
     });
-    </script>
-
-
+</script>

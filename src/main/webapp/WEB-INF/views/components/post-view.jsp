@@ -10,12 +10,19 @@
         <div class="post-header">
             <h2>Post Details</h2>
         </div>
-
         <c:if test="${not empty post}">
             <div class="post-item" data-post-id="${post.id}">
                 <div class="post-header">
                     <div class="user-info">
-                        <strong>User ${post.userId}</strong>
+                        <c:choose>
+                            <c:when test="${not empty postAuthor}">
+                                <strong>${postAuthor.fullName}</strong>
+                                <span class="username">@${postAuthor.username}</span>
+                            </c:when>
+                            <c:otherwise>
+                                <strong>Unknown User</strong>
+                            </c:otherwise>
+                        </c:choose>
                         <span>
                             <fmt:formatDate value="${post.createdAt}" pattern="MMM dd, yyyy HH:mm"/>
                         </span>

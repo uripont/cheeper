@@ -77,12 +77,17 @@ public class PostViewController extends HttpServlet {
                 return;
             }
             
+            // Get post author information
+            Optional<User> postAuthorOpt = userRepository.findById(post.getUserId());
+            User postAuthor = postAuthorOpt.orElse(null);
+            
             // Get like information for this post
             boolean isLikedByUser = likeService.isLikedByUser(postId, currentUser.getId());
             int likeCount = likeService.getLikesForPost(postId).size();
 
             // Set attributes
             req.setAttribute("post", post);
+            req.setAttribute("postAuthor", postAuthor);
             req.setAttribute("postId", postId);
             req.setAttribute("currentUser", currentUser);
             req.setAttribute("isLikedByUser", isLikedByUser);

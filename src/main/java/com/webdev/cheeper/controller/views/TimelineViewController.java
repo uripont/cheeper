@@ -90,9 +90,10 @@ public class TimelineViewController extends HttpServlet {
             System.out.println("Current user ID: " + currentUser.getId());
             System.out.println("Posts found: " + posts.size());
 
-            // Create a map of post likes for the current user
+            // Create maps for post data
             Map<Integer, Boolean> userLikes = new HashMap<>();
             Map<Integer, Integer> likeCounts = new HashMap<>();
+            Map<Integer, User> postAuthors = new HashMap<>();
             
             for (Post post : posts) {
                 boolean isLiked = likeService.isLikedByUser(post.getId(), currentUser.getId());
@@ -100,10 +101,17 @@ public class TimelineViewController extends HttpServlet {
                 
                 userLikes.put(post.getId(), isLiked);
                 likeCounts.put(post.getId(), likeCount);
+                
+                // Get post author information
+                Optional<User> authorOpt = userRepository.findById(post.getUserId());
+                if (authorOpt.isPresent()) {
+                    postAuthors.put(post.getId(), authorOpt.get());
+                }
             }
 
             req.setAttribute("userLikes", userLikes);
             req.setAttribute("likeCounts", likeCounts);
+            req.setAttribute("postAuthors", postAuthors);
 
         } catch (Exception e) {
             System.err.println("Error loading posts: " + e.getMessage());
