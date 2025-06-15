@@ -71,7 +71,7 @@ public class PostServlet extends HttpServlet {
 
         try {
             postService.createPost(post);
-            response.sendRedirect(request.getContextPath() + "/main-page.html");
+            response.sendRedirect(request.getContextPath() + "/app/home");
         } catch (Exception e) {
             request.setAttribute("error", "Post creation failed: " + e.getMessage());
             request.setAttribute("content", content);

@@ -34,7 +34,7 @@ public class PostRepository extends BaseRepository {
         }
     }
 
-    /* // Actualiza un post existente
+    // Actualiza un post existente
     public void update(Post post) {
         String sql = "UPDATE post SET source_id = ?, user_id = ?, content = ?, image = ?, updated_at = ? WHERE id = ?";
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
@@ -81,10 +81,63 @@ public class PostRepository extends BaseRepository {
         return posts;
     }
 
+    // Returns all posts in the database, ordered by creation date
+    public List<Post> findAll() {
+        String sql = "SELECT * FROM post ORDER BY created_at DESC";
+        List<Post> posts = new ArrayList<>();
+        try (PreparedStatement stmt = db.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                posts.add(mapResultSetToPost(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return posts;
+    }
+
+    //Given a userId(followerId), returns all posts from users that the user is following
+    public List<Post> findByFollowedUsers(int followerId) {
+        String sql = "SELECT p.* FROM post p JOIN followers f ON p.user_id = f.following_id WHERE f.follower_id = ? AND f.status = 'ACCEPTED' ORDER BY p.created_at DESC";
+        List<Post> posts = new ArrayList<>();
+        try (PreparedStatement stmt = db.prepareStatement(sql)) {
+            stmt.setInt(1, followerId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                posts.add(mapResultSetToPost(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return posts;
+    }
+
+    // Returns all posts that are replies to a source post
+    public List<Post> findBySourceId(int sourcePostId) {
+        String sql = "SELECT * FROM post WHERE source_id = ? ORDER BY created_at DESC";
+        List<Post> posts = new ArrayList<>();
+    
+        try (PreparedStatement stmt = db.prepareStatement(sql)) {
+            stmt.setInt(1, sourcePostId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                posts.add(mapResultSetToPost(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return posts;
+    }
+    
+    
+    
+
     // Mapea un ResultSet a un objeto Post
     private Post mapResultSetToPost(ResultSet rs) throws SQLException {
         Post post = new Post();
-        post.setId(rs.getInt("id"));
+        post.setId(rs.getInt("post_id"));
         post.setSourceId(rs.getInt("source_id"));
         post.setUserId(rs.getInt("user_id"));
         post.setContent(rs.getString("content"));
@@ -92,5 +145,5 @@ public class PostRepository extends BaseRepository {
         post.setCreatedAt(rs.getTimestamp("created_at"));
         post.setUpdatedAt(rs.getTimestamp("updated_at"));
         return post;
-    } */
+    } 
 }

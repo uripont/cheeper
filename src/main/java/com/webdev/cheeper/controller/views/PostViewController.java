@@ -16,6 +16,7 @@ public class PostViewController extends HttpServlet {
     
     private UserRepository userRepository;
     
+    
     @Override
     public void init() throws ServletException {
         this.userRepository = new UserRepository();
@@ -48,10 +49,19 @@ public class PostViewController extends HttpServlet {
             return;
         }
 
-        // TODO: Fetch post details when post model and repository are implemented
-        
+        // Fetch post details
+        PostRepository postRepository = new PostRepository();
+        Optional<Post> postOpt = postRepository.findById(Integer.parseInt(postId));
+        if (postOpt.isEmpty()) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Post not found");
+            return;
+        }
+
+        Post post = postOpt.get();
+
         // Set attributes for JSP
         req.setAttribute("currentUser", currentUser);
+        req.setAttribute("post", post);
         req.setAttribute("postId", postId);
 
         // Forward to post view

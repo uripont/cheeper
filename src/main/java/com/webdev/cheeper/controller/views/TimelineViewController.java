@@ -9,16 +9,19 @@ import com.webdev.cheeper.service.*;
 import com.webdev.cheeper.repository.*;
 
 import java.io.*;
+import java.util.List;
 import java.util.Optional;
 
 @WebServlet("/views/timeline")
 public class TimelineViewController extends HttpServlet {
     
     private UserRepository userRepository;
+    private PostRepository postRepository;
     
     @Override
     public void init() throws ServletException {
         this.userRepository = new UserRepository();
+        this.postRepository = new PostRepository(); // Add this line
     }
     
     @Override
@@ -42,11 +45,61 @@ public class TimelineViewController extends HttpServlet {
             return;
         }
 
-        // TODO: Implement timeline loading logic based on username parameter
+        // Initialize PostRepository if not done in init()
+        if (postRepository == null) {
+            postRepository = new PostRepository();
+        }
+
+        String timeline_type = req.getParameter("type"); // Get from request parameter
+        if (timeline_type == null) {
+            timeline_type = (String) session.getAttribute("type");
+        }
+        if (timeline_type == null) {
+            timeline_type = "for-you"; // Default
+        }
+
+        List<Post> posts;
+        
+        try {
+            // Fix string comparison - use .equals() instead of ==
+            if ("for-you".equals(timeline_type)) {
+                posts = postRepository.findAll();
+            }
+            else if ("following".equals(timeline_type)) {
+                posts = postRepository.findByFollowedUsers(currentUser.getId());
+            }  
+            else if ("profile".equals(timeline_type)) {
+                posts = postRepository.findByUserId(currentUser.getId());
+            }
+            else {
+                posts = postRepository.findAll(); // Default to all posts
+            }
+            
+            System.out.println("Timeline type: " + timeline_type);
+            System.out.println("Current user ID: " + currentUser.getId());
+            System.out.println("Posts found: " + posts.size());
+            
+            // Print the list of posts
+            System.out.println("Posts list:");
+            for (Post post : posts) {
+                System.out.println("- Post ID: " + post.getId() + 
+                                 ", User ID: " + post.getUserId() + 
+                                 ", Content: " + post.getContent() + 
+                                 ", Created: " + post.getCreatedAt());
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error loading posts: " + e.getMessage());
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading posts");
+            return;
+        }
         
         // Set attributes for JSP
         req.setAttribute("currentUser", currentUser);
         req.setAttribute("username", username);
+        req.setAttribute("posts", posts);
+        req.setAttribute("timeline_type", timeline_type);
 
         // Forward to timeline view
         resp.setContentType("text/html;charset=UTF-8");
