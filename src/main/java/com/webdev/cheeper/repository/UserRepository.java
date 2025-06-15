@@ -99,19 +99,15 @@ public class UserRepository extends BaseRepository {
         return user;
     }
     
-    // Retrieve all users from the database
+    // Retrieve all users from the database with all fields
     public List<User> findAll() {
         List<User> users = new ArrayList<>();
-        String query = "SELECT id, full_name, email, role_type FROM users";
+        String query = "SELECT * FROM users";
         
         try (PreparedStatement statement = db.prepareStatement(query)) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setFullName(rs.getString("full_name"));
-                user.setEmail(rs.getString("email"));
-                users.add(user);
+                users.add(mapResultSetToUser(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
