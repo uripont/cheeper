@@ -63,6 +63,19 @@
   transition: opacity
 }
 
+.like-count {
+  font-size: 13px;
+  color: #777;
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+/* Hide like count when it's 0 */
+.like-count:empty,
+.like-count[data-count="0"] {
+  display: none;
+}
+
 .reply-form-container {
   background-color: transparent;
   border-top: 1px solid #2a2a2a;
