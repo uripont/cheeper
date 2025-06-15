@@ -119,6 +119,8 @@ public class FollowController extends HttpServlet {
     }
 
     private void sendJsonResponse(HttpServletResponse resp, boolean success, String message, int status) throws IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
         resp.setStatus(status);
         String jsonResponse = String.format("{\"success\": %b, \"message\": \"%s\"}", success, message);
         resp.getWriter().write(jsonResponse);
@@ -186,6 +188,7 @@ public class FollowController extends HttpServlet {
         int following = followService.countFollowing(userId);
         
         resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
         resp.getWriter().write(String.format("{\"followers\":%d,\"following\":%d}", followers, following));
     }
 
