@@ -17,7 +17,7 @@
         <c:choose>
             <c:when test="${not empty users}">
                 <c:forEach var="user" items="${users}">
-                    <div class="user-item">
+                    <div class="user-item" data-user-id="${user.id}" style="cursor: pointer;">
                         <img src="${pageContext.request.contextPath}${user.picture}" alt="${user.fullName}" class="user-avatar">
                         <div class="user-info">
                             <h4>${user.fullName}</h4>
@@ -104,22 +104,42 @@ function toggleFollow(userId, button) {
     });
 }
 
-// Handle hover effects for follow buttons
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.follow-button.following').forEach(button => {
-        const originalText = button.textContent;
-        const hoverText = button.dataset.hoverText;
+$(document).ready(function() {
+    // Handle hover effects for follow buttons
+    $('.follow-button.following').each(function() {
+        const button = $(this);
+        const originalText = button.text();
+        const hoverText = button.data('hoverText');
         
-        button.addEventListener('mouseenter', () => {
-            if (button.classList.contains('following') && !button.disabled) {
-                button.textContent = hoverText;
+        button.hover(
+            function() {
+                if (button.hasClass('following') && !button.prop('disabled')) {
+                    button.text(hoverText);
+                }
+            },
+            function() {
+                if (button.hasClass('following') && !button.prop('disabled')) {
+                    button.text(originalText);
+                }
             }
-        });
-        
-        button.addEventListener('mouseleave', () => {
-            if (button.classList.contains('following') && !button.disabled) {
-                button.textContent = originalText;
+        );
+    });
+
+    // Make user cards clickable to load profile
+    $('.user-item').on('click', function(event) {
+        try {
+            // Get the clicked element and check if it's not the follow button
+            const target = $(event.target);
+            if (!target.is('.follow-button') && !target.closest('.follow-button').length) {
+                // Get userId from the card's data attribute
+                const userId = $(this).attr('data-user-id');
+                console.log('Loading profile for user:', userId);
+                
+                // Load the profile view
+                App.loadView('profile', { userId: userId }, '#main-panel');
             }
-        });
+        } catch(error) {
+            console.error('Error handling user card click:', error);
+        }
     });
 });
