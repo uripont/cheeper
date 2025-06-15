@@ -52,18 +52,19 @@ public class PostRepository extends BaseRepository {
 
     // Busca un post por su ID
     public Optional<Post> findById(int id) {
-        String sql = "SELECT * FROM post WHERE id = ?";
+        String sql = "SELECT * FROM post WHERE post_id = ?";
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return Optional.of(mapResultSetToPost(rs));
+                return Optional.of(mapResultSetToPost(rs)); 
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return Optional.empty();
     }
+    
 
     // Lista todos los posts de un usuario
     public List<Post> findByUserId(int userId) {

@@ -4,7 +4,6 @@ import com.webdev.cheeper.model.Post;
 import com.webdev.cheeper.model.User;
 import com.webdev.cheeper.repository.PostRepository;
 import com.webdev.cheeper.repository.UserRepository;
-import java.util.Optional;
 import com.webdev.cheeper.service.PostService;
 
 import jakarta.servlet.ServletException;
@@ -12,9 +11,9 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
-
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Optional;
 
 @MultipartConfig
 @WebServlet("/post")
@@ -36,7 +35,19 @@ public class PostServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         String content = request.getParameter("content");
-        System.out.println("Content received: " + content);
+        String sourceIdParam = request.getParameter("source_id");
+        Integer sourceId = null;
+
+        System.out.println("[PostServlet] Content received: " + content);
+
+        if (sourceIdParam != null && !sourceIdParam.trim().isEmpty()) {
+            try {
+                sourceId = Integer.parseInt(sourceIdParam);
+                System.out.println("[PostServlet] This is a reply to post ID: " + sourceId);
+            } catch (NumberFormatException e) {
+                System.err.println("[PostServlet] Invalid source_id: " + sourceIdParam);
+            }
+        }
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("email") == null) {
@@ -45,7 +56,7 @@ public class PostServlet extends HttpServlet {
         }
 
         String email = (String) session.getAttribute("email");
-        System.out.println("Email: " + email);
+        System.out.println("[PostServlet] Email: " + email);
 
         int userId;
         try (UserRepository userRepository = new UserRepository()) {
@@ -58,20 +69,28 @@ public class PostServlet extends HttpServlet {
             userId = userOpt.get().getId();
         }
 
-        System.out.println("User ID: " + userId);
+        System.out.println("[PostServlet] User ID: " + userId);
 
         Post post = new Post();
         post.setUserId(userId);
         post.setContent(content);
-        post.setImage(null); // manejar imagen si decides activarlo
-        //post.setSourceId();
+        post.setImage(null); 
+        post.setSourceId(sourceId); 
         Timestamp now = new Timestamp(System.currentTimeMillis());
         post.setCreatedAt(now);
         post.setUpdatedAt(now);
 
         try {
             postService.createPost(post);
-            response.sendRedirect(request.getContextPath() + "/app/home");
+
+            if (sourceId != null) {
+                // Si es un reply, redirige al post original
+                //response.sendRedirect(request.getContextPath() + "/views/post?id=" + sourceId);
+            } else {
+                // Si es un post normal, redirige a home
+                response.sendRedirect(request.getContextPath() + "/app/home");
+            }
+
         } catch (Exception e) {
             request.setAttribute("error", "Post creation failed: " + e.getMessage());
             request.setAttribute("content", content);

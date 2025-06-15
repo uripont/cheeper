@@ -53,3 +53,15 @@
         </c:otherwise>
     </c:choose>
 </div>
+<script>
+    $(document).ready(function () {
+        // Manejar clic en botón Reply
+        $('.timeline-view').on('click', '.reply-btn', function () {
+            const postId = $(this).closest('.post-item').data('post-id');
+            if (postId) {
+                App.loadView('post', { id: postId }, '#main-panel');
+            }
+        });
+    });
+</script>
+
