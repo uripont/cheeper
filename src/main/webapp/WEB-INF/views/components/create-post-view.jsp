@@ -1,11 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 
+
+
+
 <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/create-post.css">
 <div class="form-container">
     <h1>Create a new post</h1>
 
-    <form id="post-form" action="${pageContext.request.contextPath}/post" method="POST" enctype="multipart/form-data">
+    <form id="createPostForm" action="${pageContext.request.contextPath}/post" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="fullName" value="<%= session.getAttribute("name") != null ? session.getAttribute("name") : "" %>">
 
         <label for="content">What’s on your mind?</label>
