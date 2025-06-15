@@ -23,7 +23,7 @@
                 <p style="color: red">${error}</p>
             </c:if>
         </div>
-
+        <button>Add Image</button>
         <button type="submit">Post</button>
     </form>
 </div>

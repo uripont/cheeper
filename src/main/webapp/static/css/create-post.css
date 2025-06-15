@@ -1,98 +1,86 @@
-.create-post-view {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
+.form-container {
+max-width: 700px;
+margin: 40px auto;
+padding: 0;
+background-color: transparent;
+border-bottom: 1px solid #2a2a2a;
+border-radius: 0;
+font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+color: #fff;
 }
 
-.create-post-view__form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+.form-container h1 {
+font-size: 18px;
+font-weight: 500;
+color: #888;
+margin-bottom: 10px;
+text-align: left;
 }
 
-.create-post-view__textarea {
-    resize: vertical;
-    min-height: 100px;
-    padding: 0.5rem;
-    border: 1px solid #e1e8ed;
-    border-radius: 4px;
+.form-container label {
+display: none; /* Ocultamos el label para hacerlo más minimalista */
 }
 
-.create-post-view__submit {
-    align-self: flex-end;
-    padding: 0.5rem 1rem;
-    background-color: #1da1f2;
-    color: white;
-    border: none;
-    border-radius: 9999px;
-    cursor: pointer;
-}
-body {
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-h1 {
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 24px;
-    text-align: center;
-    color: #777777;
+.form-container textarea {
+width: 100%;
+min-height: 80px;
+padding: 8px 10px;
+border: 1px solid #333;
+background-color: #121212;
+border-radius: 6px;
+font-size: 14px;
+color: #ccc;
+font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+resize: vertical;
+margin-bottom: 10px;
+box-sizing: border-box;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+.form-container textarea::placeholder {
+color: #555;
 }
 
-textarea {
-    height: 120px;
-    padding: 16px;
-    font-size: 16px;
-    color:#fff;
-    border-radius: 12px;
-    border: 1px solid #2e2e2e;
-    resize: none;
-    outline: none;
-    background:#303030;
+.form-container textarea:focus {
+outline: none;
+border-color: #444;
 }
 
-textarea:focus {
-    border-color: #111;
+.form-container button[type="submit"] {
+background-color: transparent;
+color: #888;
+border: 1px solid #444;
+border-radius: 9999px;
+padding: 6px 14px;
+font-size: 13px;
+cursor: pointer;
+transition: all 0.2s ease;
 }
 
-input[type="file"] {
-    font-size: 14px;
+.form-container button[type="submit"]:hover {
+background-color: #992a23;
+color: #ddd;
+border-color: #555;
 }
 
-button {
-    background-color: #111;
-    color: #fff;
-    border: none;
-    padding: 14px;
-    font-size: 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background 0.2s ease-in-out;
+.form-container button {
+background-color: transparent;
+color: #888;
+border: 1px solid #444;
+border-radius: 9999px;
+padding: 6px 14px;
+font-size: 13px;
+cursor: pointer;
+transition: all 0.2s ease;
 }
 
-button:hover {
-    background-color: #e10531;
+.form-container button:hover {
+background-color: #222;
+color: #ddd;
+border-color: #555;
 }
 
-.cancel-link {
-    display: block;
-    text-align: center;
-    margin-top: 20px;
-    color: #888;
-    text-decoration: none;
-    font-size: 14px;
+.form-container .error-message {
+margin-top: 8px;
+font-size: 13px;
+color: red;
 }
-
-.cancel-link:hover {
-    color: #444;
-}
-
