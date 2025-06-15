@@ -17,8 +17,8 @@
         <c:choose>
             <c:when test="${not empty users}">
                 <c:forEach var="user" items="${users}">
-                    <div class="user-item">
-                        <img src="${user.picture}" alt="${user.fullName}" class="user-avatar">
+                    <div class="user-item" data-user-id="${user.id}" style="cursor: pointer;">
+                        <img src="${pageContext.request.contextPath}${user.picture}" alt="${user.fullName}" class="user-avatar">
                         <div class="user-info">
                             <h4>${user.fullName}</h4>
                             <div class="username">@${user.username}</div>
@@ -29,7 +29,8 @@
                         <div class="user-actions">
                             <c:if test="${currentUser != null && currentUser.id != user.id}">
                                 <button class="follow-button ${user.followed ? 'following' : ''}" 
-                                        onclick="toggleFollow(${user.id}, this)">
+                                        onclick="toggleFollow(${user.id}, this)"
+                                        data-hover-text="Unfollow">
                                     ${user.followed ? 'Following' : 'Follow'}
                                 </button>
                             </c:if>
@@ -56,19 +57,89 @@ function handleSearch(query) {
 }
 
 function toggleFollow(userId, button) {
-    fetch('/follow', {
+    // Prevent multiple clicks while processing
+    if (button.disabled) return;
+    button.disabled = true;
+    
+    const isFollowing = button.classList.contains('following');
+    const endpoint = isFollowing ? '/unfollow' : '/follow';
+    
+    // Save original text
+    const originalText = button.textContent;
+    button.textContent = 'Loading...';
+    
+    fetch(endpoint, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'userId=' + userId
+        body: 'followingId=' + userId
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
-            button.classList.toggle('following');
-            button.textContent = button.classList.contains('following') ? 'Following' : 'Follow';
+            const newIsFollowing = !isFollowing;
+            button.classList.toggle('following', newIsFollowing);
+            button.textContent = newIsFollowing ? 'Following' : 'Follow';
+        } else {
+            console.error('Error:', data.message);
+            // Revert button state if operation failed
+            button.classList.toggle('following', isFollowing);
+            button.textContent = originalText;
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        // Revert button state on error
+        button.classList.toggle('following', isFollowing);
+        button.textContent = originalText;
+    })
+    .finally(() => {
+        button.disabled = false;
+    });
 }
+
+$(document).ready(function() {
+    // Handle hover effects for follow buttons
+    $('.follow-button.following').each(function() {
+        const button = $(this);
+        const originalText = button.text();
+        const hoverText = button.data('hoverText');
+        
+        button.hover(
+            function() {
+                if (button.hasClass('following') && !button.prop('disabled')) {
+                    button.text(hoverText);
+                }
+            },
+            function() {
+                if (button.hasClass('following') && !button.prop('disabled')) {
+                    button.text(originalText);
+                }
+            }
+        );
+    });
+
+    // Make user cards clickable to load profile
+    $('.user-item').on('click', function(event) {
+        try {
+            // Get the clicked element and check if it's not the follow button
+            const target = $(event.target);
+            if (!target.is('.follow-button') && !target.closest('.follow-button').length) {
+                // Get userId from the card's data attribute
+                const userId = $(this).attr('data-user-id');
+                console.log('Loading profile for user:', userId);
+                
+                // Load the profile view
+                App.loadView('profile', { userId: userId }, '#main-panel');
+            }
+        } catch(error) {
+            console.error('Error handling user card click:', error);
+        }
+    });
+});

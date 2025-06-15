@@ -25,7 +25,15 @@ public class UsernameCheckServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String username = request.getParameter("username");
-        boolean exists = userService.usernameExists(username);
+        String userId = request.getParameter("userId");
+        
+        boolean exists;
+        if (userId != null && !userId.isEmpty()) {
+            exists = userService.usernameExists(username, Integer.parseInt(userId));
+        } else {
+            exists = userService.usernameExists(username);
+        }
+        
         response.setContentType("application/json");
         response.getWriter().write("{\"exists\": " + exists + "}");
     }

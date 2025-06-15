@@ -6,33 +6,4 @@
   <short-name>cheeper</short-name>
   <uri>http://cheeper.webdev/tags</uri>
   
-  <tag>
-    <name>profileImage</name>
-    <tag-class>com.webdev.cheeper.tags.ProfileImageTag</tag-class>
-    <body-content>empty</body-content>
-    <attribute>
-      <name>picture</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>cssClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>username</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>clickable</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>boolean</type>
-    </attribute>
-  </tag>
 </taglib>

@@ -1,21 +1,51 @@
 # Image Handling in Cheeper
 
-## Custom JSP Tags
+## Image URL
 
-Cheeper implements a custom JSP tag for consistent profile image rendering across the application. This system uses a Tag Library Descriptor (`cheeper.tld`) that defines the `profileImage` tag with configurable attributes like `picture`, `cssClass`, `username`, and `clickable`. A Java implementation (`ProfileImageTag.java`) generates the HTML markup, integrating with the `ImageService` for proper image path resolution. 
+Cheeper uses a simplified and consistent URL pattern for image handling:
+- Default profile image: `/local-images/default.png`
+- User profile pictures: `/local-images/profile/[filename]`
 
-Example usage: `<cheeper:profileImage picture="${profile.picture}" cssClass="profile-picture" />`, where profile is a user object containing the `picture` attribute, passed to the JSP.
+We've moved away from custom JSP tags in favor of direct URL patterns for better simplicity and maintainability. The image path construction is now straightforward in JSP files:
 
-This centralizes image rendering logic, eliminating code duplication and ensuring consistent behavior across the application. Without this tag system, we would need to repeatedly implement similar HTML markup and handle image path resolution (as we previously did), default images, and CSS classes in multiple JSP files, leading to maintenance challenges when image rendering requirements change.
+```jsp
+<!-- Example from profile-view.jsp -->
+<img class="profile-picture" 
+     src="${pageContext.request.contextPath}/local-images/${profile.picture != null ? 'profile/'.concat(profile.picture) : 'default.png'}" 
+     alt="Profile Picture" />
+```
 
-## Image service
+## Image Service
 
-The `ImageService` provides image management with configurable storage paths (`/var/lib/cheeper/images`), serve paths (`/local-images`), maximum file size (5MB), and allowed types (JPEG, PNG, GIF). The directory structure includes folders for profiles, defaults, and temporary storage. It is a centralized service for image handling, ensuring consistent behavior across the application.
+The `ImageService` manages image storage with:
+- Storage base path: `/var/lib/cheeper/images`
+- Maximum file size: 5MB
+- Allowed types: JPEG, PNG, GIF
+- Directory structure:
+  - `/profiles/` - User uploaded profile pictures
+  - `/static/images/` - Default images and system resources
 
 ## Image Serving
 
-Cheeper serves all images through a single `/local-images/*` endpoint. The `ImageServlet` handles these requests, automatically routing default images from `/static/images/` and user uploads from the configured storage path.
+The `ImageServlet`, mapped to `/local-images/*`, handles all image requests:
+1. `/local-images/default.png` → serves from webapp's static directory
+2. `/local-images/profile/[filename]` → serves from storage directory
 
-**JSP (most usage, like in `profile.jsp`):** `<cheeper:profileImage picture="${profile.picture}" cssClass="profile-picture" />`
+Example from forms:
+```jsp
+<div id="cropped-preview" style="margin-top: 15px; display: block;">
+    <p>${user.picture != null ? 'Current Profile Picture:' : 'Preview:'}</p>
+    <img id="cropped-result" 
+         src="${pageContext.request.contextPath}/local-images/${user.picture != null ? 'profile/'.concat(user.picture) : 'default.png'}" 
+         style="max-width: 200px; max-height: 200px;">
+</div>
+```
 
-**JavaScript:** `const imagePath = '/local-images/profiles/username.jpg'`
+We initially used a custom tag system with `ProfileImageTag` and TLD configuration, but found it introduced unnecessary complexity:
+1. Required maintaining separate Java classes for tag logic
+2. Added complexity with TLD configuration
+3. Made debugging more difficult
+4. Provided little benefit over direct URL patterns
+The current approach is:
+- More straightforward - URLs directly reflect the server's file structure
+- Easier to maintain - no extra abstraction layer

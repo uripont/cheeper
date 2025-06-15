@@ -24,8 +24,19 @@ public class UserService {
         this.imageService = new ImageService();
     }
     
+    public boolean usernameExists(String username, Integer excludeUserId) {
+        if (excludeUserId != null) {
+            // For existing users (edit mode), exclude their own ID from the check
+            return userRepository.findByUsername(username)
+                .map(u -> !u.getId().equals(excludeUserId))
+                .orElse(false);
+        }
+        // For new users, check if username exists at all
+        return userRepository.usernameExists(username);
+    }
+
     public boolean usernameExists(String username) {
-    	return userRepository.usernameExists(username);
+        return usernameExists(username, null);
     }
     public boolean emailExists(String email) {
     	return userRepository.emailExists(email);

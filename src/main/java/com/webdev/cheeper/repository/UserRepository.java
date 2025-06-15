@@ -86,6 +86,20 @@ public class UserRepository extends BaseRepository {
         }
         return Optional.empty();
     }
+    
+    public Optional<User> findById(int id) {
+        String query = "SELECT * FROM users WHERE id = ?";
+        try (PreparedStatement stmt = db.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return Optional.of(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
 
     protected User mapResultSetToUser(ResultSet rs) throws SQLException {
         User user = new User();
@@ -99,19 +113,15 @@ public class UserRepository extends BaseRepository {
         return user;
     }
     
-    // Retrieve all users from the database
+    // Retrieve all users from the database with all fields
     public List<User> findAll() {
         List<User> users = new ArrayList<>();
-        String query = "SELECT id, full_name, email, role_type FROM users";
+        String query = "SELECT * FROM users";
         
         try (PreparedStatement statement = db.prepareStatement(query)) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setFullName(rs.getString("full_name"));
-                user.setEmail(rs.getString("email"));
-                users.add(user);
+                users.add(mapResultSetToUser(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
