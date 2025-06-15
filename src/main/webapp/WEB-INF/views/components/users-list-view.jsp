@@ -18,7 +18,7 @@
             <c:when test="${not empty users}">
                 <c:forEach var="user" items="${users}">
                     <div class="user-item">
-                        <img src="${user.picture}" alt="${user.fullName}" class="user-avatar">
+                        <img src="${pageContext.request.contextPath}${user.picture}" alt="${user.fullName}" class="user-avatar">
                         <div class="user-info">
                             <h4>${user.fullName}</h4>
                             <div class="username">@${user.username}</div>

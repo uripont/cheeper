@@ -86,12 +86,8 @@ public class UsersListViewController extends HttpServlet {
 
         // Process users list to add follow status and profile pictures
         for (User user : users) {
-            // Set profile picture path
-            String picturePath = user.getPicture();
-            if (picturePath == null || picturePath.trim().isEmpty()) {
-                picturePath = imageService.getImagePath(null); // get default image path
-                user.setPicture(picturePath);
-            }
+            // Always use ImageService to get the correct path for both custom and default images
+            user.setPicture(imageService.getImagePath(user.getPicture()));
 
             // Set following status if user is logged in
             if (currentUser != null) {
