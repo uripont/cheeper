@@ -60,10 +60,10 @@
     <!-- Reply form -->
     <div class="reply-form-container">
         <h3>Reply to this post</h3>
-        <form action="${pageContext.request.contextPath}/post" method="post">
+        <form id="replyForm" action="${pageContext.request.contextPath}/post" method="post">
             <input type="hidden" name="source_id" value="${post.id}"/>
-            <textarea name="content" placeholder="Write your reply..." required></textarea>
-            <button type="submit">Reply</button>
+            <textarea id="replyContent" name="content" placeholder="Write your reply... (Ctrl/Cmd + Enter to reply)" required></textarea>
+            <button type="submit" id="replyBtn">Reply</button>
         </form>
     </div>
 
@@ -78,8 +78,8 @@
 
 <script>
     $(document).ready(function() {
-        // Load comments timeline
-        const postId = '${postId}';
+        const postId = '${post.id}';
+
         if (postId) {
             App.loadView('timeline', { 
                 type: 'comments',
@@ -98,7 +98,6 @@
             if (postId) {
                 $.post('/like', { postId: postId })
                     .done(function(response) {
-                        // Update like button image and count
                         if (response.liked) {
                             likeImg.attr('src', '${pageContext.request.contextPath}/static/images/heart-fill.png');
                             likeImg.attr('alt', 'Liked');
@@ -106,12 +105,108 @@
                             likeImg.attr('src', '${pageContext.request.contextPath}/static/images/heart.png');
                             likeImg.attr('alt', 'Like');
                         }
-                        likeCount.text(response.likeCount);
+
+                        if (response.likeCount > 0) {
+                            likeCount.text(response.likeCount).show();
+                        } else {
+                            likeCount.hide();
+                        }
                     })
                     .fail(function() {
                         console.error('Error toggling like');
                     });
             }
         });
+
+        const replyForm = document.getElementById('replyForm');
+        const replyTextarea = document.getElementById('replyContent');
+        const replyBtn = document.getElementById('replyBtn');
+
+        function submitReplyForm() {
+            const formData = new FormData(replyForm);
+
+            replyBtn.disabled = true;
+            replyBtn.textContent = 'Replying...';
+            replyBtn.style.opacity = '0.6';
+
+            $.ajax({
+                url: '/post',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    replyTextarea.value = '';
+                    replyTextarea.style.height = 'auto';
+
+                    App.loadView('timeline', { 
+                        type: 'comments',
+                        postId: postId 
+                    }, '#comments-timeline');
+
+                    replyBtn.disabled = false;
+                    replyBtn.textContent = 'Reply';
+                    replyBtn.style.opacity = '1';
+
+                    showSuccessMessage('Reply posted successfully!');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error posting reply:', error);
+                    alert('Failed to post reply. Please try again.');
+
+                    replyBtn.disabled = false;
+                    replyBtn.textContent = 'Reply';
+                    replyBtn.style.opacity = '1';
+                }
+            });
+        }
+
+        if (replyForm) {
+            replyForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitReplyForm();
+            });
+        }
+
+        if (replyTextarea) {
+            replyTextarea.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+
+                    if (replyTextarea.value.trim() === '') {
+                        alert('Please write something before replying!');
+                        return;
+                    }
+
+                    submitReplyForm();
+                }
+            });
+
+            replyTextarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+        }
+
+        function showSuccessMessage(message) {
+            const successDiv = $('<div></div>').css({
+                position: 'fixed',
+                top: '20px',
+                right: '20px',
+                background: '#28a745',
+                color: 'white',
+                padding: '12px 20px',
+                borderRadius: '6px',
+                zIndex: 1000,
+                fontSize: '14px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+            }).text(message);
+
+            $('body').append(successDiv);
+
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
     });
 </script>

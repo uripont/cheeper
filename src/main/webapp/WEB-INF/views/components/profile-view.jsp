@@ -1,159 +1,190 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="com.webdev.cheeper.model.User, com.webdev.cheeper.model.Student" %>
-<%@ page import="com.webdev.cheeper.model.User, com.webdev.cheeper.model.Entity" %>
-<%@ page import="com.webdev.cheeper.model.User, com.webdev.cheeper.model.Association" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cheeper" uri="http://cheeper.webdev/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<div class="profile-view">
-    <div class="profile-container" data-user-id="${profile.id}">
-        <div class="profile-header">
-            <div class="profile-picture-frame">
-                <cheeper:profileImage picture="${profile.picture}" cssClass="profile-picture" />
-            </div>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/post.css">
 
-            <div class="profile-info">
-                <h1 class="profile-name">${profile.fullName}</h1>
-                <div class="profile-detail-item">
-                    <span class="profile-detail-label">Username:</span>
-                    <span class="profile-detail-value">@${profile.username}</span>
-                </div>
-
-                <div class="follow-stats">
-                    <button class="follow-stat-btn">
-                        <span id="followersCount">${followersCount}</span> Followers
-                    </button>
-                    <button class="follow-stat-btn">
-                        <span id="followingCount">${followingCount}</span> Following
-                    </button>
-                </div>
-
-                <c:if test="${readOnly}">
-                    <button class="follow-standard-btn" data-userid="${profile.id}" ${isFollowing ? 'data-following="true"' : ''}>
-                        ${isFollowing ? 'Unfollow' : 'Follow'}
-                    </button>
-                </c:if>
-            </div>
+<div class="post-view">
+    <!-- Main post -->
+    <div class="post-container">
+        <div class="post-header">
+            <h2>Post Details</h2>
         </div>
-
-        <c:if test="${not empty profile.biography}">
-            <div class="profile-detail-item biography">
-                <p>${profile.biography}</p>
+        <c:if test="${not empty post}">
+            <div class="post-item" data-post-id="${post.id}">
+                <div class="post-header">
+                    <div class="user-info">
+                        <c:choose>
+                            <c:when test="${not empty postAuthor}">
+                                <strong>${postAuthor.fullName}</strong>
+                                <span class="username">@${postAuthor.username}</span>
+                            </c:when>
+                            <c:otherwise>
+                                <strong>Unknown User</strong>
+                            </c:otherwise>
+                        </c:choose>
+                        <span>
+                            <fmt:formatDate value="${post.createdAt}" pattern="MMM dd, yyyy HH:mm"/>
+                        </span>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>${post.content}</p>
+                </div>
+                <div class="post-actions">
+                    <button class="action-btn like-btn" title="Like" data-post-id="${post.id}">
+                        <c:choose>
+                            <c:when test="${isLikedByUser}">
+                                <img src="${pageContext.request.contextPath}/static/images/heart.fill.red.png" alt="Liked" width="18" height="18">
+                            </c:when>
+                            <c:otherwise>
+                                <img src="${pageContext.request.contextPath}/static/images/heart.png" alt="Like" width="18" height="18">
+                            </c:otherwise>
+                        </c:choose>
+                        <span class="like-count">${likeCount}</span>
+                    </button>
+                    <button class="action-btn reply-btn" title="Reply">
+                        <img src="${pageContext.request.contextPath}/static/images/reply.png" alt="Reply" width="18" height="18">
+                    </button>
+                </div>
             </div>
         </c:if>
 
-        <div class="profile-details">
-            <div class="profile-detail-item">
-                <span class="profile-detail-label">Role:</span>
-                <span class="profile-detail-value">${profile.roleType}</span>
+        <c:if test="${empty post}">
+            <div class="placeholder-message">
+                <p>Post not found or error loading post.</p>
             </div>
-            <div class="profile-detail-item">
-                <span class="profile-detail-label">Email:</span>
-                <span class="profile-detail-value">${profile.email}</span>
-            </div>
-
-            <%-- Student-specific information --%>
-            <c:if test="${profile['class'].simpleName eq 'Student'}">
-                <c:if test="${not empty profile.socialLinks}">
-                    <div class="profile-detail-item">
-                        <span class="profile-detail-label">Social Links:</span>
-                        <span class="profile-detail-value">
-                            <ul>
-                                <c:forEach var="link" items="${profile.socialLinks}">
-                                    <li><a href="${link.value}" target="_blank" rel="noopener noreferrer">${link.key}</a></li>
-                                </c:forEach>
-                            </ul>
-                        </span>
-                    </div>
-                </c:if>
-
-                <c:if test="${not empty profile.degrees}">
-                    <div class="profile-detail-item">
-                        <span class="profile-detail-label">Degrees:</span>
-                        <span class="profile-detail-value">
-                            <ul>
-                                <c:forEach var="degree" items="${profile.degrees}">
-                                    <li>[${degree.key}] ${degree.value}</li>
-                                </c:forEach>
-                            </ul>
-                        </span>
-                    </div>
-                </c:if>
-
-                <c:if test="${not empty profile.enrolledSubjects}">
-                    <div class="profile-detail-item">
-                        <span class="profile-detail-label">Subjects:</span>
-                        <span class="profile-detail-value">
-                            <ul>
-                                <c:forEach var="subject" items="${profile.enrolledSubjects}">
-                                    <li>[${subject.key}] ${subject.value}</li>
-                                </c:forEach>
-                            </ul>
-                        </span>
-                    </div>
-                </c:if>
-            </c:if>
-
-            <%-- Entity-specific information --%>
-            <c:if test="${profile['class'].simpleName eq 'Entity'}">
-                <div class="profile-detail-item">
-                    <span class="profile-detail-label">Department:</span>
-                    <span class="profile-detail-value">${profile.department}</span>
-                </div>
-            </c:if>
-        </div>
+        </c:if>
     </div>
 
-    <!-- Timeline Section -->
-    <div id="profile-timeline-container" class="timeline-container">
-        <!-- Timeline will be loaded here -->
+    <!-- Reply form -->
+    <div class="reply-form-container">
+        <h3>Reply to this post</h3>
+        <form id="replyForm" action="${pageContext.request.contextPath}/post" method="post">
+            <input type="hidden" name="source_id" value="${post.id}"/>
+            <textarea id="replyContent" name="content" placeholder="Write your reply... (Ctrl/Cmd + Enter to reply)" required></textarea>
+            <button type="submit" id="replyBtn">Reply</button>
+        </form>
+    </div>
+
+    <!-- Comments section -->
+    <div class="comments-section">
+        <h3>Comments</h3>
+        <div id="comments-timeline" class="timeline-container">
+            <!-- Comments timeline will be loaded here -->
+        </div>
     </div>
 </div>
 
 <script>
-    // Handle follower/following button clicks with App.loadView
-    $('.follow-stat-btn').first().on('click', function() {
-        App.loadView('users', { 
-            context: 'followers',
-            userId: '${profile.id}'
-        }, '#main-panel');
-    });
-    
-    $('.follow-stat-btn').last().on('click', function() {
-        App.loadView('users', { 
-            context: 'following',
-            userId: '${profile.id}'
-        }, '#main-panel');
-    });
-    $(document).ready(function() {
-        // Load user's timeline
-        App.loadView('timeline', { 
-            type: 'profile',
-            userId: '${profile.id}'
-        }, '#profile-timeline-container');
+    $(document).ready(function () {
+        const postId = '${post.id}';
 
-        // Handle follow button clicks
-        $('.follow-standard-btn').on('click', function() {
-            const button = $(this);
-            const userId = button.data('userid');
-            const isFollowing = button.attr('data-following') === 'true';
-            const action = isFollowing ? 'unfollow' : 'follow';
+        // Load initial comments timeline
+        function loadCommentsTimeline() {
+            App.loadView('timeline', {
+                type: 'comments',
+                postId: postId
+            }, '#comments-timeline');
+        }
 
-            $.post(`/${action}`, { followingId: userId })
-                .done(function() {
-                    // Toggle button state
-                    button.attr('data-following', (!isFollowing).toString());
-                    button.text(isFollowing ? 'Follow' : 'Unfollow');
-                    
-                    // Update follower count
-                    $.get(`/profile-counts?userId=${userId}`, function(data) {
-                        $('#followersCount').text(data.followers);
-                        $('#followingCount').text(data.following);
-                    });
+        loadCommentsTimeline();
+
+        // Handle like button click
+        $('.post-view').on('click', '.like-btn', function () {
+            const likeBtn = $(this);
+            const likeImg = likeBtn.find('img');
+            const likeCount = likeBtn.find('.like-count');
+
+            $.post('/like', { postId: postId })
+                .done(function (response) {
+                    if (response.liked) {
+                        likeImg.attr('src', '${pageContext.request.contextPath}/static/images/heart-fill.png');
+                        likeImg.attr('alt', 'Liked');
+                    } else {
+                        likeImg.attr('src', '${pageContext.request.contextPath}/static/images/heart.png');
+                        likeImg.attr('alt', 'Like');
+                    }
+
+                    if (response.likeCount > 0) {
+                        likeCount.text(response.likeCount).show();
+                    } else {
+                        likeCount.hide();
+                    }
                 })
-                .fail(function() {
-                    alert(`Failed to ${action} user`);
+                .fail(function () {
+                    alert('Error toggling like');
                 });
         });
+
+        // Reply logic
+        const replyForm = $('#replyForm');
+        const replyTextarea = $('#replyContent');
+        const replyBtn = $('#replyBtn');
+
+        function submitReply() {
+            if (!replyTextarea.val().trim()) {
+                alert('Please write something before replying!');
+                return;
+            }
+
+            const formData = new FormData(replyForm[0]);
+
+            replyBtn.prop('disabled', true).text('Replying...').css('opacity', '0.6');
+
+            $.ajax({
+                url: '/post',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function () {
+                    replyTextarea.val('').css('height', 'auto');
+                    loadCommentsTimeline();
+
+                    replyBtn.prop('disabled', false).text('Reply').css('opacity', '1');
+                    showSuccessMessage('Reply posted successfully!');
+                },
+                error: function () {
+                    alert('Failed to post reply. Please try again.');
+                    replyBtn.prop('disabled', false).text('Reply').css('opacity', '1');
+                }
+            });
+        }
+
+        replyForm.on('submit', function (e) {
+            e.preventDefault();
+            submitReply();
+        });
+
+        replyTextarea.on('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                submitReply();
+            }
+        });
+
+        replyTextarea.on('input', function () {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+
+        function showSuccessMessage(message) {
+            const successDiv = $('<div></div>').css({
+                position: 'fixed',
+                top: '20px',
+                right: '20px',
+                background: '#28a745',
+                color: 'white',
+                padding: '12px 20px',
+                borderRadius: '6px',
+                zIndex: 1000,
+                fontSize: '14px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+            }).text(message);
+
+            $('body').append(successDiv);
+            setTimeout(() => successDiv.remove(), 3000);
+        }
     });
 </script>
