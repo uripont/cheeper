@@ -1,7 +1,5 @@
 package com.webdev.cheeper.repository;
-
 import com.webdev.cheeper.model.Post;
-import com.webdev.cheeper.util.DBManager;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -18,7 +16,7 @@ public class PostRepository extends BaseRepository {
             if (post.getSourceId() != null) {
                 stmt.setInt(1, post.getSourceId());
             } else {
-                stmt.setNull(1, java.sql.Types.INTEGER);  // ✅ Clave para evitar violaciones de FK
+                stmt.setNull(1, java.sql.Types.INTEGER); 
             }
 
             stmt.setInt(2, post.getUserId());

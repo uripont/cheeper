@@ -81,14 +81,10 @@
         const postId = '${post.id}';
 
         // Load initial comments timeline
-        function loadCommentsTimeline() {
-            App.loadView('timeline', {
-                type: 'comments',
-                postId: postId
-            }, '#comments-timeline');
-        }
-
-        loadCommentsTimeline();
+        App.loadView('timeline', {
+            type: 'comments',
+            postId: postId
+        }, '#comments-timeline');
 
         // Handle like button click
         $('.post-view').on('click', '.like-btn', function () {
@@ -117,74 +113,40 @@
                 });
         });
 
-        // Reply logic
-        const replyForm = $('#replyForm');
-        const replyTextarea = $('#replyContent');
-        const replyBtn = $('#replyBtn');
+        // Reply form logic (same pattern as create-post)
+        const form = document.getElementById('replyForm');
+        const textarea = document.getElementById('replyContent');
+        const replyBtn = document.getElementById('replyBtn');
 
-        function submitReply() {
-            if (!replyTextarea.val().trim()) {
-                alert('Please write something before replying!');
-                return;
-            }
-
-            const formData = new FormData(replyForm[0]);
-
-            replyBtn.prop('disabled', true).text('Replying...').css('opacity', '0.6');
-
-            $.ajax({
-                url: '/post',
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function () {
-                    replyTextarea.val('').css('height', 'auto');
-                    loadCommentsTimeline();
-
-                    replyBtn.prop('disabled', false).text('Reply').css('opacity', '1');
-                    showSuccessMessage('Reply posted successfully!');
-                },
-                error: function () {
-                    alert('Failed to post reply. Please try again.');
-                    replyBtn.prop('disabled', false).text('Reply').css('opacity', '1');
-                }
-            });
-        }
-
-        replyForm.on('submit', function (e) {
-            e.preventDefault();
-            submitReply();
-        });
-
-        replyTextarea.on('keydown', function (e) {
+        // Submit on Ctrl+Enter / Cmd+Enter
+        textarea.addEventListener('keydown', function (e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 e.preventDefault();
-                submitReply();
+
+                if (textarea.value.trim() === '') {
+                    alert('Please write something before replying!');
+                    return;
+                }
+
+                replyBtn.disabled = true;
+                replyBtn.textContent = 'Replying...';
+                replyBtn.style.opacity = '0.6';
+
+                form.submit();
             }
         });
 
-        replyTextarea.on('input', function () {
+        // Visual feedback on normal submit
+        form.addEventListener('submit', function () {
+            replyBtn.disabled = true;
+            replyBtn.textContent = 'Replying...';
+            replyBtn.style.opacity = '0.6';
+        });
+
+        // Auto-resize textarea
+        textarea.addEventListener('input', function () {
             this.style.height = 'auto';
             this.style.height = this.scrollHeight + 'px';
         });
-
-        function showSuccessMessage(message) {
-            const successDiv = $('<div></div>').css({
-                position: 'fixed',
-                top: '20px',
-                right: '20px',
-                background: '#28a745',
-                color: 'white',
-                padding: '12px 20px',
-                borderRadius: '6px',
-                zIndex: 1000,
-                fontSize: '14px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-            }).text(message);
-
-            $('body').append(successDiv);
-            setTimeout(() => successDiv.remove(), 3000);
-        }
     });
 </script>

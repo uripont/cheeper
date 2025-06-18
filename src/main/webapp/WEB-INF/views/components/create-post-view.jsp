@@ -64,7 +64,7 @@ $(document).ready(function() {
         this.style.height = this.scrollHeight + 'px';
     });
 
-    // Character counter (optional)
+    // Character counter
     textarea.addEventListener('input', function() {
         const remaining = 280 - this.value.length; // Twitter-like limit
         if (remaining < 0) {
