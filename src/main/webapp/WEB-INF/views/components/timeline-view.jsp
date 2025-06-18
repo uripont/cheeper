@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/post.css">
 
 <div class="timeline-view">
+    <!--Timeline Header (for DEBUG purpouses delete before finishing) -->
     <div class="timeline-view__header">
         Timeline - ${timeline_type}
         <div style="font-size: 0.8em; font-weight: normal; color: #657786;">

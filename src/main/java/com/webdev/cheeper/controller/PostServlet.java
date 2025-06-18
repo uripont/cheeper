@@ -83,13 +83,10 @@ public class PostServlet extends HttpServlet {
         try {
             postService.createPost(post);
 
-            if (sourceId != null) {
-                // Si es un reply, redirige al post original
-                //response.sendRedirect(request.getContextPath() + "/views/post?id=" + sourceId);
-            } else {
-                // Si es un post normal, redirige a home
+            // Not needed since using ajax calls to create posts
+            /* if (sourceId == null) {
                 response.sendRedirect(request.getContextPath() + "/app/home");
-            }
+            } */
 
         } catch (Exception e) {
             request.setAttribute("error", "Post creation failed: " + e.getMessage());

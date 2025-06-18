@@ -81,7 +81,7 @@ function handleSearch(query) {
 
 function viewUserProfile(username) {
     // Navigate to user profile using App system
-    App.loadView('profile', { u: username }, '#main-panel');
+    App.loadView('profile', { username: username }, '#main-panel');
 }
 
 function toggleFollow(userId, button) {
