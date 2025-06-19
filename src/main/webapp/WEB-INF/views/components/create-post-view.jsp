@@ -9,9 +9,9 @@
         <input type="hidden" name="fullName" value="<%= session.getAttribute("name") != null ? session.getAttribute("name") : "" %>">
 
         <label for="content">What's on your mind?</label>
-        <textarea id="content" name="content" rows="4" required
-                  placeholder="Share your thoughts here... (Ctrl+Enter to post)">${param.content}</textarea>
-
+        <textarea id="content" name="content" rows="4" required placeholder="Share your thoughts here... (Ctrl+Enter to post)">${param.content}</textarea>
+        <input type="file" id="image" name="image" accept="image/*" style="display: none;">
+        <div id="imagePreview" style="margin-top: 10px;"></div>
         <div class="error-message">
             <c:if test="${not empty error}">
                 <p style="color: red">${error}</p>
@@ -154,5 +154,23 @@ $(document).ready(function() {
             successDiv.remove();
         }, 3000);
     }
+
+    // Open file input when "Add Image" button is clicked
+    $('#addImageBtn').on('click', function () {
+        document.getElementById('image').click();
+    });
+
+    // Preview selected image
+    document.getElementById('image').addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('imagePreview').innerHTML = `<img src="${e.target.result}" style="max-width: 100%; max-height: 200px;" />`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
 });
 </script>

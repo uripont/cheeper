@@ -30,6 +30,14 @@
                 </div>
                 <div class="post-content">
                     <p>${post.content}</p>
+
+                    <!--Image displauy here-->
+                    <c:if test="${not empty post.image}">
+                        <div class="post-image">
+                            <img src="${pageContext.request.contextPath}/static/images/${post.image}" alt="Post image" style="max-width: 100%; max-height: 300px;">
+                        </div>
+                    </c:if>
+                    
                 </div>
                 <div class="post-actions">
                     <button class="action-btn like-btn" title="Like" data-post-id="${post.id}">

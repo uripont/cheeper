@@ -14,6 +14,7 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Optional;
+import java.io.File;
 
 @MultipartConfig
 @WebServlet("/post")
@@ -71,10 +72,30 @@ public class PostServlet extends HttpServlet {
 
         System.out.println("[PostServlet] User ID: " + userId);
 
+        Part imagePart = request.getPart("image");
+        String imagePath = null;
+
+        if (imagePart != null && imagePart.getSize() > 0) {
+            String fileName = System.currentTimeMillis() + "_" + imagePart.getSubmittedFileName();
+
+            // Obtiene ruta física absoluta dentro del servidor
+            String uploadDir = getServletContext().getRealPath("/static/images/uploads");
+            File uploadDirFile = new File(uploadDir);
+            if (!uploadDirFile.exists()) {
+                uploadDirFile.mkdirs();
+            }
+
+            File imageFile = new File(uploadDirFile, fileName);
+            imagePart.write(imageFile.getAbsolutePath());
+
+            // Ruta que se guarda en DB (relativa a /static/images/)
+            imagePath = "uploads/" + fileName;
+        }
+
         Post post = new Post();
         post.setUserId(userId);
         post.setContent(content);
-        post.setImage(null); 
+        post.setImage(imagePath);
         post.setSourceId(sourceId); 
         Timestamp now = new Timestamp(System.currentTimeMillis());
         post.setCreatedAt(now);
