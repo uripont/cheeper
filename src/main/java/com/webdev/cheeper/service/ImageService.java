@@ -9,7 +9,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.Enumeration;
 import java.util.HashSet;
+import java.net.URL;
 
 
 public class ImageService {
@@ -101,8 +105,55 @@ public class ImageService {
     public void ensureStorageExists() {
         createDirectoryIfNotExists(storageBasePath);
         createDirectoryIfNotExists(storageBasePath + "/profiles");
+        createDirectoryIfNotExists(storageBasePath + "/posts");
+
+        copyAllResourceImages("Profiles", storageBasePath + "/profiles");
+        copyAllResourceImages("Posts", storageBasePath + "/posts");
     }
-    
+
+  
+    private void copyAllResourceImages(String resourceDir, String targetDir) {
+        try {
+            ClassLoader classLoader = getClass().getClassLoader();
+            URL dirURL = classLoader.getResource(resourceDir);
+            if (dirURL != null && dirURL.getProtocol().equals("file")) {
+                // Running from IDE or exploded WAR
+                File folder = new File(dirURL.toURI());
+                File[] files = folder.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        Path target = Paths.get(targetDir, file.getName());
+                        if (!Files.exists(target)) {
+                            try (InputStream in = new java.io.FileInputStream(file)) {
+                                Files.copy(in, target);
+                            }
+                        }
+                    }
+                }
+            } else if (dirURL != null && dirURL.getProtocol().equals("jar")) {
+                // Running from JAR/WAR
+                String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!"));
+                try (JarFile jar = new JarFile(jarPath)) {
+                    Enumeration<JarEntry> entries = jar.entries();
+                    while (entries.hasMoreElements()) {
+                        JarEntry entry = entries.nextElement();
+                        String name = entry.getName();
+                        if (name.startsWith(resourceDir + "/") && !entry.isDirectory()) {
+                            String fileName = name.substring(resourceDir.length() + 1);
+                            Path target = Paths.get(targetDir, fileName);
+                            if (!Files.exists(target)) {
+                                try (InputStream in = classLoader.getResourceAsStream(name)) {
+                                    Files.copy(in, target);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }    
     private void createDirectoryIfNotExists(String path) {
         File dir = new File(path);
         if (!dir.exists()) {

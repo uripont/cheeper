@@ -30,7 +30,7 @@
                         <div class="user-actions" onclick="event.stopPropagation()">
                             <c:if test="${currentUser != null && currentUser.id != user.id}">
                                 <button class="follow-button ${user.followed ? 'following' : ''}" 
-                                        onclick="toggleFollow(${user.id}, this)">
+                                        onclick="toggleFollow('${user.id}', this)">
                                     ${user.followed ? 'Following' : 'Follow'}
                                 </button>
                             </c:if>
