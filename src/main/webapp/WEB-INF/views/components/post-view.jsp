@@ -34,7 +34,9 @@
                     <!--Image displauy here-->
                     <c:if test="${not empty post.image}">
                         <div class="post-image">
-                            <img src="${pageContext.request.contextPath}/static/images/${post.image}" alt="Post image" style="max-width: 100%; max-height: 300px;">
+                            <img src="${pageContext.request.contextPath}/local-images/posts/${post.image}" 
+                                    alt="Post image" 
+                                    style="max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 10px;">
                         </div>
                     </c:if>
                     

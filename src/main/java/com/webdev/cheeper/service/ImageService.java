@@ -160,4 +160,50 @@ public class ImageService {
             dir.mkdirs();
         }
     }
+
+    
+    // Methods for post images
+    public String storePostImage(Part file, String baseName) throws IOException {
+        if (file == null || file.getSize() == 0) {
+            return null;
+        }
+        
+        String originalName = Paths.get(file.getSubmittedFileName()).getFileName().toString();
+        String extension = "";
+        int dotIndex = originalName.lastIndexOf('.');
+        if (dotIndex > 0) {
+            extension = originalName.substring(dotIndex);
+        }
+        
+        String newFileName = baseName + extension;
+        Path targetPath = Paths.get(storageBasePath, "posts", newFileName);
+        
+        // Create posts directory if it doesn't exist
+        Files.createDirectories(targetPath.getParent());
+        
+        try (InputStream in = file.getInputStream()) {
+            Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            return newFileName;
+        }
+    }
+
+    public String getPostImagePath(String filename) {
+        if (filename == null || filename.trim().isEmpty()) {
+            return null;
+        }
+        return serveBasePath + "/posts/" + filename;
+    }
+
+    public void deletePostImage(String filename) {
+        if (filename == null || filename.trim().isEmpty()) {
+            return;
+        }
+        
+        try {
+            Path imagePath = Paths.get(storageBasePath, "posts", filename);
+            Files.deleteIfExists(imagePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

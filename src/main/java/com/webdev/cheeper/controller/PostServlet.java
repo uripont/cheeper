@@ -4,6 +4,7 @@ import com.webdev.cheeper.model.Post;
 import com.webdev.cheeper.model.User;
 import com.webdev.cheeper.repository.PostRepository;
 import com.webdev.cheeper.repository.UserRepository;
+import com.webdev.cheeper.service.ImageService;
 import com.webdev.cheeper.service.PostService;
 
 import jakarta.servlet.ServletException;
@@ -14,19 +15,20 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Optional;
-import java.io.File;
 
 @MultipartConfig
 @WebServlet("/post")
 public class PostServlet extends HttpServlet {
     private PostService postService;
+    private ImageService imageService;
 
     @Override
     public void init() throws ServletException {
         try {
             this.postService = new PostService(new PostRepository());
+            this.imageService = new ImageService();
         } catch (Exception e) {
-            throw new ServletException("Failed to initialize PostService", e);
+            throw new ServletException("Failed to initialize services", e);
         }
     }
 
@@ -60,6 +62,7 @@ public class PostServlet extends HttpServlet {
         System.out.println("[PostServlet] Email: " + email);
 
         int userId;
+        String username;
         try (UserRepository userRepository = new UserRepository()) {
             Optional<User> userOpt = userRepository.findByEmail(email);
             if (userOpt.isEmpty()) {
@@ -68,28 +71,50 @@ public class PostServlet extends HttpServlet {
                 return;
             }
             userId = userOpt.get().getId();
+            username = userOpt.get().getUsername();
         }
 
         System.out.println("[PostServlet] User ID: " + userId);
-
+        
+        // Handle image upload using ImageService
         Part imagePart = request.getPart("image");
         String imagePath = null;
 
+        System.out.println("[PostServlet] Image part received: " + (imagePart != null ? "YES" : "NO"));
+        if (imagePart != null) {
+            System.out.println("[PostServlet] Image part size: " + imagePart.getSize() + " bytes");
+            System.out.println("[PostServlet] Image part filename: " + imagePart.getSubmittedFileName());
+            System.out.println("[PostServlet] Image part content type: " + imagePart.getContentType());
+        }
+
         if (imagePart != null && imagePart.getSize() > 0) {
-            String fileName = System.currentTimeMillis() + "_" + imagePart.getSubmittedFileName();
+            try {
+                // Validate image first
+                if (!imageService.validateImage(imagePart)) {
+                    System.err.println("[PostServlet] Image validation failed");
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().print("Invalid image file");
+                    return;
+                }
 
-            // Obtiene ruta física absoluta dentro del servidor
-            String uploadDir = getServletContext().getRealPath("/static/images/uploads");
-            File uploadDirFile = new File(uploadDir);
-            if (!uploadDirFile.exists()) {
-                uploadDirFile.mkdirs();
+                System.out.println("[PostServlet] Image validation passed");
+
+                // Store image using ImageService with unique identifier for posts
+                String postImageName = username + "_post_" + System.currentTimeMillis();
+                System.out.println("[PostServlet] Storing image with name: " + postImageName);
+                
+                imagePath = imageService.storePostImage(imagePart, postImageName);
+                System.out.println("[PostServlet] Image stored successfully: " + imagePath);
+                
+            } catch (IOException e) {
+                System.err.println("[PostServlet] Error storing image: " + e.getMessage());
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().print("Failed to store image");
+                return;
             }
-
-            File imageFile = new File(uploadDirFile, fileName);
-            imagePart.write(imageFile.getAbsolutePath());
-
-            // Ruta que se guarda en DB (relativa a /static/images/)
-            imagePath = "uploads/" + fileName;
+        } else {
+            System.out.println("[PostServlet] No image to process");
         }
 
         Post post = new Post();
@@ -101,20 +126,22 @@ public class PostServlet extends HttpServlet {
         post.setCreatedAt(now);
         post.setUpdatedAt(now);
 
+        System.out.println("[PostServlet] Post created with image: " + (imagePath != null ? imagePath : "NO IMAGE"));
+
         try {
             postService.createPost(post);
+            System.out.println("[PostServlet] Post saved successfully to database");
 
-            // Not needed since using ajax calls to create posts
-            /* if (sourceId == null) {
-                response.sendRedirect(request.getContextPath() + "/app/home");
-            } */
+            // Return success response for AJAX
+            response.setContentType("application/json");
+            response.getWriter().print("{\"success\": true, \"postId\": " + post.getId() + "}");
 
         } catch (Exception e) {
-            request.setAttribute("error", "Post creation failed: " + e.getMessage());
-            request.setAttribute("content", content);
-            request.getRequestDispatcher("/WEB-INF/views/create-post.jsp").forward(request, response);
+            System.err.println("[PostServlet] Error creating post: " + e.getMessage());
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType("application/json");
+            response.getWriter().print("{\"error\": \"Post creation failed: " + e.getMessage() + "\"}");
         }
     }
 }
-
-

@@ -41,7 +41,20 @@ public class ImageServlet extends HttpServlet {
             // Look for default images in the webapp's static directory
             String defaultImagePath = getServletContext().getRealPath("/static/images/" + imagePath.substring("defaults/".length()));
             file = new File(defaultImagePath);
-        } else {
+
+        } else if (imagePath.startsWith("posts/")) {
+            // Get post images from the storage directory
+            String storageBasePath = System.getenv("IMAGE_STORAGE_PATH") != null ? 
+                System.getenv("IMAGE_STORAGE_PATH") : "/var/lib/cheeper/images";
+            file = new File(storageBasePath, imagePath);
+            
+            // Security check for post images
+            if (!file.getCanonicalPath().startsWith(new File(storageBasePath).getCanonicalPath())) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+            
+        }else {
             // Get user uploaded images from the storage directory
             String storageBasePath = System.getenv("IMAGE_STORAGE_PATH") != null ? 
                 System.getenv("IMAGE_STORAGE_PATH") : "/var/lib/cheeper/images";
