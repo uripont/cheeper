@@ -101,20 +101,7 @@ public class UserRepository extends BaseRepository {
         return Optional.empty();
     }
 
-    public Optional<User> findById(int id) {
-        String sql = "SELECT * FROM users WHERE id = ?";
-        try (PreparedStatement stmt = db.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            
-            if (rs.next()) {
-                return Optional.of(mapResultSetToUser(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return Optional.empty();
-    }
+
 
     protected User mapResultSetToUser(ResultSet rs) throws SQLException {
         User user = new User();
