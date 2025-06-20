@@ -17,8 +17,8 @@ public class AssociationService extends UserService {
         this.associationRepository = associationRepository;
     }
 
-    public Map<String, String> validate(Association association) {
-        Map<String, String> errors = super.validate(association);
+    public Map<String, String> validate(Association association, String mode) {
+        Map<String, String> errors = super.validate(association, mode);
 
         // Validate verification status
         if (association.getVerificationStatus() == null) {
@@ -29,7 +29,7 @@ public class AssociationService extends UserService {
     }
 
     public Map<String, String> register(Association association, Part filePart) throws IOException {
-        Map<String, String> errors = validate(association);
+        Map<String, String> errors = validate(association, "register");
 
         if (errors.isEmpty()) {
             try {
@@ -41,6 +41,21 @@ public class AssociationService extends UserService {
             }
         }
 
+        return errors;
+    }
+
+    public Map<String,String> update(Association association, Part filePart) {
+        Map<String,String> errors = validate(association, "edit");
+        
+        if (errors.isEmpty()) {
+        	try {
+                savePicture(association, filePart);
+                associationRepository.update(association);
+            } catch (Exception e) {
+                errors.put("system", "Update failed: " + e.getMessage());
+                e.printStackTrace(); 
+            }
+        }
         return errors;
     }
     

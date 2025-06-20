@@ -86,7 +86,7 @@ public class UserRepository extends BaseRepository {
         }
         return Optional.empty();
     }
-    
+
     public Optional<User> findById(int id) {
         String query = "SELECT * FROM users WHERE id = ?";
         try (PreparedStatement stmt = db.prepareStatement(query)) {
@@ -113,15 +113,19 @@ public class UserRepository extends BaseRepository {
         return user;
     }
     
-    // Retrieve all users from the database with all fields
+    // Retrieve all users from the database
     public List<User> findAll() {
         List<User> users = new ArrayList<>();
-        String query = "SELECT * FROM users";
+        String query = "SELECT id, full_name, email, role_type FROM users";
         
         try (PreparedStatement statement = db.prepareStatement(query)) {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                users.add(mapResultSetToUser(rs));
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setFullName(rs.getString("full_name"));
+                user.setEmail(rs.getString("email"));
+                users.add(user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -170,5 +174,18 @@ public class UserRepository extends BaseRepository {
         return findByEmail(email)
                 .map(User::getId)
                 .orElse(null);
+    }
+
+    public boolean isUsernameOfUser(int userId, String username) {
+        String query = "SELECT COUNT(*) FROM users WHERE id = ? AND username = ?";
+        try (PreparedStatement stmt = db.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            stmt.setString(2, username);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

@@ -15,9 +15,9 @@ import com.webdev.cheeper.model.Entity;
 import com.webdev.cheeper.repository.EntityRepository;
 import com.webdev.cheeper.repository.UserRepository;
 import com.webdev.cheeper.service.EntityService;
+import com.webdev.cheeper.service.UserService;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,16 +27,19 @@ public class EntityForm extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private UserRepository userRepository;
+    private UserService userService;
     private EntityRepository entityRepository;
     private EntityService entityService;
 
     @Override
     public void init() throws ServletException {
         this.userRepository = new UserRepository();
+        this.userService = new UserService(userRepository);
         this.entityRepository = new EntityRepository();
         this.entityService = new EntityService(userRepository, entityRepository);
     }
 
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -52,7 +55,7 @@ public class EntityForm extends HttpServlet {
             }
             
             String email = (String) session.getAttribute("email");
-            Optional<User> userOpt = userRepository.findByEmail(email);
+            Optional<User> userOpt = userService.getUserByEmail(email);
             
             if (userOpt.isEmpty()) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
@@ -81,37 +84,30 @@ public class EntityForm extends HttpServlet {
             throws ServletException, IOException {
         
         String mode = request.getParameter("mode");
-        Entity entity;
+        Entity entity = new Entity();
+
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("email") == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        String email = (String) session.getAttribute("email");
+
         
         if ("edit".equals(mode)) {
-            // Get existing entity for update
-            HttpSession session = request.getSession(false);
-            if (session == null || session.getAttribute("email") == null) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            Optional<User> userOpt = userService.getUserByEmail(email);
+            if (userOpt.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
-            
-            String email = (String) session.getAttribute("email");
-            Optional<Entity> existingEntity = entityService.getProfile(
-                userRepository.findByEmail(email).get().getId()
-            );
-            
-            if (existingEntity.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Entity profile not found");
-                return;
-            }
-            
-            entity = existingEntity.get();
-        } else {
-            // Create new entity
-            entity = new Entity();
+            User user = userOpt.get();
+            int userId = user.getId();
+            entity.setId(userId);
         }
-        
-        Map<String, String> errors = new HashMap<>();
    
         try {
-            // Store the ID if in edit mode
-            int entityId = "edit".equals(mode) ? entity.getId() : 0;
             
             // Manually decode and populate fields
             entity.setFullName(request.getParameter("fullName"));
@@ -120,11 +116,6 @@ public class EntityForm extends HttpServlet {
             entity.setBiography(request.getParameter("biography"));
             entity.setDepartment(request.getParameter("department"));
             entity.setRoleType(RoleType.ENTITY);
-            
-            // Restore the ID if in edit mode
-            if ("edit".equals(mode)) {
-                entity.setId(entityId);
-            }
             
             Part filePart = request.getPart("picture");
             Map<String, String> validationErrors;
