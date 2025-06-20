@@ -29,9 +29,24 @@ function initUserValidation(form) {
     function checkUsernameAvailability() {
         if (!validateUsername()) return;
 
+        // Skip validation if in edit mode and username hasn't changed
+        const originalUsername = username.getAttribute('data-original');
+        if (originalUsername && originalUsername === username.value) {
+            username.setCustomValidity("");
+            username.removeAttribute('aria-invalid');
+            return;
+        }
+
         const requestId = ++currentUsernameCheck;
 
-        fetch('http://localhost:8080/Cheeper/check-username?username=' + encodeURIComponent(username.value))
+        // Include userId if in edit mode
+        let url = window.contextPath + '/check-username?username=' + encodeURIComponent(username.value);
+        const userId = username.getAttribute('data-user-id');
+        if (userId) {
+            url += '&userId=' + encodeURIComponent(userId);
+        }
+        
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 if (requestId !== currentUsernameCheck) return;

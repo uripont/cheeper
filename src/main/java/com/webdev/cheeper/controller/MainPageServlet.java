@@ -5,23 +5,29 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebServlet("/app/*")
+@WebServlet(urlPatterns = {
+    "/", "/home", "/explore", "/create", "/chats", "/profile"
+})
 public class MainPageServlet extends HttpServlet {
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
         
-        // Get the path after /app/
-        String path = req.getPathInfo();
-        if (path == null || path.equals("/")) {
-            path = "/home"; // Default route
+        // Check if user is authenticated
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("email") == null) {
+            // No valid session, redirect to auth
+            resp.sendRedirect(req.getContextPath() + "/auth");
+            return;
         }
         
-        // Remove leading slash
-        String view = path.substring(1);
+        // Get the path and remove leading slash
+        String path = req.getServletPath();
+        String view = path.equals("/") ? "home" : path.substring(1);
         
         // Set the current view for the layout
         req.setAttribute("view", view);

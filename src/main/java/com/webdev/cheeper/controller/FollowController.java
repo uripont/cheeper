@@ -66,57 +66,64 @@ public class FollowController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (req.getServletPath().equals("/unfollow")) {
-            unfollowUser(req,resp);
-        } else if (req.getServletPath().equals("/follow")) {
-        	followUser(req,resp);
-        }
-    }
-
-    private void followUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    	try (UserRepository userRepo = new UserRepository()) {
-                Integer followerId = getCurrentUserId(req, userRepo);
-                if (followerId == null) {
-                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    return;
-                }
-
-                int followingId = Integer.parseInt(req.getParameter("followingId"));
-
-                if (followService.follow(followerId, followingId)) {
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    resp.getWriter().write("Followed successfully");
-                } else {
-                    resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to follow");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
-            }
-    }
-    
-    private void unfollowUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        
         try (UserRepository userRepo = new UserRepository()) {
-
+            // Get current user ID
             Integer followerId = getCurrentUserId(req, userRepo);
             if (followerId == null) {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                sendJsonResponse(resp, false, "User not authenticated", HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
-            int followingId = Integer.parseInt(req.getParameter("followingId"));
-
-            if (followService.unfollow(followerId, followingId)) {
-                resp.setStatus(HttpServletResponse.SC_OK);
-                resp.getWriter().write("Unfollowed successfully");
-            } else {
-                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to unfollow");
+            // Get target user ID
+            String followingIdStr = req.getParameter("followingId");
+            if (followingIdStr == null || followingIdStr.isEmpty()) {
+                sendJsonResponse(resp, false, "Missing followingId parameter", HttpServletResponse.SC_BAD_REQUEST);
+                return;
             }
+
+            int followingId;
+            try {
+                followingId = Integer.parseInt(followingIdStr);
+            } catch (NumberFormatException e) {
+                sendJsonResponse(resp, false, "Invalid followingId format", HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+
+            // Prevent self-following
+            if (followerId == followingId) {
+                sendJsonResponse(resp, false, "Cannot follow/unfollow yourself", HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+
+            boolean success;
+            String message;
+
+            // Handle follow/unfollow based on path
+            if (req.getServletPath().equals("/unfollow")) {
+                success = followService.unfollow(followerId, followingId);
+                message = success ? "Successfully unfollowed user" : "Failed to unfollow user";
+            } else {
+                success = followService.follow(followerId, followingId);
+                message = success ? "Successfully followed user" : "Failed to follow user";
+            }
+
+            sendJsonResponse(resp, success, message, success ? HttpServletResponse.SC_OK : HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
         } catch (Exception e) {
             e.printStackTrace();
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
+            sendJsonResponse(resp, false, "An internal error occurred", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private void sendJsonResponse(HttpServletResponse resp, boolean success, String message, int status) throws IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        resp.setStatus(status);
+        String jsonResponse = String.format("{\"success\": %b, \"message\": \"%s\"}", success, message);
+        resp.getWriter().write(jsonResponse);
     }
 
     
@@ -181,6 +188,7 @@ public class FollowController extends HttpServlet {
         int following = followService.countFollowing(userId);
         
         resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
         resp.getWriter().write(String.format("{\"followers\":%d,\"following\":%d}", followers, following));
     }
 

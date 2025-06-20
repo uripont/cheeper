@@ -52,9 +52,21 @@ public class UsersListViewController extends HttpServlet {
         // Initialize UserService
         UserService userService = new UserService(userRepository);
         
+
+
+        // Require authentication only for suggestions and chats
+        if (currentUser == null && 
+            (contextLower.equals("suggestions") || 
+             contextLower.equals("suggested") || 
+             contextLower.equals("chats"))) {
+            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
         List<User> users;
         String contextTitle;
-        
+        String userIdStr = req.getParameter("userId");
+
         try {
             switch (contextLower) {
                 case "search":
@@ -90,7 +102,24 @@ public class UsersListViewController extends HttpServlet {
                     users = userService.getRecommendedUsers(10, currentUser.getId());
                     contextTitle = "Chat Users";
                     break;
-                    
+
+                case "followers":
+                case "following":
+                    if (userIdStr == null) {
+                        resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing userId for followers/following context");
+                        return;
+                    }
+
+                    int userId = Integer.parseInt(userIdStr);
+                    if (contextLower.equals("followers")) {
+                        users = followRepository.getFollowers(userId);
+                        contextTitle = "Followers";
+                    } else {
+                        users = followRepository.getFollowing(userId);
+                        contextTitle = "Following";
+                    }
+                    break;
+                
                 default:
                     resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid context");
                     return;

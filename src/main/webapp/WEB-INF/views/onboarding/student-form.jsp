@@ -5,32 +5,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Student Registration</title>
+    <title>${param.mode eq 'edit' ? 'Edit Profile' : 'Student Registration'}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/register-style.css">
-    <!-- Cropper.js CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
-    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Cropper.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 </head>
 <body>
 
     <div class="form-container">
-        <h1>Welcome to Cheeper <br> 
-            <%= session.getAttribute("name") != null ? session.getAttribute("name") : "Unknown Student" %>!
-        </h1>
-        <h2> 
-            <%= session.getAttribute("role") != null ? session.getAttribute("role") : "Unknown Role" %>
-        </h2>
+        <h1>${param.mode eq 'edit' ? 'Edit Your Profile' : 'Welcome to Cheeper'}</h1>
+        <c:if test="${param.mode ne 'edit'}">
+            <h2> 
+                <%= session.getAttribute("role") != null ? session.getAttribute("role") : "Unknown Role" %>
+            </h2>
+        </c:if>
         
-        <form id="registerForm" action="student-form" method="POST" enctype="multipart/form-data">
-            <!-- Hidden fields for data from session -->
+        <form id="registerForm" action="student-form?mode=${param.mode}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="mode" value="${param.mode}">
             <input type="hidden" name="fullName" value="<%= session.getAttribute("name") != null ? session.getAttribute("name") : "" %>">
             <input type="hidden" name="email" value="<%= session.getAttribute("email") != null ? session.getAttribute("email") : "" %>">
             
             <label for="username">Username:</label> 
-            <input type="text" id="username" name="username" required minlength="3" maxlength="20" value="${student.username}" 
+            <input type="text" id="username" name="username" required minlength="3" maxlength="20" 
+                   value="${student.username}" data-original="${student.username}"
+                   data-user-id="${student.id}"
                    title="Username must be between 3 and 20 characters."/> 
             
             <label for="birthdate">Birthdate:</label>
@@ -57,9 +56,11 @@
                     </div>
                 </div>
                 
-                <div id="cropped-preview" style="margin-top: 15px; display: none;">
-                    <p>Preview:</p>
-                    <img id="cropped-result" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; background-color: black;">
+                <div id="cropped-preview" style="margin-top: 15px; display: block;">
+                    <p>${student.picture != null ? 'Current Profile Picture:' : 'Preview:'}</p>
+                    <img id="cropped-result" 
+                         src="${pageContext.request.contextPath}/local-images/${student.picture != null ? 'profile/'.concat(student.picture) : 'default.png'}" 
+                         style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; background-color: black;">
                     <input type="hidden" id="cropped-image-data" name="croppedImageData">
                 </div>
             </div>
@@ -109,15 +110,21 @@
                 </div>
             </div>
 
-            <button type="submit">Register</button>
+            <button type="submit">${param.mode eq 'edit' ? 'Save Changes' : 'Register'}</button>
         </form>
     </div>
     
     <script>
-        // Image Cropper functionality
+        // Picture upload and cropping functionality
         $(document).ready(function() {
             let cropper;
             const TARGET_SIZE = 400;
+            
+            // Store original image source if it exists
+            const originalSrc = $('#cropped-result').attr('src');
+            if (originalSrc) {
+                $('#cropped-result').attr('data-original-src', originalSrc);
+            }
             
             $('#picture').on('change', function(e) {
                 if (this.files && this.files.length) {
@@ -180,6 +187,11 @@
                 if (cropper) {
                     cropper.destroy();
                 }
+                // Restore original preview if it exists
+                const originalSrc = $('#cropped-result').attr('data-original-src');
+                if (originalSrc) {
+                    $('#cropped-result').attr('src', originalSrc);
+                }
             });
             
             $('#chooseImageBtn').on('click', function () {
@@ -236,11 +248,14 @@
     </script>
     
     <!-- Load validation scripts -->
-    <script src="${pageContext.request.contextPath}/js/user-validation.js"></script>
-    <script src="${pageContext.request.contextPath}/js/student-validation.js"></script>
+    <script src="${pageContext.request.contextPath}/static/js/user-validation.js"></script>
+    <script src="${pageContext.request.contextPath}/static/js/student-validation.js"></script>
     
     <!-- Initialize validation -->
     <script>
+        // Make context path available to validation scripts
+        window.contextPath = '${pageContext.request.contextPath}';
+        
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('registerForm');
             

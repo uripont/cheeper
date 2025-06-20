@@ -9,7 +9,9 @@
     <div class="profile-container" data-user-id="${profile.id}">
         <div class="profile-header">
             <div class="profile-picture-frame">
-                <cheeper:profileImage picture="${profile.picture}" cssClass="profile-picture" />
+                <img class="profile-picture" 
+                     src="${pageContext.request.contextPath}/local-images/${profile.picture != null ? 'profile/'.concat(profile.picture) : 'default.png'}" 
+                     alt="Profile Picture" />
             </div>
 
             <div class="profile-info">
@@ -26,11 +28,22 @@
                     <button class="follow-stat-btn">
                         <span id="followingCount">${followingCount}</span> Following
                     </button>
+                    <c:if test="${not readOnly}">
+                        <a href="${pageContext.request.contextPath}/edit-profile" class="follow-standard-btn" style="color: white; text-decoration: none; display: inline-block; margin-left: 10px;">
+                            Edit Profile
+                        </a>
+                        <a href="${pageContext.request.contextPath}/logout" class="follow-standard-btn logout-btn" style="color: white; text-decoration: none; display: inline-block; margin-left: 10px;">
+                            Logout
+                        </a>
+                    </c:if>
                 </div>
 
                 <c:if test="${readOnly}">
-                    <button class="follow-standard-btn" data-userid="${profile.id}" ${isFollowing ? 'data-following="true"' : ''}>
-                        ${isFollowing ? 'Unfollow' : 'Follow'}
+                    <button class="follow-standard-btn" 
+                            data-userid="${profile.id}" 
+                            ${isFollowing ? 'data-following="true"' : ''} 
+                            data-hover-text="Unfollow">
+                        ${isFollowing ? 'Following' : 'Follow'}
                     </button>
                 </c:if>
             </div>
@@ -116,14 +129,14 @@
         App.loadView('users', { 
             context: 'followers',
             userId: '${profile.id}'
-        }, '#main-panel');
+        }, '#rightSidebar');
     });
     
     $('.follow-stat-btn').last().on('click', function() {
         App.loadView('users', { 
             context: 'following',
             userId: '${profile.id}'
-        }, '#main-panel');
+        }, '#rightSidebar');
     });
     
     $(document).ready(function() {
@@ -133,28 +146,105 @@
             userId: '${profile.id}'
         }, '#profile-timeline-container');
 
+        // Handle hover effects for follow button
+        const handleFollowButtonHover = () => {
+            const button = $('.follow-standard-btn[data-userid]');
+            const originalText = button.text();
+            const hoverText = button.data('hoverText');
+            
+            button.hover(
+                function() {
+                    if ($(this).attr('data-following') === 'true' && !$(this).prop('disabled')) {
+                        $(this).text(hoverText);
+                    }
+                },
+                function() {
+                    if ($(this).attr('data-following') === 'true' && !$(this).prop('disabled')) {
+                        $(this).text(originalText);
+                    }
+                }
+            );
+        };
+
+        handleFollowButtonHover();
+
         // Handle follow button clicks
-        $('.follow-standard-btn').on('click', function() {
+        // Handle follow button clicks
+        $('.follow-standard-btn[data-userid]').on('click', function() {
             const button = $(this);
             const userId = button.data('userid');
+            
+            // Prevent multiple clicks while processing
+            if (button.prop('disabled')) return;
+            button.prop('disabled', true);
+            
             const isFollowing = button.attr('data-following') === 'true';
-            const action = isFollowing ? 'unfollow' : 'follow';
-
-            $.post(`/${action}`, { followingId: userId })
-                .done(function() {
-                    // Toggle button state
-                    button.attr('data-following', (!isFollowing).toString());
-                    button.text(isFollowing ? 'Follow' : 'Unfollow');
+            const endpoint = isFollowing ? 'unfollow' : 'follow';
+            
+            // Save original text
+            const originalText = button.text();
+            button.text('Loading...');
+            
+            fetch('${pageContext.request.contextPath}/' + endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json',
+                },
+                body: 'followingId=' + userId
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const contentType = response.headers.get("content-type");
+                console.log('Content-Type:', contentType);
+                if (contentType && contentType.includes("application/json")) {
+                    return response.json();
+                }
+                throw new TypeError("Server did not return JSON response");
+            })
+            .then(data => {
+                if (data.success) {
+                    const newIsFollowing = !isFollowing;
+                    button.attr('data-following', newIsFollowing.toString());
+                    button.text(newIsFollowing ? 'Following' : 'Follow');
                     
                     // Update follower count
-                    $.get(`/profile-counts?userId=${userId}`, function(data) {
-                        $('#followersCount').text(data.followers);
-                        $('#followingCount').text(data.following);
-                    });
-                })
-                .fail(function() {
-                    alert(`Failed to ${action} user`);
-                });
+                    fetch('${pageContext.request.contextPath}/profile-counts?userId=' + userId, {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    })
+                        .then(response => {
+                            const contentType = response.headers.get("content-type");
+                            if (contentType && contentType.includes("application/json")) {
+                                return response.json();
+                            }
+                            throw new TypeError("Server did not return JSON response for profile counts");
+                        })
+                        .then(data => {
+                            $('#followersCount').text(data.followers);
+                            $('#followingCount').text(data.following);
+                        });
+                } else {
+                    console.error('Error:', data.message);
+                    // Revert button state if operation failed
+                    button.text(originalText);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Show error alert to user
+                alert('Failed to ' + endpoint + ' user. Please try again.');
+                // Revert button state on error
+                button.text(originalText);
+            })
+            .finally(() => {
+                button.prop('disabled', false);
+            });
         });
     });
 </script>

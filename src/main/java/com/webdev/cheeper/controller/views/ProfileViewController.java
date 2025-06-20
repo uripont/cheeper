@@ -33,6 +33,7 @@ public class ProfileViewController extends HttpServlet {
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String userIdStr = req.getParameter("userId");
         String username = req.getParameter("username");
         User targetUser;
         User currentUser = null;
@@ -48,17 +49,35 @@ public class ProfileViewController extends HttpServlet {
             }
         }
         
-        // If username provided, load that profile. Otherwise load current user's profile
-        if (username != null && !username.isEmpty()) {
+        // Try to find user by ID first
+        if (userIdStr != null && !userIdStr.isEmpty()) {
+            try {
+                int userId = Integer.parseInt(userIdStr);
+                Optional<User> userOpt = userRepository.findById(userId);
+                if (userOpt.isEmpty()) {
+                    resp.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
+                    return;
+                }
+                targetUser = userOpt.get();
+                isReadOnly = currentUser == null || !targetUser.getId().equals(currentUser.getId()); // Only editable if it's your own profile
+            } catch (NumberFormatException e) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID");
+                return;
+            }
+        }
+        // Then try by username
+        else if (username != null && !username.isEmpty()) {
             Optional<User> userOpt = userRepository.findByUsername(username);
             if (userOpt.isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
                 return;
             }
             targetUser = userOpt.get();
-            isReadOnly = true; // Viewing someone else's profile
-        } else {
-            // No username provided, must be logged in to view own profile
+            isReadOnly = currentUser == null || !targetUser.getId().equals(currentUser.getId()); // Only editable if it's your own profile
+        }
+        // Finally fall back to current user's profile
+        else {
+            // No userId or username provided, must be logged in to view own profile
             if (currentUser == null) {
                 resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;

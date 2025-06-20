@@ -88,9 +88,9 @@ public class ImageService {
     
     public String getImagePath(String filename) {
         if (filename == null || filename.trim().isEmpty() || filename.equals(DEFAULT_IMAGE)) {
-            return serveBasePath + "/defaults/" + DEFAULT_IMAGE;
+            return serveBasePath + "/default.png";
         }
-        return serveBasePath + "/profiles/" + filename;
+        return serveBasePath + "/profile/" + filename;
     }
     
     public boolean validateImage(Part file) {
