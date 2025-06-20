@@ -52,6 +52,6 @@ public class CreatePostViewController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // TODO: Implement post creation logic
-        doGet(req, resp);
+        req.getRequestDispatcher("/post").forward(req, resp);
     }
 }

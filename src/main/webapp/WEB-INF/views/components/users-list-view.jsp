@@ -5,10 +5,11 @@
 <div class="users-list-view">
     <div class="users-list-header">
         <h3>${context}</h3>
-        <c:if test="${context eq 'Search Users'}">
+        <c:if test="${context.startsWith('Search')}">
             <div class="search-input-container">
                 <input type="text" class="search-input" placeholder="Search users..." 
                        value="${searchQuery}" oninput="handleSearch(this.value)">
+                <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
             </div>
         </c:if>
     </div>
@@ -26,7 +27,7 @@
                                 <div class="biography">${user.biography}</div>
                             </c:if>
                         </div>
-                        <div class="user-actions">
+                        <div class="user-actions" onclick="event.stopPropagation()">
                             <c:if test="${currentUser != null && currentUser.id != user.id}">
                                 <button class="follow-button ${user.followed ? 'following' : ''}" 
                                         onclick="toggleFollow(${user.id}, this)"
@@ -40,7 +41,14 @@
             </c:when>
             <c:otherwise>
                 <div class="placeholder-message">
-                    <p>No users found</p>
+                    <c:choose>
+                        <c:when test="${not empty searchQuery}">
+                            <p>No users found for "${searchQuery}"</p>
+                        </c:when>
+                        <c:otherwise>
+                            <p>No users found</p>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </c:otherwise>
         </c:choose>
@@ -48,12 +56,33 @@
 </div>
 
 <script>
+let searchTimeout;
+
 function handleSearch(query) {
-    let searchTimeout;
     clearTimeout(searchTimeout);
+    
+    if (query.trim().length === 0) {
+        // Load default users list
+        App.loadView('users', { context: 'search' }, '#main-panel');
+        return;
+    }
+    
+    if (query.trim().length < 2) {
+        return;
+    }
+    
     searchTimeout = setTimeout(() => {
-        window.location.href = '/views/users?context=search&q=' + encodeURIComponent(query);
-    }, 500);
+        // Load users with search query
+        App.loadView('users', { 
+            context: 'search', 
+            q: query.trim() 
+        }, '#main-panel');
+    }, 300);
+}
+
+function viewUserProfile(username) {
+    // Navigate to user profile using App system
+    App.loadView('profile', { username: username }, '#main-panel');
 }
 
 function toggleFollow(userId, button) {
@@ -143,3 +172,4 @@ $(document).ready(function() {
         }
     });
 });
+

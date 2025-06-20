@@ -36,6 +36,15 @@ public class ImageServlet extends HttpServlet {
         if (imagePath.equals("default.png") || imagePath.equals("profile/default.png")) {
             String defaultImagePath = getServletContext().getRealPath("/static/images/default.png");
             file = new File(defaultImagePath);
+
+        } else if (imagePath.startsWith("posts/")) {
+            // Get post images from the storage directory
+            String storageBasePath = System.getenv("IMAGE_STORAGE_PATH") != null ? 
+                System.getenv("IMAGE_STORAGE_PATH") : "/var/lib/cheeper/images";
+            file = new File(storageBasePath, imagePath);
+            
+            // Security check for post images
+
         }
         // Handle profile pictures
         else if (imagePath.startsWith("profile/")) {
@@ -46,10 +55,12 @@ public class ImageServlet extends HttpServlet {
             file = new File(new File(storageBasePath, "profiles"), filename);
             
             // Security check for user uploaded images
+
             if (!file.getCanonicalPath().startsWith(new File(storageBasePath).getCanonicalPath())) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
+
         } else {
             // Get user uploaded images from the storage directory
             String storageBasePath = System.getenv("IMAGE_STORAGE_PATH") != null ? 

@@ -191,7 +191,6 @@ public class UserRepository extends BaseRepository {
         }
     }
 
-
     public List<User> searchUsers(String query, int limit, Integer excludeUserId) {
         List<User> users = new ArrayList<>();
         
@@ -265,4 +264,6 @@ public class UserRepository extends BaseRepository {
         
         return users;
     }
+
 }
+

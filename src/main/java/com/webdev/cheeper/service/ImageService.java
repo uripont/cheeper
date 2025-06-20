@@ -9,7 +9,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.Enumeration;
 import java.util.HashSet;
+import java.net.URL;
 
 
 public class ImageService {
@@ -101,12 +105,105 @@ public class ImageService {
     public void ensureStorageExists() {
         createDirectoryIfNotExists(storageBasePath);
         createDirectoryIfNotExists(storageBasePath + "/profiles");
+        createDirectoryIfNotExists(storageBasePath + "/posts");
+
+        copyAllResourceImages("Profiles", storageBasePath + "/profiles");
+        copyAllResourceImages("Posts", storageBasePath + "/posts");
     }
-    
+
+  
+    private void copyAllResourceImages(String resourceDir, String targetDir) {
+        try {
+            ClassLoader classLoader = getClass().getClassLoader();
+            URL dirURL = classLoader.getResource(resourceDir);
+            if (dirURL != null && dirURL.getProtocol().equals("file")) {
+                // Running from IDE or exploded WAR
+                File folder = new File(dirURL.toURI());
+                File[] files = folder.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        Path target = Paths.get(targetDir, file.getName());
+                        if (!Files.exists(target)) {
+                            try (InputStream in = new java.io.FileInputStream(file)) {
+                                Files.copy(in, target);
+                            }
+                        }
+                    }
+                }
+            } else if (dirURL != null && dirURL.getProtocol().equals("jar")) {
+                // Running from JAR/WAR
+                String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!"));
+                try (JarFile jar = new JarFile(jarPath)) {
+                    Enumeration<JarEntry> entries = jar.entries();
+                    while (entries.hasMoreElements()) {
+                        JarEntry entry = entries.nextElement();
+                        String name = entry.getName();
+                        if (name.startsWith(resourceDir + "/") && !entry.isDirectory()) {
+                            String fileName = name.substring(resourceDir.length() + 1);
+                            Path target = Paths.get(targetDir, fileName);
+                            if (!Files.exists(target)) {
+                                try (InputStream in = classLoader.getResourceAsStream(name)) {
+                                    Files.copy(in, target);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }    
     private void createDirectoryIfNotExists(String path) {
         File dir = new File(path);
         if (!dir.exists()) {
             dir.mkdirs();
+        }
+    }
+
+    
+    // Methods for post images
+    public String storePostImage(Part file, String baseName) throws IOException {
+        if (file == null || file.getSize() == 0) {
+            return null;
+        }
+        
+        String originalName = Paths.get(file.getSubmittedFileName()).getFileName().toString();
+        String extension = "";
+        int dotIndex = originalName.lastIndexOf('.');
+        if (dotIndex > 0) {
+            extension = originalName.substring(dotIndex);
+        }
+        
+        String newFileName = baseName + extension;
+        Path targetPath = Paths.get(storageBasePath, "posts", newFileName);
+        
+        // Create posts directory if it doesn't exist
+        Files.createDirectories(targetPath.getParent());
+        
+        try (InputStream in = file.getInputStream()) {
+            Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            return newFileName;
+        }
+    }
+
+    public String getPostImagePath(String filename) {
+        if (filename == null || filename.trim().isEmpty()) {
+            return null;
+        }
+        return serveBasePath + "/posts/" + filename;
+    }
+
+    public void deletePostImage(String filename) {
+        if (filename == null || filename.trim().isEmpty()) {
+            return;
+        }
+        
+        try {
+            Path imagePath = Paths.get(storageBasePath, "posts", filename);
+            Files.deleteIfExists(imagePath);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
