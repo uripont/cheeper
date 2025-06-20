@@ -54,7 +54,10 @@
                                 <!-- Delete button - only show if current user owns the post -->
                                 <c:if test="${currentUser != null && currentUser.id == post.userId}">
                                     <button class="delete-btn" title="Delete post" data-post-id="${post.id}">
-                                        <img src="${pageContext.request.contextPath}/static/images/trash.circle.fill.png" alt="Delete" sytle="height=30px width=30px;" >
+                                        <img src="${pageContext.request.contextPath}/static/images/trash.circle.fill.png" alt="Delete" >
+                                    </button>
+                                    <button class="edit-btn" title="Edit post" data-post-id="${post.id}">
+                                        <img src="${pageContext.request.contextPath}/static/images/edit.circle.fill.png" alt="Edit" >
                                     </button>
                                 </c:if>
 
