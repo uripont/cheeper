@@ -19,10 +19,42 @@
 .user-info {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   font-size: 14px;
   font-weight: 500;
   color: #fff;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-details strong {
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.username {
+  font-size: 13px;
+  color: #777;
+  font-weight: 400;
+}
+
+.timestamp {
+  font-size: 13px;
+  color: #777;
+  margin-left: auto;
 }
 
 .user-info strong {
@@ -125,3 +157,4 @@
   color: #ddd;
   border-color: #555;
 }
+

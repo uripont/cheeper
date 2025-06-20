@@ -34,11 +34,17 @@
                                 <c:set var="author" value="${postAuthors[post.id]}" />
                                 <c:choose>
                                     <c:when test="${not empty author}">
-                                        <strong>${author.fullName}</strong>
-                                        <span class="username">@${author.username}</span>
+                                        <img src="${pageContext.request.contextPath}/local-images/${author.picture}" alt="${author.fullName}" class="user-avatar">                                
+                                        <div class="user-details">
+                                            <strong>${author.fullName}</strong>
+                                            <span class="username">@${author.username}</span>
+                                        </div>
                                     </c:when>
                                     <c:otherwise>
-                                        <strong>Unknown User</strong>
+                                        <img src="${pageContext.request.contextPath}/local-images/default.png" alt="Unknown User" class="user-avatar">
+                                        <div class="user-details">
+                                            <strong>Unknown User</strong>
+                                        </div>
                                     </c:otherwise>
                                 </c:choose>
                                 <span class="timestamp">
@@ -48,7 +54,7 @@
                         </div>
                         <div class="post-content">
                             <p>${post.content}</p>
-                            
+
                             <!--Image displauy here-->
                             <c:if test="${not empty post.image}">
                                 <div class="post-image">

@@ -16,14 +16,20 @@
                     <div class="user-info">
                         <c:choose>
                             <c:when test="${not empty postAuthor}">
-                                <strong>${postAuthor.fullName}</strong>
-                                <span class="username">@${postAuthor.username}</span>
+                                <img src="${pageContext.request.contextPath}/local-images/${postAuthor.picture}" alt="${postAuthor.fullName}" class="user-avatar">                                
+                                <div class="user-details">
+                                    <strong>${postAuthor.fullName}</strong>
+                                    <span class="username">@${postAuthor.username}</span>
+                                </div>
                             </c:when>
                             <c:otherwise>
-                                <strong>Unknown User</strong>
+                                <img src="${pageContext.request.contextPath}/local-images/default.png" alt="Unknown User" class="user-avatar">
+                                <div class="user-details">
+                                    <strong>Unknown User</strong>
+                                </div>
                             </c:otherwise>
                         </c:choose>
-                        <span>
+                        <span class="timestamp">
                             <fmt:formatDate value="${post.createdAt}" pattern="MMM dd, yyyy HH:mm"/>
                         </span>
                     </div>
