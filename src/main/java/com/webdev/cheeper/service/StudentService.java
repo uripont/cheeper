@@ -1,111 +1,124 @@
 package com.webdev.cheeper.service;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.Optional;
 import jakarta.servlet.http.Part;
 
 import com.webdev.cheeper.model.Student;
-import com.webdev.cheeper.model.User;
 import com.webdev.cheeper.repository.StudentRepository;
 import com.webdev.cheeper.repository.UserRepository;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-public class StudentService {
-    private final UserRepository userRepository;
+public class StudentService extends UserService {
     private final StudentRepository studentRepository;
-    private final ImageService imageService;
 
     public StudentService(UserRepository userRepository, StudentRepository studentRepository) {
-        this.userRepository = userRepository;
+        super(userRepository);
         this.studentRepository = studentRepository;
-        this.imageService = new ImageService();
     }
+
     
-    public Optional<Student> getProfile(int id) {
-        return studentRepository.getProfile(id);
-    }
-    
-    public Map<String, String> register(Student student, Part picture) {
-        Map<String, String> errors = new HashMap<>();
-        
-        try {
-        
-        // Validate email uniqueness for new users
-        if (userRepository.findByEmail(student.getEmail()).isPresent()) {
-            errors.put("email", "Email already exists");
-        }
-        
-        // Validate username uniqueness for new users
-        if (userRepository.findByUsername(student.getUsername()).isPresent()) {
-            errors.put("username", "Username already taken");
-        }
-        
-        if (!errors.isEmpty()) {
-            return errors;
-        }
-        
-            // Handle profile picture if provided
-            if (picture != null && picture.getSize() > 0) {
-                String picturePath = imageService.storeImage(picture, student.getUsername());
-                student.setPicture(picturePath);
+    public Map<String, String> validate(Student student, String mode) {
+        Map<String, String> errors = super.validate(student, mode);
+
+        // Validate birthdate
+        if (student.getBirthdate() == null) {
+            errors.put("birthdate", "Birthdate is required");
+        } else {
+            LocalDate birthDate = student.getBirthdate().toLocalDate();
+            LocalDate minAgeDate = LocalDate.now().minusYears(13);
+            if (birthDate.isAfter(minAgeDate)) {
+                errors.put("birthdate", "You must be at least 13 years old");
             }
-            
-            // Save student
-            studentRepository.save(student);
-        } catch (IOException e) {
-            errors.put("picture", "Failed to save profile picture");
-            e.printStackTrace();
+        }
+
+        // Validate social links
+        if (student.getSocialLinks() != null) {
+            student.getSocialLinks().forEach((platform, url) -> {
+                if (platform == null || platform.trim().isEmpty()) {
+                    errors.put("socialLinks", "Platform name is required");
+                } else if (!platform.matches("^[a-z0-9]+$")) {
+                    errors.put("socialLinks", "Platform name must contain only lowercase letters and numbers");
+                }
+                
+                if (url == null || url.trim().isEmpty()) {
+                    errors.put("socialLinks", "URL is required");
+                } else if (!url.startsWith("https://www.")) {
+                    errors.put("socialLinks", "URL must start with https://www.");
+                }
+            });
+        }
+
+        // Validate degrees
+        if (student.getDegrees() != null) {
+            student.getDegrees().forEach((degreeType, field) -> {
+                if (degreeType == null || degreeType.trim().isEmpty()) {
+                    errors.put("degrees", "Degree type is required");
+                } else if (degreeType.length() > 10) {
+                    errors.put("degrees", "Degree type should be abbreviated (e.g., BSc, PhD)");
+                }
+                
+                if (field == null || field.trim().isEmpty()) {
+                    errors.put("degrees", "Field of study is required");
+                } else if (field.length() > 100) {
+                    errors.put("degrees", "Field of study cannot exceed 100 characters");
+                }
+            });
+        }
+
+        // Validate enrolled subjects
+        if (student.getEnrolledSubjects() != null) {
+            student.getEnrolledSubjects().forEach((code, name) -> {
+                if (code == null || code.trim().isEmpty()) {
+                    errors.put("subjects", "Subject code is required");
+                } else if (!code.matches("^\\d{5}$")) {
+                    errors.put("subjects", "Subject code must be exactly 5 digits");
+                }
+                
+                if (name == null || name.trim().isEmpty()) {
+                    errors.put("subjects", "Subject name is required");
+                } else if (name.length() > 100) {
+                    errors.put("subjects", "Subject name cannot exceed 100 characters");
+                }
+            });
+        }
+
+        return errors;
+    }
+
+    public Map<String, String> register(Student student, Part filePart) throws IOException {
+        Map<String, String> errors = validate(student, "register");
+        
+        if (errors.isEmpty()) {
+            try {
+                savePicture(student, filePart);
+                studentRepository.save(student);
+            } catch (Exception e) {
+                errors.put("system", "Registration failed: " + e.getMessage());
+                e.printStackTrace(); 
+            }
+        }
+        return errors;
+    }
+
+    public Map<String,String> update(Student student, Part filePart) {
+        Map<String,String> errors = validate(student, "edit");
+        
+        if (errors.isEmpty()) {
+        	try {
+                savePicture(student, filePart);
+                studentRepository.update(student);
+            } catch (Exception e) {
+                errors.put("system", "Update failed: " + e.getMessage());
+                e.printStackTrace(); 
+            }
         }
         return errors;
     }
     
-    public Map<String, String> update(Student student, Part picture) {
-        Map<String, String> errors = new HashMap<>();
-        
-        // Get existing student to check for email/username changes
-        Optional<Student> existingStudent = studentRepository.getProfile(student.getId());
-        if (existingStudent.isEmpty()) {
-            errors.put("general", "Student not found");
-            return errors;
-        }
-        
-        Student current = existingStudent.get();
-        
-        // Only validate email uniqueness if it changed
-        if (!current.getEmail().equals(student.getEmail()) && 
-            userRepository.findByEmail(student.getEmail()).isPresent()) {
-            errors.put("email", "Email already exists");
-        }
-        
-        // Only validate username uniqueness if it changed
-        if (!current.getUsername().equals(student.getUsername()) && 
-            userRepository.findByUsername(student.getUsername()).isPresent()) {
-            errors.put("username", "Username already taken");
-        }
-        
-        if (!errors.isEmpty()) {
-            return errors;
-        }
-        
-        try {
-            // Handle profile picture if provided
-            if (picture != null && picture.getSize() > 0) {
-                String picturePath = imageService.storeImage(picture, student.getUsername());
-                student.setPicture(picturePath);
-            } else {
-                // Keep existing picture if no new one provided
-                student.setPicture(current.getPicture());
-            }
-            
-            // Update student
-            studentRepository.update(student);
-        } catch (IOException e) {
-            errors.put("picture", "Failed to save profile picture");
-            e.printStackTrace();
-        }
-        
-        return errors;
+    public Optional<Student> getProfile(int userId) {
+        return studentRepository.getProfile(userId);
     }
+
 }

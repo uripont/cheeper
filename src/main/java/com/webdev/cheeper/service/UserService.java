@@ -1,6 +1,5 @@
 package com.webdev.cheeper.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -55,7 +54,7 @@ public class UserService {
     }
 
 
-    public Map<String, String> validate(User user) {
+    public Map<String, String> validate(User user, String mode) {
         Map<String, String> errors = new HashMap<>();
 
         // Validate username
@@ -63,7 +62,7 @@ public class UserService {
             errors.put("username", "Username is required");
         } else if (user.getUsername().length() < 3 || user.getUsername().length() > 20) {
             errors.put("username", "Username must be 3-20 characters");
-        } else if (userRepository.usernameExists(user.getUsername())) {
+        } else if (userRepository.usernameExists(user.getUsername()) && !"edit".equals(mode)) {
             errors.put("username", "Username already taken");
         }
 
@@ -72,7 +71,7 @@ public class UserService {
             errors.put("email", "Email is required");
         } else if (!user.getEmail().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
             errors.put("email", "Invalid email format");
-        } else if (userRepository.emailExists(user.getEmail())) {
+        } else if (userRepository.emailExists(user.getEmail()) && !"edit".equals(mode)) {
             errors.put("email", "Email already registered");
         }
 
@@ -85,14 +84,23 @@ public class UserService {
     }
 
     public Map<String, String> register(User user, Part filePart) throws IOException{
-        Map<String, String> errors = validate(user);
+        Map<String, String> errors = validate(user, "register");
         if (errors.isEmpty()) {
-        	savePicture(user, filePart);
-            userRepository.save(user);
+            try {
+                savePicture(user, filePart);
+                userRepository.save(user);
+            } catch (Exception e) {
+                errors.put("system", "Registration failed: " + e.getMessage());
+                e.printStackTrace(); 
+            }
         }
         return errors;
     }
     
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     public Integer getUserIdByEmail(String email) {
     	return userRepository.findUserIdByEmail(email);
     }
@@ -101,6 +109,10 @@ public class UserService {
     	return userRepository.findRandomUsers(limit, excludeUserId);
     }
 
+    public boolean isUsernameOfUser(int userId, String username) {
+        return userRepository.isUsernameOfUser(userId, username);
+    }
+   
     public List<User> searchUsers(String query, int limit, Integer excludeUserId) {
         if (query == null || query.trim().isEmpty()) {
             return new ArrayList<>();
@@ -128,3 +140,4 @@ public class UserService {
     }
     
 }
+

@@ -15,6 +15,7 @@ import com.webdev.cheeper.model.Student;
 import com.webdev.cheeper.repository.StudentRepository;
 import com.webdev.cheeper.repository.UserRepository;
 import com.webdev.cheeper.service.StudentService;
+import com.webdev.cheeper.service.UserService;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -30,15 +31,18 @@ public class StudentForm extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private UserRepository userRepository;
+    private UserService userService;
     private StudentRepository studentRepository;
     private StudentService studentService;
 
     @Override
     public void init() throws ServletException {
         this.userRepository = new UserRepository();
+        this.userService = new UserService(userRepository);
         this.studentRepository = new StudentRepository();
         this.studentService = new StudentService(userRepository, studentRepository);
     }
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -55,7 +59,7 @@ public class StudentForm extends HttpServlet {
             }
             
             String email = (String) session.getAttribute("email");
-            Optional<User> userOpt = userRepository.findByEmail(email);
+            Optional<User> userOpt = userService.getUserByEmail(email);
             
             if (userOpt.isEmpty()) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
@@ -84,45 +88,41 @@ public class StudentForm extends HttpServlet {
             throws ServletException, IOException {
         
         String mode = request.getParameter("mode");
-        Student student;
+        Student student = new Student();
+
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("email") == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        String email = (String) session.getAttribute("email");
+
         
         if ("edit".equals(mode)) {
-            // Get existing student for update
-            HttpSession session = request.getSession(false);
-            if (session == null || session.getAttribute("email") == null) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            Optional<User> userOpt = userService.getUserByEmail(email);
+            if (userOpt.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
-            
-            String email = (String) session.getAttribute("email");
-            Optional<Student> existingStudent = studentService.getProfile(
-                userRepository.findByEmail(email).get().getId()
-            );
-            
-            if (existingStudent.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Student profile not found");
-                return;
-            }
-            
-            student = existingStudent.get();
-        } else {
-            // Create new student
-            student = new Student();
-        }
+            User user = userOpt.get();
+            int userId = user.getId();
+            student.setId(userId); 
+        } 
         
         Map<String, String> errors = new HashMap<>();
-	   
-	    try {
-	        // Manually decode and populate fields (simpler approach)
-	        student.setFullName(request.getParameter("fullName"));
-	        student.setEmail(request.getParameter("email"));
-	        student.setUsername(request.getParameter("username"));
-	        student.setBiography(request.getParameter("biography"));
-	        student.setRoleType(RoleType.STUDENT);	
+       
+        try {
+            // Manually decode and populate fields (simpler approach)
+            student.setFullName(request.getParameter("fullName"));
+            student.setEmail(request.getParameter("email"));
+            student.setUsername(request.getParameter("username"));
+            student.setBiography(request.getParameter("biography"));
+            student.setRoleType(RoleType.STUDENT);	
+            
+            Part filePart = request.getPart("picture");
 	        
-	        Part filePart = request.getPart("picture");
-	        
-
 	        // Handle birthdate
 	        String birthdateStr = request.getParameter("birthdate");
 	        if (birthdateStr == null || birthdateStr.isEmpty()) {
@@ -167,7 +167,10 @@ public class StudentForm extends HttpServlet {
             }
             
         } catch (Exception e) {
-            handleException(request, response, student, e);
+            e.printStackTrace();
+            request.setAttribute("student", student);
+            request.setAttribute("error", "Registration failed: " + e.getMessage());
+            request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
         }
     }
     
@@ -187,14 +190,6 @@ public class StudentForm extends HttpServlet {
             }
             setter.accept(map);
         }
-    }
-    
-    private void handleException(HttpServletRequest request, HttpServletResponse response,
-                                Student student, Exception e) throws ServletException, IOException {
-        e.printStackTrace();
-        request.setAttribute("student", student);
-        request.setAttribute("error", "Registration failed: " + e.getMessage());
-        request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
     }
 	
 }
