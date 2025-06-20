@@ -33,7 +33,7 @@
         <!-- Preview -->
         <div id="cropped-preview" style="margin-top: 15px; display: none;">
             <p>Preview:</p>
-            <img id="cropped-result" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; background-color: black;">
+            <img id="cropped-result" style="max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 10px;">
         </div>
 
         <div class="error-message">
@@ -67,11 +67,17 @@ $(document).ready(function() {
                 }
 
                 cropper = new Cropper(image, {
-                    aspectRatio: 16 / 9,
                     viewMode: 1,
                     autoCropArea: 1,
-                    responsive: true
+                    responsive: true,
+                    movable: true,
+                    zoomable: true,
+                    scalable: true,
+                    rotatable: false,
+                    cropBoxResizable: true,
+                    cropBoxMovable: true
                 });
+
             };
 
             reader.readAsDataURL(file);
@@ -137,7 +143,12 @@ $(document).ready(function() {
                 // Reset form
                 textarea.value = '';
                 textarea.style.height = 'auto';
-                
+
+                // Clear image preview
+                $('#cropped-result').attr('src', '');
+                $('#cropped-preview').hide();
+                $('#image').val('');
+
                 // Clear any error messages
                 $('.error-message').empty();
 
