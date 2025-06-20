@@ -47,8 +47,12 @@ public class UsersListViewController extends HttpServlet {
             context = "suggestions";
         }
 
-        // Convert to lowercase for case-insensitive comparison
         String contextLower = context.toLowerCase();
+        
+        // Initialize UserService
+        UserService userService = new UserService(userRepository);
+        
+
 
         // Require authentication only for suggestions and chats
         if (currentUser == null && 
@@ -62,38 +66,88 @@ public class UsersListViewController extends HttpServlet {
         List<User> users;
         String contextTitle;
         String userIdStr = req.getParameter("userId");
-        
-        if ((contextLower.equals("followers") || contextLower.equals("following")) && userIdStr != null) {
-            int userId = Integer.parseInt(userIdStr);
-            if (contextLower.equals("followers")) {
-                users = followRepository.getFollowers(userId);
-                contextTitle = "Followers";
-            } else {
-                users = followRepository.getFollowing(userId);
-                contextTitle = "Following";
+
+        try {
+            switch (contextLower) {
+                case "search":
+                    if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                        Integer excludeId = currentUser != null ? currentUser.getId() : null;
+                        users = userService.searchUsers(searchQuery, 20, excludeId);
+                        contextTitle = "Search Results for \"" + searchQuery + "\"";
+                    } else {
+                        // Show popular/suggested users when no search query
+                        users = currentUser != null ? 
+                            userService.getRecommendedUsers(10, currentUser.getId()) :
+                            userRepository.findAll();
+                        contextTitle = "Search Users";
+                    }
+                    break;
+                    
+                case "suggestions": //delete this
+                case "suggested":
+                    if (currentUser == null) {
+                        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                        return;
+                    }
+                    users = userService.getRecommendedUsers(10, currentUser.getId());
+                    contextTitle = "Suggested Users";
+                    break;
+                    
+                case "chats":
+                    if (currentUser == null) {
+                        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                        return;
+                    }
+                    // TODO: Implement chat users (following users)
+                    users = userService.getRecommendedUsers(10, currentUser.getId());
+                    contextTitle = "Chat Users";
+                    break;
+
+                case "followers":
+                case "following":
+                    if (userIdStr == null) {
+                        resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing userId for followers/following context");
+                        return;
+                    }
+
+                    int userId = Integer.parseInt(userIdStr);
+                    if (contextLower.equals("followers")) {
+                        users = followRepository.getFollowers(userId);
+                        contextTitle = "Followers";
+                    } else {
+                        users = followRepository.getFollowing(userId);
+                        contextTitle = "Following";
+                    }
+                    break;
+                
+                default:
+                    resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid context");
+                    return;
             }
-        } else if (contextLower.equals("suggestions") || contextLower.equals("suggested") || contextLower.equals("chats")) {
-            users = userRepository.findRandomUsers(10, currentUser.getId());
-            contextTitle = contextLower.equals("chats") ? "Chat Users" : "Suggested Users";
-        } else if (contextLower.equals("search")) {
-            // For now, show all users if no query, later implement search
-            users = userRepository.findAll();
-            contextTitle = "Search Users";
-        } else {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid context");
+
+            // Process users list to add follow status and profile pictures
+            for (User user : users) {
+                // Set profile picture path
+                String picturePath = user.getPicture();
+                if (picturePath == null || picturePath.trim().isEmpty()) {
+                    picturePath = imageService.getImagePath(null);
+                    user.setPicture(picturePath);
+                } else {
+                    user.setPicture(imageService.getImagePath(picturePath));
+                }
+
+                // Set following status if user is logged in
+                if (currentUser != null) {
+                    boolean isFollowing = followRepository.isFollowing(currentUser.getId(), user.getId());
+                    user.setFollowed(isFollowing);
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error searching users: " + e.getMessage());
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error searching users");
             return;
-        }
-
-        // Process users list to add follow status and profile pictures
-        for (User user : users) {
-            // Always use ImageService to get the correct path for both custom and default images
-            user.setPicture(imageService.getImagePath(user.getPicture()));
-
-            // Set following status if user is logged in
-            if (currentUser != null) {
-                boolean isFollowing = followRepository.isFollowing(currentUser.getId(), user.getId());
-                user.setFollowed(isFollowing);
-            }
         }
 
         // Set attributes for JSP

@@ -138,6 +138,7 @@
             userId: '${profile.id}'
         }, '#rightSidebar');
     });
+    
     $(document).ready(function() {
         // Load user's timeline
         App.loadView('timeline', { 

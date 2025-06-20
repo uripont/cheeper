@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,5 +100,31 @@ public class UserService {
     public List<User> getRandomUsers(int limit, int excludeUserId){
     	return userRepository.findRandomUsers(limit, excludeUserId);
     }
-   
- }
+
+    public List<User> searchUsers(String query, int limit, Integer excludeUserId) {
+        if (query == null || query.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        // Clean and validate query
+        String cleanQuery = query.trim();
+        if (cleanQuery.length() < 2) {
+            return new ArrayList<>(); // Require at least 2 characters
+        }
+        
+        return userRepository.searchUsers(cleanQuery, limit, excludeUserId);
+    }
+
+    public List<User> searchUsersByUsername(String username, int limit) {
+        if (username == null || username.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        return userRepository.searchUsersByUsername(username.trim(), limit);
+    }
+
+    public List<User> getRecommendedUsers(int limit, int excludeUserId) {
+        return userRepository.findRandomUsers(limit, excludeUserId);
+    }
+    
+}

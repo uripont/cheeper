@@ -101,6 +101,8 @@ public class UserRepository extends BaseRepository {
         return Optional.empty();
     }
 
+
+
     protected User mapResultSetToUser(ResultSet rs) throws SQLException {
         User user = new User();
         user.setId(rs.getInt("id"));
@@ -170,5 +172,79 @@ public class UserRepository extends BaseRepository {
         return findByEmail(email)
                 .map(User::getId)
                 .orElse(null);
+    }
+
+    public List<User> searchUsers(String query, int limit, Integer excludeUserId) {
+        List<User> users = new ArrayList<>();
+        
+        // Build dynamic query based on whether we're excluding a user
+        StringBuilder sqlBuilder = new StringBuilder();
+        sqlBuilder.append("SELECT * FROM users WHERE ");
+        sqlBuilder.append("(full_name LIKE ? OR username LIKE ? OR email LIKE ?) ");
+        
+        if (excludeUserId != null) {
+            sqlBuilder.append("AND id != ? ");
+        }
+        
+        sqlBuilder.append("ORDER BY ");
+        sqlBuilder.append("CASE ");
+        sqlBuilder.append("  WHEN username LIKE ? THEN 1 ");  // Exact username match gets priority
+        sqlBuilder.append("  WHEN full_name LIKE ? THEN 2 ");  // Full name match second
+        sqlBuilder.append("  ELSE 3 ");
+        sqlBuilder.append("END, ");
+        sqlBuilder.append("full_name ASC ");
+        sqlBuilder.append("LIMIT ?");
+        
+        try (PreparedStatement stmt = db.prepareStatement(sqlBuilder.toString())) {
+            String searchPattern = "%" + query.toLowerCase() + "%";
+            String exactPattern = query.toLowerCase() + "%";
+            
+            int paramIndex = 1;
+            
+            // Search parameters
+            stmt.setString(paramIndex++, searchPattern); // full_name LIKE
+            stmt.setString(paramIndex++, searchPattern); // username LIKE  
+            stmt.setString(paramIndex++, searchPattern); // email LIKE
+            
+            // Exclude user parameter
+            if (excludeUserId != null) {
+                stmt.setInt(paramIndex++, excludeUserId);
+            }
+            
+            // Ordering parameters
+            stmt.setString(paramIndex++, exactPattern); // username priority
+            stmt.setString(paramIndex++, exactPattern); // full_name priority
+            
+            // Limit parameter
+            stmt.setInt(paramIndex, limit);
+            
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return users;
+    }
+    
+    public List<User> searchUsersByUsername(String username, int limit) {
+        List<User> users = new ArrayList<>();
+        String query = "SELECT * FROM users WHERE username LIKE ? ORDER BY username ASC LIMIT ?";
+        
+        try (PreparedStatement stmt = db.prepareStatement(query)) {
+            stmt.setString(1, username + "%"); // Starts with pattern
+            stmt.setInt(2, limit);
+            
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return users;
     }
 }

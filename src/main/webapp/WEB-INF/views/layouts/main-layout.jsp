@@ -23,11 +23,11 @@
         <a href="${pageContext.request.contextPath}/explore" class="menu" data-view="explore">
             <img src="${pageContext.request.contextPath}/static/images/magnifyingglass.png" alt="Explore" />
         </a>
-        <a href="${pageContext.request.contextPath}/create" class="menu" data-view="create">
+        <a href="${pageContext.request.contextPath}/create-post" class="menu" data-view="create">
             <img src="${pageContext.request.contextPath}/static/images/plus.png" alt="Create" />
         </a>
-        <a href="${pageContext.request.contextPath}/chats" class="menu" data-view="chats">
-            <img src="${pageContext.request.contextPath}/static/images/person.fill.png" alt="Chats" />
+        <a href="${pageContext.request.contextPath}/app/chats" class="menu" data-view="chats">
+            <img src="${pageContext.request.contextPath}/static/images/text.bubble.png" alt="Chats" />
         </a>
         <a href="${pageContext.request.contextPath}/profile" class="menu" data-view="profile">
             <img src="${pageContext.request.contextPath}/static/images/person.png" alt="Profile" />
