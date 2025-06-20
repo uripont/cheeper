@@ -144,5 +144,16 @@ public class PostRepository extends BaseRepository {
         post.setCreatedAt(rs.getTimestamp("created_at"));
         post.setUpdatedAt(rs.getTimestamp("updated_at"));
         return post;
-    } 
+    }
+
+    public void deleteById(int postId) {
+        String sql = "DELETE FROM post WHERE post_id = ?";
+        try (PreparedStatement stmt = db.prepareStatement(sql)) {
+            stmt.setInt(1, postId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error deleting post", e);
+        }
+    }
 }

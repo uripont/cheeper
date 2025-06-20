@@ -144,4 +144,96 @@ public class PostServlet extends HttpServlet {
             response.getWriter().print("{\"error\": \"Post creation failed: " + e.getMessage() + "\"}");
         }
     }
+
+
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("[PostServlet DELETE] Request received");
+        
+        String postIdParam = request.getParameter("postId");
+        System.out.println("[PostServlet DELETE] PostId param: " + postIdParam);
+        
+        if (postIdParam == null || postIdParam.trim().isEmpty()) {
+            System.out.println("[PostServlet DELETE] ERROR: Post ID is null or empty");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setContentType("application/json");
+            response.getWriter().print("{\"success\": false, \"message\": \"Post ID required\"}");
+            return;
+        }
+        
+        int postId;
+        try {
+            postId = Integer.parseInt(postIdParam);
+            System.out.println("[PostServlet DELETE] Parsed Post ID: " + postId);
+        } catch (NumberFormatException e) {
+            System.out.println("[PostServlet DELETE] ERROR: Invalid post ID format: " + postIdParam);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setContentType("application/json");
+            response.getWriter().print("{\"success\": false, \"message\": \"Invalid post ID\"}");
+            return;
+        }
+        
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("email") == null) {
+            System.out.println("[PostServlet DELETE] ERROR: No valid session found");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().print("{\"success\": false, \"message\": \"Unauthorized\"}");
+            return;
+        }
+        
+        String email = (String) session.getAttribute("email");
+        System.out.println("[PostServlet DELETE] Email from session: " + email);
+        
+        try (UserRepository userRepository = new UserRepository()) {
+            Optional<User> userOpt = userRepository.findByEmail(email);
+            if (userOpt.isEmpty()) {
+                System.out.println("[PostServlet DELETE] ERROR: User not found for email: " + email);
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.setContentType("application/json");
+                response.getWriter().print("{\"success\": false, \"message\": \"User not found\"}");
+                return;
+            }
+            
+            int userId = userOpt.get().getId();
+            System.out.println("[PostServlet DELETE] Current user ID: " + userId);
+            
+            // Check if user owns the post
+            Post post = postService.getPostById(postId);
+            if (post == null) {
+                System.out.println("[PostServlet DELETE] ERROR: Post not found with ID: " + postId);
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.setContentType("application/json");
+                response.getWriter().print("{\"success\": false, \"message\": \"Post not found\"}");
+                return;
+            }
+            
+            System.out.println("[PostServlet DELETE] Post found - Post User ID: " + post.getUserId() + ", Current User ID: " + userId);
+            
+            if (post.getUserId() != userId) {
+                System.out.println("[PostServlet DELETE] ERROR: User " + userId + " not authorized to delete post owned by " + post.getUserId());
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setContentType("application/json");
+                response.getWriter().print("{\"success\": false, \"message\": \"Not authorized to delete this post\"}");
+                return;
+            }
+            
+            System.out.println("[PostServlet DELETE] Authorization passed. Attempting to delete post ID: " + postId);
+            
+            // Delete the post
+            postService.deletePost(postId);
+            System.out.println("[PostServlet DELETE] Post deleted successfully");
+            
+            response.setContentType("application/json");
+            response.getWriter().print("{\"success\": true}");
+            
+        } catch (Exception e) {
+            System.err.println("[PostServlet DELETE] ERROR: Exception occurred - " + e.getMessage());
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType("application/json");
+            response.getWriter().print("{\"success\": false, \"message\": \"Server error\"}");
+        }
+    }
 }

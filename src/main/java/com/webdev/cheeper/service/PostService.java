@@ -39,4 +39,8 @@ public class PostService {
     public java.util.List<Post> getPostsByUserId(int userId) throws SQLException {
         return postRepository.findByUserId(userId);
     }
+
+    public void deletePost(int postId) throws SQLException {
+        postRepository.deleteById(postId);
+    }
 }

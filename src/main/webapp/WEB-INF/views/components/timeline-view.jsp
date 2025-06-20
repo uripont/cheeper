@@ -50,6 +50,14 @@
                                 <span class="timestamp">
                                     <fmt:formatDate value="${post.createdAt}" pattern="MMM dd, yyyy HH:mm"/>
                                 </span>
+
+                                <!-- Delete button - only show if current user owns the post -->
+                                <c:if test="${currentUser != null && currentUser.id == post.userId}">
+                                    <button class="delete-btn" title="Delete post" data-post-id="${post.id}">
+                                        <img src="${pageContext.request.contextPath}/static/images/trash.circle.fill.png" alt="Delete" sytle="height=30px width=30px;" >
+                                    </button>
+                                </c:if>
+
                             </div>
                         </div>
                         <div class="post-content">
@@ -92,6 +100,35 @@
 
 <script>
     $(document).ready(function () {
+        // Delete button logic
+        $('.timeline-view').on('click', '.delete-btn', function () {
+            const postElement = $(this).closest('.post-item');
+            const postId = postElement.data('post-id');
+            
+            console.log('Delete button clicked for post ID:', postId); // Debug
+            
+            if (confirm('Are you sure you want to delete this post?')) {
+                $.ajax({
+                    url: '/post?postId=' + postId, 
+                    method: 'DELETE',
+                    success: function(response) {
+                        console.log('Delete response:', response); // Debug
+                        if (response.success) {
+                            postElement.fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            alert('Failed to delete post: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Delete error:', xhr.responseText); // Debug
+                        alert('Error deleting post. Please try again.');
+                    }
+                });
+            }
+        });
+
         // Like button logic
         $('.timeline-view').on('click', '.like-btn', function () {
             const postElement = $(this).closest('.post-item');
