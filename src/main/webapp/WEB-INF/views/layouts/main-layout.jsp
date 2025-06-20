@@ -23,7 +23,7 @@
         <a href="${pageContext.request.contextPath}/explore" class="menu" data-view="explore">
             <img src="${pageContext.request.contextPath}/static/images/magnifyingglass.png" alt="Explore" />
         </a>
-        <a href="${pageContext.request.contextPath}/create" class="menu" data-view="create">
+        <a href="${pageContext.request.contextPath}/create-post" class="menu" data-view="create">
             <img src="${pageContext.request.contextPath}/static/images/plus.png" alt="Create" />
         </a>
         <a href="${pageContext.request.contextPath}/app/chats" class="menu" data-view="chats">
