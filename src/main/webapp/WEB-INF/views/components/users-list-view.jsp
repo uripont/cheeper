@@ -29,10 +29,10 @@
                         </div>
                         <div class="user-actions" onclick="event.stopPropagation()">
                             <c:if test="${currentUser != null && currentUser.id != user.id}">
-                                <button class="follow-button ${user.followed ? 'following' : ''}" 
+                                <button class="follow-button ${user.followed ? 'unfollow' : ''}" 
                                         onclick="toggleFollow(${user.id}, this)"
                                         data-hover-text="Unfollow">
-                                    ${user.followed ? 'Following' : 'Follow'}
+                                    ${user.followed ? 'Unfollow' : 'Follow'}
                                 </button>
                             </c:if>
                         </div>
@@ -90,7 +90,7 @@ function toggleFollow(userId, button) {
     if (button.disabled) return;
     button.disabled = true;
     
-    const isFollowing = button.classList.contains('following');
+    const isFollowing = button.classList.contains('unfollow');
     const endpoint = isFollowing ? '/unfollow' : '/follow';
     
     // Save original text
@@ -113,19 +113,19 @@ function toggleFollow(userId, button) {
     .then(data => {
         if (data.success) {
             const newIsFollowing = !isFollowing;
-            button.classList.toggle('following', newIsFollowing);
-            button.textContent = newIsFollowing ? 'Following' : 'Follow';
+            button.classList.toggle('unfollow', newIsFollowing);
+            button.textContent = newIsFollowing ? 'Unfollow' : 'Follow';
         } else {
             console.error('Error:', data.message);
             // Revert button state if operation failed
-            button.classList.toggle('following', isFollowing);
+            button.classList.toggle('unfollow', isFollowing);
             button.textContent = originalText;
         }
     })
     .catch(error => {
         console.error('Error:', error);
         // Revert button state on error
-        button.classList.toggle('following', isFollowing);
+        button.classList.toggle('unfollow', isFollowing);
         button.textContent = originalText;
     })
     .finally(() => {
@@ -135,19 +135,19 @@ function toggleFollow(userId, button) {
 
 $(document).ready(function() {
     // Handle hover effects for follow buttons
-    $('.follow-button.following').each(function() {
+    $('.follow-button.unfollow').each(function() {
         const button = $(this);
         const originalText = button.text();
         const hoverText = button.data('hoverText');
         
         button.hover(
             function() {
-                if (button.hasClass('following') && !button.prop('disabled')) {
+                if (button.hasClass('unfollow') && !button.prop('disabled')) {
                     button.text(hoverText);
                 }
             },
             function() {
-                if (button.hasClass('following') && !button.prop('disabled')) {
+                if (button.hasClass('unfollow') && !button.prop('disabled')) {
                     button.text(originalText);
                 }
             }
@@ -155,7 +155,7 @@ $(document).ready(function() {
     });
 
     // Make user cards clickable to load profile
-    $('.user-item').on('click', function(event) {
+    $(document).on('click', '.user-item', function(event) {
         try {
             // Get the clicked element and check if it's not the follow button
             const target = $(event.target);

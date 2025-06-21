@@ -8,7 +8,7 @@
 
 .users-list-header h3 {
     margin: 0;
-    color: #333;
+    color: #ddd;
 }
 
 .search-input-container {
@@ -40,6 +40,14 @@
 
 .user-item:hover {
     background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Change text color on hover */
+.user-item:hover .user-info h4,
+.user-item:hover .username,
+.user-item:hover .biography {
+    color: #333;
 }
 
 .user-avatar {
@@ -56,7 +64,7 @@
 
 .user-info h4 {
     margin: 0;
-    color: #333;
+    color: #ddd;
     font-size: 16px;
 }
 
@@ -83,21 +91,21 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    border: 1px solid #1da1f2;
+    border: 1px solid #e0245e;
     background: white;
-    color: #1da1f2;
+    color: #e0245e;
 }
 
 .follow-button:hover {
     background-color: rgba(29, 161, 242, 0.1);
 }
 
-.follow-button.following {
-    background-color: #1da1f2;
+.follow-button.unfollow {
+    background-color: #e0245e;
     color: white;
 }
 
-.follow-button.following:hover {
+.follow-button.unfollow:hover {
     background-color: #e0245e;
     border-color: #e0245e;
 }
