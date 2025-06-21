@@ -29,10 +29,10 @@
                         <span id="followingCount">${followingCount}</span> Following
                     </button>
                     <c:if test="${not readOnly}">
-                        <a href="${pageContext.request.contextPath}/edit-profile" class="follow-standard-btn" style="color: white; text-decoration: none; display: inline-block; margin-left: 10px;">
+                        <a href="${pageContext.request.contextPath}/edit-profile" class="standard-btn">
                             Edit Profile
                         </a>
-                        <a href="${pageContext.request.contextPath}/logout" class="follow-standard-btn logout-btn" style="color: white; text-decoration: none; display: inline-block; margin-left: 10px;">
+                        <a href="${pageContext.request.contextPath}/logout" class="standard-btn logout-btn">
                             Logout
                         </a>
                     </c:if>
