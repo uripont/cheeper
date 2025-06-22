@@ -93,7 +93,7 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
                         request.getRequestDispatcher("/WEB-INF/views/onboarding/association-form.jsp").forward(request, response);
                     }
                 } else {
-                    response.sendRedirect(request.getContextPath() + "/app/home");
+                    response.sendRedirect(request.getContextPath() + "/home");
                 }
             }
 

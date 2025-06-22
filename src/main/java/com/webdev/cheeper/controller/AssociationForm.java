@@ -131,7 +131,7 @@ public class AssociationForm extends HttpServlet {
         }
 
         if (validationErrors.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/app/home");
+            response.sendRedirect(request.getContextPath() + "/home");
         } else {
             request.setAttribute("association", association);
             request.setAttribute("errors", validationErrors);
