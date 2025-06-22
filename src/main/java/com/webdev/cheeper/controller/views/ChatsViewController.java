@@ -21,6 +21,7 @@ public class ChatsViewController extends HttpServlet {
     private RoomRepository roomRepository;
     private MessageRepository messageRepository;
     private ChatService chatService;
+    private MessageService messageService;
     
     @Override
     public void init() throws ServletException {
@@ -29,6 +30,7 @@ public class ChatsViewController extends HttpServlet {
         this.roomRepository = new RoomRepository();
         this.messageRepository = new MessageRepository();
         this.chatService = new ChatService();
+        this.messageService = new MessageService();
     }
     
     @Override
@@ -81,6 +83,34 @@ public class ChatsViewController extends HttpServlet {
             req.getRequestDispatcher("/WEB-INF/views/components/private-chat-users-view.jsp").forward(req, resp);
         } else {
             req.getRequestDispatcher("/WEB-INF/views/components/chats-view.jsp").forward(req, resp);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        User currentUser = null;
+
+        // Get current user from session if available
+        HttpSession session = req.getSession(false);
+        if (session != null && session.getAttribute("email") != null) {
+            String email = (String) session.getAttribute("email");
+            Optional<User> currentUserOpt = userRepository.findByEmail(email);
+            if (currentUserOpt.isPresent()) {
+                currentUser = currentUserOpt.get();
+            }
+        }
+
+        // Require authentication
+        if (currentUser == null) {
+            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        String action = req.getParameter("action");
+        if (action != null && action.equals("send-message")) {
+            handleSendMessage(req, resp, currentUser);
+        } else {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action for POST request");
         }
     }
 
@@ -146,6 +176,70 @@ public class ChatsViewController extends HttpServlet {
         } catch (NumberFormatException e) {
             System.out.println("Error: Invalid user ID format: " + otherUserIdStr);
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
+        }
+    }
+
+    private void handleSendMessage(HttpServletRequest req, HttpServletResponse resp, User currentUser)
+            throws ServletException, IOException {
+
+        System.out.println("Handling send message...");
+        System.out.println("Current user: " + currentUser.getId() + " (" + currentUser.getUsername() + ")");
+
+        String roomIdStr = req.getParameter("roomId");
+        String content = req.getParameter("content");
+
+        if (roomIdStr == null || content == null || content.trim().isEmpty()) {
+            System.out.println("Error: Missing roomId or content");
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing room ID or message content");
+            return;
+        }
+
+        try {
+            Integer roomId = Integer.parseInt(roomIdStr);
+            Optional<Room> roomOpt = roomRepository.findById(roomId);
+
+            if (roomOpt.isEmpty()) {
+                System.out.println("Error: Room not found with ID: " + roomId);
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Room not found");
+                return;
+            }
+
+            Room room = roomOpt.get();
+            System.out.println("Found room: " + room.getId());
+
+            // Save the message
+            messageService.saveMessage(room.getId(), currentUser.getId(), content);
+            System.out.println("Message saved to room " + room.getId());
+
+            // Redirect back to the chat view for this room
+            // We need to pass the other user ID to load the conversation correctly
+            // Find the other user in the room participants (assuming private chat with 2 users)
+            Integer otherUserId = null;
+            // This requires fetching room participants, which RoomRepository doesn't currently do
+            // For now, we'll rely on the client to provide the otherUserId in the form
+            String otherUserIdStr = req.getParameter("otherUserId");
+             if (otherUserIdStr != null) {
+                 otherUserId = Integer.parseInt(otherUserIdStr);
+             }
+
+
+            if (otherUserId != null) {
+                 System.out.println("Redirecting back to chat with other user ID: " + otherUserId);
+                 resp.sendRedirect(req.getContextPath() + "/views/chats?action=load-conversation&otherUserId=" + otherUserId);
+            } else {
+                 // Fallback if otherUserId is not available (shouldn't happen with correct form)
+                 System.out.println("Error: Could not determine other user ID for redirect.");
+                 resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not load chat after sending message.");
+            }
+
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Invalid room ID or other user ID format: " + roomIdStr);
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid ID format");
+        } catch (Exception e) {
+             System.out.println("Error sending message: " + e.getMessage());
+             e.printStackTrace();
+             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error sending message");
         }
     }
 }

@@ -58,6 +58,19 @@
                         </c:if>
                     </div>
                 </c:if>
+
+                <!-- Message Input Form -->
+                <c:if test="${not empty room}">
+                    <div class="message-input">
+                        <form id="messageForm" action="${pageContext.request.contextPath}/views/chats" method="post">
+                            <input type="hidden" name="action" value="send-message">
+                            <input type="hidden" name="roomId" value="${room.id}">
+                            <input type="hidden" name="otherUserId" value="${otherUser.id}"> <%-- Pass otherUserId for redirect --%>
+                            <input type="text" name="content" placeholder="Type your message..." required>
+                            <button type="submit">Send</button>
+                        </form>
+                    </div>
+                </c:if>
             </div>
         </c:when>
         <c:otherwise>
@@ -75,5 +88,31 @@
         if ($('#rightSidebar .private-chat-users').length === 0) {
             App.loadView('chats', { component: 'private-chat-users' }, '#rightSidebar');
         }
+
+        // Handle message form submission
+        $('#messageForm').on('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+
+            var form = $(this);
+            var url = form.attr('action');
+            var formData = form.serialize();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                success: function(response) {
+                    // On success, reload the chat view to show the new message
+                    // This assumes the server redirects to the GET endpoint for the chat view
+                    // The redirect handles the view update
+                    console.log("Message sent successfully, redirecting...");
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error sending message:", error);
+                    // Handle error, e.g., show an alert
+                    alert("Error sending message: " + error);
+                }
+            });
+        });
     });
 </script>
