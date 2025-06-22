@@ -24,8 +24,8 @@
     <form id="registerForm" action="association-form?mode=${param.mode}" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="mode" value="${param.mode}">
         <input type="hidden" name="userId" value="${association.id}"> <%-- Add hidden input for userId --%>
-        <input type="hidden" name="fullName" value="<%= session.getAttribute("name") != null ? session.getAttribute("name") : "" %>">
-        <input type="hidden" name="email" value="<%= session.getAttribute("email") != null ? session.getAttribute("email") : "" %>">
+        <input type="hidden" name="fullName" value="${association.fullName}">
+        <input type="hidden" name="email" value="${association.email}">
         <input type="hidden" name="role" value="ASSOCIATION">
 
         <label for="username">Username:</label> 
