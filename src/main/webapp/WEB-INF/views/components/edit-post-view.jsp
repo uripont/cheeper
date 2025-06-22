@@ -156,9 +156,14 @@ $(document).ready(function() {
     });
 
     // Add/Change image button
-    addImageBtn.addEventListener('click', function() {
+    addImageBtn.addEventListener('click', function () {
+        
+        $('#newImage').val('');
+        $('#removeImageFlag').val('false');
+        $('#current-image-section').hide();
         $('#newImage').click();
     });
+
     
     // Remove current image
     if (removeImageBtn) {
