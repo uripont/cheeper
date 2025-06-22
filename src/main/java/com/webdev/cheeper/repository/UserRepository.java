@@ -280,5 +280,19 @@ public class UserRepository extends BaseRepository {
         return users;
     }
 
+    public String findUserPicture(int userId) {
+        String query = "SELECT picture FROM users WHERE id = ?";
+        try (PreparedStatement stmt = db.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("picture");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if no picture found
+    }
+
 }
 
