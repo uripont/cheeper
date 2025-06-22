@@ -35,6 +35,11 @@ public class PostService {
         return postRepository.findAll();
     }
 
+    // Método para obtener todos los posts
+    public java.util.List<Post> getAllPostsButYours(int userId) throws SQLException {
+        return postRepository.findAllButYou(userId);
+    }
+
     // Método para obtener posts por usuario
     public java.util.List<Post> getPostsByUserId(int userId) throws SQLException {
         return postRepository.findByUserId(userId);

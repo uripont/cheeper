@@ -64,9 +64,23 @@ public class PostRepository extends BaseRepository {
     }
     
 
-    // Lista todos los posts de un usuario
-    public List<Post> findByUserId(int userId) {
-        String sql = "SELECT * FROM post WHERE user_id = ?";
+    // Returns all posts in the database, ordered by creation date (excluding comments)
+    public List<Post> findAll() {
+        String sql = "SELECT * FROM post WHERE source_id IS NULL ORDER BY created_at DESC";
+        List<Post> posts = new ArrayList<>();
+        try (PreparedStatement stmt = db.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                posts.add(mapResultSetToPost(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return posts;
+    }
+
+    public List<Post> findAllButYou(int userId) {
+        String sql = "SELECT * FROM post WHERE user_id != ? AND source_id IS NULL ORDER BY created_at DESC";
         List<Post> posts = new ArrayList<>();
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
             stmt.setInt(1, userId);
@@ -80,11 +94,12 @@ public class PostRepository extends BaseRepository {
         return posts;
     }
 
-    // Returns all posts in the database, ordered by creation date
-    public List<Post> findAll() {
-        String sql = "SELECT * FROM post ORDER BY created_at DESC";
+    // Lista todos los posts de un usuario (excluding comments)
+    public List<Post> findByUserId(int userId) {
+        String sql = "SELECT * FROM post WHERE user_id = ? AND source_id IS NULL ORDER BY created_at DESC";
         List<Post> posts = new ArrayList<>();
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 posts.add(mapResultSetToPost(rs));
@@ -95,9 +110,9 @@ public class PostRepository extends BaseRepository {
         return posts;
     }
 
-    //Given a userId(followerId), returns all posts from users that the user is following
+    // Given a userId(followerId), returns all posts from users that the user is following (excluding comments)
     public List<Post> findByFollowedUsers(int followerId) {
-        String sql = "SELECT p.* FROM post p JOIN followers f ON p.user_id = f.following_id WHERE f.follower_id = ? AND f.status = 'ACCEPTED' ORDER BY p.created_at DESC";
+        String sql = "SELECT p.* FROM post p JOIN followers f ON p.user_id = f.following_id WHERE f.follower_id = ? AND f.status = 'ACCEPTED' AND p.source_id IS NULL ORDER BY p.created_at DESC";
         List<Post> posts = new ArrayList<>();
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
             stmt.setInt(1, followerId);
@@ -108,7 +123,6 @@ public class PostRepository extends BaseRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    
         return posts;
     }
 

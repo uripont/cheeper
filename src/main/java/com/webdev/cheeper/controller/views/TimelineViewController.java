@@ -58,7 +58,7 @@ public class TimelineViewController extends HttpServlet {
         try {
             switch (timeline_type) {
                 case "for-you":
-                    posts = postRepository.findAll();
+                    posts = postRepository.findAllButYou(currentUser.getId());
                     break;
 
                 case "following":
