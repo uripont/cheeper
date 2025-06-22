@@ -136,9 +136,6 @@ public class EntityForm extends HttpServlet {
             }
             
         } catch (Exception e) {
-            request.setAttribute("entity", entity);
-            request.setAttribute("error", "Registration failed: " + e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/views/onboarding/entity-form.jsp").forward(request, response);
-        }
+            e.printStackTrace();
     }
 }

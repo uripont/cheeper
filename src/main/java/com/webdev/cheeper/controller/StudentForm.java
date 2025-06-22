@@ -168,9 +168,6 @@ public class StudentForm extends HttpServlet {
             
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("student", student);
-            request.setAttribute("error", "Registration failed: " + e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
         }
     }
     
