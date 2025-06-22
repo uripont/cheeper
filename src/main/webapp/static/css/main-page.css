@@ -94,6 +94,41 @@ html, body {
   box-sizing: border-box;
 }
 
+.feed-header {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 15px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.feed-tabs {
+  display: flex;
+  gap: 50px;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 20px;
+  padding: 0 0 3px 0; /* keep consistent padding */
+  color: var(--secondary-text);
+  border-bottom: 2px solid transparent; /* reserve border space */
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.tab-button:hover {
+  color: #DA2E4F; /* your red on hover */
+}
+
+.tab-button.active {
+  color: #DA2E4F; /* your red when active */
+  border-bottom-color: #DA2E4F; /* your red bottom border */
+}
+
+
 /* Prevent content overflow */
 * {
   max-width: 100%;

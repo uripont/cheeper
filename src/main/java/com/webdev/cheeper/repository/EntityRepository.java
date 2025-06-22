@@ -28,19 +28,11 @@ public class EntityRepository extends UserRepository {
     }
 
     public void update(Entity entity) {
-        // Update user data
-        String userQuery = "UPDATE users SET full_name = ?, email = ?, biography = ? WHERE id = ?";
-        try (PreparedStatement stmt = db.prepareStatement(userQuery)) {
-            stmt.setString(1, entity.getFullName());
-            stmt.setString(2, entity.getEmail());
-            stmt.setString(3, entity.getBiography());
-            stmt.setInt(4, entity.getId());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        super.update(entity); // Update user data first
+        updateEntityDetails(entity);
+    }
 
-        // Update entity data
+    public void updateEntityDetails(Entity entity) {
         String entityQuery = "UPDATE entity SET department = ? WHERE entity_id = ?";
         try (PreparedStatement stmt = db.prepareStatement(entityQuery)) {
             stmt.setString(1, entity.getDepartment());
