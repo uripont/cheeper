@@ -3,14 +3,14 @@ package com.webdev.cheeper.model;
 import java.util.Date;
 
 public class Room {
-    private Long id;
+    private Integer id;
     private String name;
     private boolean isPrivate;
     private Date createdAt;
 
     public Room() {}
 
-    public Room(Long id, String name, boolean isPrivate, Date createdAt) {
+    public Room(Integer id, String name, boolean isPrivate, Date createdAt) {
         this.id = id;
         this.name = name;
         this.isPrivate = isPrivate;
@@ -18,7 +18,7 @@ public class Room {
     }
 
     // Getters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -35,7 +35,7 @@ public class Room {
     }
 
     // Setters 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

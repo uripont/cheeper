@@ -3,15 +3,15 @@ package com.webdev.cheeper.model;
 import java.util.Date;
 
 public class Message {
-    private Long id;
-    private Long roomId;
-    private Long senderId;
+    private Integer id;
+    private Integer roomId;
+    private Integer senderId;
     private String content;
     private Date createdAt;
 
     public Message() {}
 
-    public Message(Long id, Long roomId, Long senderId, String content, Date createdAt) {
+    public Message(Integer id, Integer roomId, Integer senderId, String content, Date createdAt) {
         this.id = id;
         this.roomId = roomId;
         this.senderId = senderId;
@@ -20,15 +20,15 @@ public class Message {
     }
 
     // Getters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public Long getRoomId() {
+    public Integer getRoomId() {
         return roomId;
     }
 
-    public Long getSenderId() {
+    public Integer getSenderId() {
         return senderId;
     }
 
@@ -41,15 +41,15 @@ public class Message {
     }
 
     // Setters
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public void setRoomId(Long roomId) {
+    public void setRoomId(Integer roomId) {
         this.roomId = roomId;
     }
 
-    public void setSenderId(Long senderId) {
+    public void setSenderId(Integer senderId) {
         this.senderId = senderId;
     }
 

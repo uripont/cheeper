@@ -11,8 +11,8 @@ public class MessageRepository extends BaseRepository {
     public void save(Message message) {
         String sql = "INSERT INTO message (room_id, sender_id, content, created_at) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setLong(1, message.getRoomId());
-            stmt.setLong(2, message.getSenderId());
+            stmt.setInt(1, message.getRoomId());
+            stmt.setInt(2, message.getSenderId());
             stmt.setString(3, message.getContent());
             stmt.setTimestamp(4, new Timestamp(message.getCreatedAt().getTime()));
             
@@ -20,17 +20,17 @@ public class MessageRepository extends BaseRepository {
             
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
-                message.setId(rs.getLong(1));
+                message.setId(rs.getInt(1));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public Optional<Message> findById(Long id) {
+    public Optional<Message> findById(Integer id) {
         String sql = "SELECT * FROM message WHERE id = ?";
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
-            stmt.setLong(1, id);
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return Optional.of(mapResultSetToMessage(rs));
@@ -41,11 +41,11 @@ public class MessageRepository extends BaseRepository {
         return Optional.empty();
     }
 
-    public List<Message> findByRoomId(Long roomId) {
+    public List<Message> findByRoomId(Integer roomId) {
         String sql = "SELECT * FROM message WHERE room_id = ? ORDER BY created_at ASC";
         List<Message> messages = new ArrayList<>();
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
-            stmt.setLong(1, roomId);
+            stmt.setInt(1, roomId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 messages.add(mapResultSetToMessage(rs));
@@ -56,11 +56,11 @@ public class MessageRepository extends BaseRepository {
         return messages;
     }
 
-    public List<Message> findLatestByRoomId(Long roomId, int limit) {
+    public List<Message> findLatestByRoomId(Integer roomId, int limit) {
         String sql = "SELECT * FROM message WHERE room_id = ? ORDER BY created_at DESC LIMIT ?";
         List<Message> messages = new ArrayList<>();
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
-            stmt.setLong(1, roomId);
+            stmt.setInt(1, roomId);
             stmt.setInt(2, limit);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -74,9 +74,9 @@ public class MessageRepository extends BaseRepository {
 
     private Message mapResultSetToMessage(ResultSet rs) throws SQLException {
         Message message = new Message();
-        message.setId(rs.getLong("id"));
-        message.setRoomId(rs.getLong("room_id"));
-        message.setSenderId(rs.getLong("sender_id"));
+        message.setId(rs.getInt("id"));
+        message.setRoomId(rs.getInt("room_id"));
+        message.setSenderId(rs.getInt("sender_id"));
         message.setContent(rs.getString("content"));
         message.setCreatedAt(rs.getTimestamp("created_at"));
         return message;
