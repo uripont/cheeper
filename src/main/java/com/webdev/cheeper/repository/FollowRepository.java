@@ -148,4 +148,38 @@ public class FollowRepository extends BaseRepository {
         return ids;
     }
 
+    public List<User> getMutualFollowers(int userId) {
+        // Get users who you follow and who follow you back (mutual connections)
+        String query = "SELECT DISTINCT u.* FROM users u " +
+                      "JOIN followers f1 ON u.id = f1.following_id " +
+                      "JOIN followers f2 ON u.id = f2.follower_id " +
+                      "WHERE f1.follower_id = ? " +  // You follow them
+                      "AND f2.following_id = ? " +   // They follow you
+                      "AND f1.status = 'ACCEPTED' " +
+                      "AND f2.status = 'ACCEPTED'";
+        return fetchUsers(query, userId, userId);
+    }
+
+    private List<User> fetchUsers(String query, int... params) {
+        List<User> users = new ArrayList<>();
+        try (PreparedStatement stmt = db.prepareStatement(query)) {
+            for (int i = 0; i < params.length; i++) {
+                stmt.setInt(i + 1, params[i]);
+            }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUsername(rs.getString("username"));
+                user.setFullName(rs.getString("full_name"));
+                user.setEmail(rs.getString("email"));
+                user.setPicture(rs.getString("picture"));
+                user.setRoleType(RoleType.valueOf(rs.getString("role_type")));
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
 }
