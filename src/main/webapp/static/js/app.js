@@ -7,18 +7,29 @@ const App = (function() {
             .join('&');
             
         // Make AJAX request to get the view content
-        $.ajax({
-            url: `/views/${view}${queryString ? '?' + queryString : ''}`,
-            method: 'GET',
-            success: function(response) {
-                // Update target container with the received content
-                $(targetContainer).html(response);
-            },
-            error: function(xhr, status, error) {
-                console.error('Error loading view:', error);
-                $(targetContainer).html('<p>Error loading content.</p>');
-            }
-        });
+    console.log('Loading view:', view, 'with params:', params, 'to container:', targetContainer);
+    const fullUrl = `/views/${view}${queryString ? '?' + queryString : ''}`;
+    console.log('Request URL:', fullUrl);
+
+    $.ajax({
+        url: fullUrl,
+        method: 'GET',
+        success: function(response) {
+            console.log('View loaded successfully:', view);
+            // Update target container with the received content
+            $(targetContainer).html(response);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading view:', {
+                view: view,
+                status: status,
+                error: error,
+                response: xhr.responseText,
+                statusCode: xhr.status
+            });
+            $(targetContainer).html('<p>Error loading content.</p>');
+        }
+    });
     }
 
     // Handle client-side navigation

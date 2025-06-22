@@ -57,14 +57,14 @@ function handleSearch(query) {
     }
 }
 
-$(document).ready(function() {
-    // Handle user card clicks
-    $('.private-chat-user-item').on('click', function() {
-        let userId = $(this).data('user-id');
-        App.loadView('chats', { 
-            action: 'load-conversation',
-            otherUserId: userId 
-        }, '#mainPanel');
-    });
+// Use event delegation for dynamically loaded content
+$(document).on('click', '.private-chat-user-item', function() {
+    let userId = $(this).data('user-id');
+    console.log('User card clicked:', userId);
+    
+    App.loadView('chats', { 
+        action: 'load-conversation',
+        otherUserId: userId 
+    }, '#main-panel');  // Fix selector to match app.js
 });
 </script>

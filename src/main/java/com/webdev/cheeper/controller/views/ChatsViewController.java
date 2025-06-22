@@ -85,46 +85,40 @@ public class ChatsViewController extends HttpServlet {
     private void handleLoadConversation(HttpServletRequest req, HttpServletResponse resp, User currentUser) 
             throws ServletException, IOException {
         
+        System.out.println("Loading conversation...");
+        System.out.println("Current user: " + currentUser.getId() + " (" + currentUser.getUsername() + ")");
+        
         String otherUserIdStr = req.getParameter("otherUserId");
+        System.out.println("Requested other user ID: " + otherUserIdStr);
+        
         if (otherUserIdStr == null) {
+            System.out.println("Error: No otherUserId provided");
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "No user ID provided");
             return;
         }
 
-        Integer otherUserId = Integer.parseInt(otherUserIdStr);
-        Optional<User> otherUserOpt = userRepository.findById(otherUserId);
-        if (otherUserOpt.isEmpty()) {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
-            return;
+        try {
+            Integer otherUserId = Integer.parseInt(otherUserIdStr);
+            Optional<User> otherUserOpt = userRepository.findById(otherUserId);
+            
+            if (otherUserOpt.isEmpty()) {
+                System.out.println("Error: User not found with ID: " + otherUserId);
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
+                return;
+            }
+            
+            User otherUser = otherUserOpt.get();
+            System.out.println("Found other user: " + otherUser.getId() + " (" + otherUser.getUsername() + ")");
+
+            // Set attributes for JSP
+            req.setAttribute("otherUser", otherUser);
+            
+            System.out.println("Forwarding to chat view...");
+            req.getRequestDispatcher("/WEB-INF/views/components/chats-view.jsp").forward(req, resp);
+            
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Invalid user ID format: " + otherUserIdStr);
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
         }
-        User otherUser = otherUserOpt.get();
-
-        // Get or create private room between the users
-        Optional<Room> roomOpt = roomRepository.findPrivateRoomBetweenUsers(currentUser.getId(), otherUserId);
-        Room room;
-        if (roomOpt.isEmpty()) {
-            // Create new room
-            room = new Room();
-            room.setName("Chat between " + currentUser.getUsername() + " and " + otherUser.getUsername());
-            room.setPrivate(true);
-            room.setCreatedAt(new Date());
-            roomRepository.save(room);
-
-            // Add participants
-            roomRepository.addParticipant(room.getId(), currentUser.getId());
-            roomRepository.addParticipant(room.getId(), otherUserId);
-        } else {
-            room = roomOpt.get();
-        }
-
-        // Load messages
-        List<Message> messages = messageRepository.findByRoomId(room.getId());
-
-        // Set attributes for JSP
-        req.setAttribute("room", room);
-        req.setAttribute("messages", messages);
-        req.setAttribute("otherUser", otherUser);
-        
-        req.getRequestDispatcher("/WEB-INF/views/components/chats-view.jsp").forward(req, resp);
     }
 }

@@ -1,31 +1,14 @@
 .chats-view {
     display: flex;
+    flex-direction: column;
     height: 100%;
     overflow: hidden;
-}
-
-.chat-list {
-    width: 300px;
-    border-right: 1px solid #e1e8ed;
-    display: flex;
-    flex-direction: column;
-}
-
-.chat-list-header {
-    padding: 15px;
-    border-bottom: 1px solid #e1e8ed;
-}
-
-.chat-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
 }
 
 .chat-header {
     padding: 15px;
     border-bottom: 1px solid #e1e8ed;
+    background-color: #fff;
 }
 
 .chat-user-info {
@@ -53,80 +36,49 @@
     color: #657786;
 }
 
-.messages-container {
+.chat-placeholder {
     flex: 1;
+    padding: 40px;
+    text-align: center;
+    background-color: #f7f9fa;
+}
+
+.chat-placeholder h3 {
+    color: #1da1f2;
+    margin-bottom: 20px;
+}
+
+.user-ids {
+    background-color: #fff;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
     padding: 20px;
-    overflow-y: auto;
+    margin: 20px auto;
+    max-width: 400px;
 }
 
-.message {
+.user-ids p {
     margin: 10px 0;
-    max-width: 70%;
-}
-
-.message.sent {
-    margin-left: auto;
-}
-
-.message.received {
-    margin-right: auto;
-}
-
-.message-content {
-    padding: 10px 15px;
-    border-radius: 20px;
-}
-
-.message.sent .message-content {
-    background-color: #1da1f2;
-    color: white;
-}
-
-.message.received .message-content {
-    background-color: #e1e8ed;
     color: #14171a;
 }
 
-.message-time {
-    font-size: 12px;
+.user-ids strong {
+    color: #1da1f2;
+    margin-right: 8px;
+}
+
+.placeholder-note {
     color: #657786;
-    margin-top: 5px;
-    text-align: right;
-}
-
-.message-input {
-    padding: 15px;
-    border-top: 1px solid #e1e8ed;
-}
-
-.message-input form {
-    display: flex;
-    gap: 10px;
-}
-
-.message-input input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #e1e8ed;
-    border-radius: 20px;
-    outline: none;
-}
-
-.message-input button {
-    padding: 10px 20px;
-    background-color: #1da1f2;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-}
-
-.message-input button:hover {
-    background-color: #1991da;
+    font-style: italic;
 }
 
 .placeholder-message {
     text-align: center;
     color: #657786;
-    padding: 20px;
+    padding: 40px;
+}
+
+.placeholder-message h3 {
+    color: #1da1f2;
+    margin-bottom: 10px;
 }
