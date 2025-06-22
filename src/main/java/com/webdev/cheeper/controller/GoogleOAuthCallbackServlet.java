@@ -84,7 +84,7 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
             // Redirect to the appropriate form based on the role
             try (UserRepository userRepository = new UserRepository();) {
             	UserService userService = new UserService(userRepository);
-                if (!userService.emailExists(email)) {
+                if (!userService.emailExists(email, null)) {
                     if (role == RoleType.STUDENT) {
                         request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
                     } else if (role == RoleType.ENTITY) {
