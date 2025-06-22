@@ -25,21 +25,17 @@
             <c:choose>
                 <c:when test="${not empty room}">
                     <div class="messages-preview"> <%-- This will be the scrollable area --%>
-                        <c:if test="${not empty messages}">
-                            <div class="messages-list"> <%-- Container for bubbles --%>
-                                <c:forEach var="message" items="${messages}">
-                                    <div class="message-bubble ${message.senderId eq currentUser.id ? 'my-message' : 'other-message'}">
-                                        <div class="message-content">${message.content}</div>
-                                        <div class="message-time">
-                                            <fmt:formatDate value="${message.createdAt}" pattern="HH:mm"/>
-                                        </div>
+                        <div class="messages-list"> <%-- Container for bubbles --%>
+                            <c:forEach var="message" items="${messages}">
+                                <div class="message-bubble ${message.senderId eq currentUser.id ? 'my-message' : 'other-message'}">
+                                    <div class="message-content">${message.content}</div>
+                                    <div class="message-time">
+                                        <fmt:formatDate value="${message.createdAt}" pattern="HH:mm"/>
                                     </div>
-                                </c:forEach>
-                            </div>
-                        </c:if>
-                        <c:if test="${empty messages}">
-                            <p class="no-messages">No messages yet in this conversation</p>
-                        </c:if>
+                                </div>
+                            </c:forEach>
+                        </div>
+                        <%-- Removed "No messages yet" paragraph, messages-list is always present --%>
                     </div>
 
                     <%-- Message Input Form --%>
@@ -48,6 +44,7 @@
                             <input type="hidden" name="action" value="send-message">
                             <input type="hidden" name="roomId" value="${room.id}">
                             <input type="hidden" name="otherUserId" value="${otherUser.id}"> <%-- Pass otherUserId for redirect --%>
+                            <input type="hidden" id="currentUserId" value="${currentUser.id}"> <%-- Add current user ID for JS --%>
                             <input type="text" name="content" placeholder="Type your message..." required class="message-input-field"> <%-- Input class --%>
                             <button type="submit" class="send-button">Send</button> <%-- Button class --%>
                         </form>
@@ -77,6 +74,33 @@
             App.loadView('chats', { component: 'private-chat-users' }, '#rightSidebar');
         }
 
+        // Function to format timestamp
+        function formatTimestamp(timestamp) {
+            var date = new Date(timestamp);
+            var hours = date.getHours().toString().padStart(2, '0');
+            var minutes = date.getMinutes().toString().padStart(2, '0');
+            return hours + ':' + minutes;
+        }
+
+        // Function to append a new message to the chat view
+        function appendMessage(message) {
+            var currentUserId = $('#currentUserId').val();
+            var messageClass = message.senderId == currentUserId ? 'my-message' : 'other-message';
+            var formattedTime = formatTimestamp(message.createdAt);
+
+            var messageHtml = '<div class="message-bubble ' + messageClass + '">' +
+                              '<div class="message-content">' + message.content + '</div>' +
+                              '<div class="message-time">' + formattedTime + '</div>' +
+                              '</div>';
+
+            // Append the new message
+            $('.messages-list').append(messageHtml);
+
+            // Scroll to the bottom
+            var messagesPreview = $('.messages-preview');
+            messagesPreview.scrollTop(messagesPreview[0].scrollHeight);
+        }
+
         // Handle message form submission
         $('#messageForm').on('submit', function(e) {
             e.preventDefault(); // Prevent default form submission
@@ -89,11 +113,12 @@
                 type: "POST",
                 url: url,
                 data: formData,
+                dataType: "json", // Expect JSON response
                 success: function(response) {
-                    // On success, reload the chat view to show the new message
-                    // This assumes the server redirects to the GET endpoint for the chat view
-                    // The redirect handles the view update
-                    console.log("Message sent successfully, redirecting...");
+                    // On success, append the new message to the chat view
+                    console.log("Message sent successfully:", response);
+                    appendMessage(response); // Append the message from the JSON response
+
                     // Clear the input field after successful send
                     form.find('input[name="content"]').val('');
                 },

@@ -207,34 +207,31 @@ public class ChatsViewController extends HttpServlet {
             Room room = roomOpt.get();
             System.out.println("Found room: " + room.getId());
 
-            // Save the message
-            messageService.saveMessage(room.getId(), currentUser.getId(), content);
-            System.out.println("Message saved to room " + room.getId());
+            // Save the message and get the saved message object
+            Message savedMessage = messageService.saveMessage(room.getId(), currentUser.getId(), content);
+            System.out.println("Message saved to room " + room.getId() + ", ID: " + savedMessage.getId());
 
-            // Redirect back to the chat view for this room
-            // We need to pass the other user ID to load the conversation correctly
-            // Find the other user in the room participants (assuming private chat with 2 users)
-            Integer otherUserId = null;
-            // This requires fetching room participants, which RoomRepository doesn't currently do
-            // For now, we'll rely on the client to provide the otherUserId in the form
-            String otherUserIdStr = req.getParameter("otherUserId");
-             if (otherUserIdStr != null) {
-                 otherUserId = Integer.parseInt(otherUserIdStr);
-             }
+            // Prepare JSON response
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            PrintWriter out = resp.getWriter();
 
+            // Manually construct JSON string for the saved message
+            // Include necessary details for client-side appending
+            String jsonResponse = String.format(
+                "{\"id\": %d, \"roomId\": %d, \"senderId\": %d, \"content\": \"%s\", \"createdAt\": %d}",
+                savedMessage.getId(),
+                savedMessage.getRoomId(),
+                savedMessage.getSenderId(),
+                savedMessage.getContent().replace("\"", "\\\""), // Escape quotes in content
+                savedMessage.getCreatedAt().getTime() // Get timestamp in milliseconds
+            );
 
-            if (otherUserId != null) {
-                 System.out.println("Redirecting back to chat with other user ID: " + otherUserId);
-                 resp.sendRedirect(req.getContextPath() + "/views/chats?action=load-conversation&otherUserId=" + otherUserId);
-            } else {
-                 // Fallback if otherUserId is not available (shouldn't happen with correct form)
-                 System.out.println("Error: Could not determine other user ID for redirect.");
-                 resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not load chat after sending message.");
-            }
-
+            out.print(jsonResponse);
+            out.flush();
 
         } catch (NumberFormatException e) {
-            System.out.println("Error: Invalid room ID or other user ID format: " + roomIdStr);
+            System.out.println("Error: Invalid room ID format: " + roomIdStr);
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid ID format");
         } catch (Exception e) {
              System.out.println("Error sending message: " + e.getMessage());

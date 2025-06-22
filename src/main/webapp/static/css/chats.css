@@ -46,9 +46,8 @@
     max-height: 100%;
     padding: 15px;
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    /* Removed display: flex and flex-direction: column */
+    justify-content: flex-end; /* Keep justify-content for initial positioning */
 }
 
 .room-status {
@@ -79,10 +78,9 @@
 }
 
 .messages-list {
-    display: flex;
-    flex-direction: column-reverse; /* Show most recent at bottom */
+    /* Removed display: flex and flex-direction: column */
     gap: 10px;
-    padding: 0 20px; /* Add horizontal padding for spacing */
+    padding: 0 20px;
 }
 
 .message-bubble {
@@ -93,6 +91,8 @@
     position: relative;
     font-size: 15px;
     line-height: 1.4;
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .my-message {
