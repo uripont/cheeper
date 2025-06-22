@@ -136,5 +136,8 @@ public class UserService {
     public List<User> getRecommendedUsers(int limit, int excludeUserId) {
         return userRepository.findRandomUsers(limit, excludeUserId);
     }
-    
+
+    public boolean deleteUser(int userId) {
+        return userRepository.delete(userId);
+    }
 }

@@ -301,4 +301,15 @@ public class UserRepository extends BaseRepository {
         return users;
     }
 
+    public boolean delete(int userId) {
+        String query = "DELETE FROM users WHERE id = ?";
+        try (PreparedStatement stmt = db.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
