@@ -186,5 +186,13 @@
                 App.loadView('post', { id: postId }, '#main-panel');
             }
         });
+        
+        // Añadir al script existente en timeline-view.jsp
+        $('.timeline-view').on('click', '.edit-btn', function () {
+            const postId = $(this).closest('.post-item').data('post-id');
+            if (postId) {
+                App.loadView('edit-post', { postId: postId }, '#main-panel');
+            }
+        });
     });
 </script>
