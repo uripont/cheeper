@@ -59,7 +59,8 @@ public class ProfileViewController extends HttpServlet {
                     return;
                 }
                 targetUser = userOpt.get();
-                isReadOnly = currentUser == null || !targetUser.getId().equals(currentUser.getId()); // Only editable if it's your own profile
+                // An ENTITY (admin) user can edit any profile, otherwise only editable if it's your own profile
+                isReadOnly = currentUser == null || (!targetUser.getId().equals(currentUser.getId()) && currentUser.getRoleType() != RoleType.ENTITY);
             } catch (NumberFormatException e) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID");
                 return;
@@ -73,7 +74,8 @@ public class ProfileViewController extends HttpServlet {
                 return;
             }
             targetUser = userOpt.get();
-            isReadOnly = currentUser == null || !targetUser.getId().equals(currentUser.getId()); // Only editable if it's your own profile
+            // An ENTITY user can edit any profile, otherwise only editable if it's your own profile
+            isReadOnly = currentUser == null || (!targetUser.getId().equals(currentUser.getId()) && currentUser.getRoleType() != RoleType.ENTITY);
         }
         // Finally fall back to current user's profile
         else {
@@ -83,6 +85,7 @@ public class ProfileViewController extends HttpServlet {
                 return;
             }
             targetUser = currentUser;
+            isReadOnly = false; // Current user's own profile is always editable
         }
 
         // Get appropriate profile based on role

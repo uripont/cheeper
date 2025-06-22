@@ -43,6 +43,19 @@
 	</div>
   </div>
 
+  <% 
+    User currentUser = (User) request.getAttribute("currentUser");
+    boolean isReadOnly = (boolean) request.getAttribute("readOnly");
+    
+    // Show edit/logout buttons if it's the current user's profile OR if the current user is an ENTITY
+    if (!isReadOnly || (currentUser != null && currentUser.getRoleType() == com.webdev.cheeper.model.RoleType.ENTITY)) {
+  %>
+    <div class="profile-actions">
+      <a href="<%= request.getContextPath() %>/auth/<%= profile.getRoleType().toString().toLowerCase() %>-form?mode=edit&userId=<%= profile.getId() %>" class="btn btn-primary">Edit Profile</a>
+      <a href="<%= request.getContextPath() %>/logout" class="btn btn-secondary">Logout</a>
+    </div>
+  <% } %>
+
   <% if (profile.getBiography() != null && !profile.getBiography().isEmpty()) { %>
     <div class="profile-detail-item biography">
       <p><%= profile.getBiography() %></p>

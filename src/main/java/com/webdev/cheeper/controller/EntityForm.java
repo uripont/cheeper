@@ -119,14 +119,24 @@ public class EntityForm extends HttpServlet {
 
         
         if ("edit".equals(mode)) {
-            Optional<User> userOpt = userService.getUserByEmail(email);
-            if (userOpt.isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return;
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try {
+                    int userId = Integer.parseInt(userIdParam);
+                    entity.setId(userId);
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
+                    return;
+                }
+            } else {
+                // Fallback to current user if no userId is provided in edit mode
+                Optional<User> userOpt = userService.getUserByEmail(email);
+                if (userOpt.isEmpty()) {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+                entity.setId(userOpt.get().getId());
             }
-            User user = userOpt.get();
-            int userId = user.getId();
-            entity.setId(userId);
         }
    
         try {
