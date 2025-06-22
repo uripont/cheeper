@@ -67,6 +67,7 @@
     </c:choose>
 </div>
 
+<script src="${pageContext.request.contextPath}/static/js/chat-websocket.js"></script>
 <script>
     $(document).ready(function() {
         // Load private chat users list in right sidebar if not already loaded
@@ -101,33 +102,33 @@
             messagesPreview.scrollTop(messagesPreview[0].scrollHeight);
         }
 
+        // Initialize WebSocket connection if a room is present
+        var roomId = '${room.id}';
+        var currentUserId = $('#currentUserId').val();
+        var contextPath = '${pageContext.request.contextPath}';
+
+        if (roomId && currentUserId) {
+            connectToChatWebSocket(roomId, currentUserId, contextPath, appendMessage);
+        }
+
         // Handle message form submission
         $('#messageForm').on('submit', function(e) {
             e.preventDefault(); // Prevent default form submission
 
             var form = $(this);
-            var url = form.attr('action');
-            var formData = form.serialize();
+            var messageContent = form.find('input[name="content"]').val();
+            var roomId = form.find('input[name="roomId"]').val();
+            var senderId = $('#currentUserId').val();
 
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: formData,
-                dataType: "json", // Expect JSON response
-                success: function(response) {
-                    // On success, append the new message to the chat view
-                    console.log("Message sent successfully:", response);
-                    appendMessage(response); // Append the message from the JSON response
+            if (messageContent.trim() !== '') {
+                sendMessageViaWebSocket(messageContent, parseInt(roomId), parseInt(senderId));
+                form.find('input[name="content"]').val(''); // Clear the input field
+            }
+        });
 
-                    // Clear the input field after successful send
-                    form.find('input[name="content"]').val('');
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error sending message:", error);
-                    // Handle error, e.g., show an alert
-                    alert("Error sending message: " + error);
-                }
-            });
+        // Disconnect WebSocket when navigating away or closing the page
+        $(window).on('beforeunload', function() {
+            disconnectChatWebSocket();
         });
     });
 </script>

@@ -107,4 +107,19 @@ public class RoomRepository extends BaseRepository {
         room.setActive(rs.getBoolean("is_active"));
         return room;
     }
+
+    public boolean isUserParticipant(Integer roomId, Integer userId) {
+        String sql = "SELECT COUNT(*) FROM room_participants WHERE room_id = ? AND user_id = ?";
+        try (PreparedStatement stmt = db.prepareStatement(sql)) {
+            stmt.setInt(1, roomId);
+            stmt.setInt(2, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

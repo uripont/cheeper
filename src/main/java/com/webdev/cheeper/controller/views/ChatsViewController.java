@@ -106,12 +106,9 @@ public class ChatsViewController extends HttpServlet {
             return;
         }
 
-        String action = req.getParameter("action");
-        if (action != null && action.equals("send-message")) {
-            handleSendMessage(req, resp, currentUser);
-        } else {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action for POST request");
-        }
+        // With WebSocket, message sending is handled client-side via WS.
+        // This POST endpoint is no longer needed for 'send-message' action.
+        resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action for POST request or action no longer supported via HTTP POST.");
     }
 
     private void handleLoadConversation(HttpServletRequest req, HttpServletResponse resp, User currentUser) 
@@ -176,67 +173,6 @@ public class ChatsViewController extends HttpServlet {
         } catch (NumberFormatException e) {
             System.out.println("Error: Invalid user ID format: " + otherUserIdStr);
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
-        }
-    }
-
-    private void handleSendMessage(HttpServletRequest req, HttpServletResponse resp, User currentUser)
-            throws ServletException, IOException {
-
-        System.out.println("Handling send message...");
-        System.out.println("Current user: " + currentUser.getId() + " (" + currentUser.getUsername() + ")");
-
-        String roomIdStr = req.getParameter("roomId");
-        String content = req.getParameter("content");
-
-        if (roomIdStr == null || content == null || content.trim().isEmpty()) {
-            System.out.println("Error: Missing roomId or content");
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing room ID or message content");
-            return;
-        }
-
-        try {
-            Integer roomId = Integer.parseInt(roomIdStr);
-            Optional<Room> roomOpt = roomRepository.findById(roomId);
-
-            if (roomOpt.isEmpty()) {
-                System.out.println("Error: Room not found with ID: " + roomId);
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Room not found");
-                return;
-            }
-
-            Room room = roomOpt.get();
-            System.out.println("Found room: " + room.getId());
-
-            // Save the message and get the saved message object
-            Message savedMessage = messageService.saveMessage(room.getId(), currentUser.getId(), content);
-            System.out.println("Message saved to room " + room.getId() + ", ID: " + savedMessage.getId());
-
-            // Prepare JSON response
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
-            PrintWriter out = resp.getWriter();
-
-            // Manually construct JSON string for the saved message
-            // Include necessary details for client-side appending
-            String jsonResponse = String.format(
-                "{\"id\": %d, \"roomId\": %d, \"senderId\": %d, \"content\": \"%s\", \"createdAt\": %d}",
-                savedMessage.getId(),
-                savedMessage.getRoomId(),
-                savedMessage.getSenderId(),
-                savedMessage.getContent().replace("\"", "\\\""), // Escape quotes in content
-                savedMessage.getCreatedAt().getTime() // Get timestamp in milliseconds
-            );
-
-            out.print(jsonResponse);
-            out.flush();
-
-        } catch (NumberFormatException e) {
-            System.out.println("Error: Invalid room ID format: " + roomIdStr);
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid ID format");
-        } catch (Exception e) {
-             System.out.println("Error sending message: " + e.getMessage());
-             e.printStackTrace();
-             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error sending message");
         }
     }
 }
