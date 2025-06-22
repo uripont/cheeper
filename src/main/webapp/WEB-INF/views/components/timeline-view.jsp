@@ -57,7 +57,7 @@
                                         <img src="${pageContext.request.contextPath}/static/images/trash.circle.fill.png" alt="Delete" >
                                     </button>
                                     <button class="edit-btn" title="Edit post" data-post-id="${post.id}">
-                                        <img src="${pageContext.request.contextPath}/static/images/edit.circle.fill.png" alt="Edit" >
+                                        <img src="${pageContext.request.contextPath}/static/images/edit.circle.fill.png" alt="Edit" width="18" height="18">
                                     </button>
                                 </c:if>
 
