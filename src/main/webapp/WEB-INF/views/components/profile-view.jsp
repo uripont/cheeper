@@ -2,8 +2,23 @@
 <%@ page import="com.webdev.cheeper.model.User, com.webdev.cheeper.model.Student" %>
 <%@ page import="com.webdev.cheeper.model.User, com.webdev.cheeper.model.Entity" %>
 <%@ page import="com.webdev.cheeper.model.User, com.webdev.cheeper.model.Association" %>
+<%@ page import="com.webdev.cheeper.model.RoleType" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cheeper" uri="http://cheeper.webdev/tags" %>
+
+<%
+    User currentUser = (User) request.getAttribute("currentUser");
+    boolean isReadOnly = (boolean) request.getAttribute("readOnly");
+    
+    // Determine if the current user can edit this profile
+    boolean canEdit = !isReadOnly || (currentUser != null && currentUser.getRoleType() == RoleType.ENTITY);
+    
+    // Determine if the current user can logout (only on their own profile)
+    boolean canLogout = !isReadOnly;
+
+    request.setAttribute("canEdit", canEdit); // Make canEdit available for JSTL
+    request.setAttribute("canLogout", canLogout); // Make canLogout available for JSTL
+%>
 
 <div class="profile-view">
     <div class="profile-container" data-user-id="${profile.id}">
@@ -28,17 +43,19 @@
                     <button class="follow-stat-btn">
                         <span id="followingCount">${followingCount}</span> Following
                     </button>
-                    <c:if test="${not readOnly}">
+                    <c:if test="${canEdit}">
                         <a href="${pageContext.request.contextPath}/edit-profile" class="standard-btn">
                             Edit Profile
                         </a>
+                    </c:if>
+                    <c:if test="${canLogout}">
                         <a href="${pageContext.request.contextPath}/logout" class="standard-btn logout-btn">
                             Logout
                         </a>
                     </c:if>
                 </div>
 
-                <c:if test="${readOnly}">
+                <c:if test="${not canEdit}">
                     <button class="follow-standard-btn" 
                             data-userid="${profile.id}" 
                             ${isFollowing ? 'data-following="true"' : ''} 

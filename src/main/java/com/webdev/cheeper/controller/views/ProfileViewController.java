@@ -131,6 +131,7 @@ public class ProfileViewController extends HttpServlet {
         req.setAttribute("followingCount", followingCount);
         req.setAttribute("isFollowing", isFollowing);
         req.setAttribute("readOnly", isReadOnly);
+        req.setAttribute("currentUser", currentUser); // To determine if admin
 
         // Forward to profile view (to render the profile page)
         resp.setContentType("text/html;charset=UTF-8");
