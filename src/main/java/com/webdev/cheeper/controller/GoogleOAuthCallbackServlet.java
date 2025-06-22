@@ -93,6 +93,11 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
                         request.getRequestDispatcher("/WEB-INF/views/onboarding/association-form.jsp").forward(request, response);
                     }
                 } else {
+                    // User exists, retrieve full user object and store in session
+                    com.webdev.cheeper.model.User user = userService.getUserByEmail(email).orElse(null);
+                    if (user != null) {
+                        session.setAttribute("currentUser", user);
+                    }
                     response.sendRedirect(request.getContextPath() + "/home");
                 }
             }
