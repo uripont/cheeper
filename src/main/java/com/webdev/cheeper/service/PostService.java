@@ -35,15 +35,24 @@ public class PostService {
         return postRepository.findAll();
     }
 
+    public java.util.List<Post> getPostsByFollowedUsers(int userId) throws SQLException {
+        return postRepository.findByFollowedUsers(userId);
+    }
+
     // Método para obtener todos los posts
     public java.util.List<Post> getAllPostsButYours(int userId) throws SQLException {
         return postRepository.findAllButYou(userId);
     }
 
     // Método para obtener posts por usuario
+    public java.util.List<Post> getCommentsForPost(int postId) throws SQLException {
+        return postRepository.findBySourceId(postId);
+    }
+
     public java.util.List<Post> getPostsByUserId(int userId) throws SQLException {
         return postRepository.findByUserId(userId);
     }
+
 
     public void deletePost(int postId) throws SQLException {
         postRepository.deleteById(postId);
