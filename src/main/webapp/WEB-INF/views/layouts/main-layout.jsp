@@ -15,6 +15,11 @@
 </head>
 
 <body>
+    <!-- Add logo at the top -->
+    <a href="${pageContext.request.contextPath}/home" class="logo">
+        <img src="${pageContext.request.contextPath}/static/images/red-logo.png" alt="Logo"/>
+    </a>
+
     <!-- Left/Icon Sidebar -->
     <div class="sidebar" id="navigation">
         <a href="${pageContext.request.contextPath}/home" class="menu" data-view="home">
