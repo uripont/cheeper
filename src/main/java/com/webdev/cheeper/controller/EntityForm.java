@@ -127,7 +127,7 @@ public class EntityForm extends HttpServlet {
             }
             
             if (validationErrors.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/app/home");
+                response.sendRedirect(request.getContextPath() + "/home");
             } else {
                 request.setAttribute("entity", entity);
                 request.setAttribute("errors", validationErrors);

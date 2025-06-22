@@ -158,7 +158,7 @@ public class StudentForm extends HttpServlet {
             }
             
             if (validationErrors.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/app/home");
+                response.sendRedirect(request.getContextPath() + "/home");
             } else {
                 request.setAttribute("student", student);
                 request.setAttribute("errors", validationErrors);

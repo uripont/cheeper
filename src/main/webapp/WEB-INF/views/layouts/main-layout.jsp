@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/main-page.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/profile.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/users-list.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/private-chat-users.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/chats.css" />
     <link rel="icon" href="${pageContext.request.contextPath}/static/images/upf.jpg" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="${pageContext.request.contextPath}/static/js/app.js" defer></script>
@@ -26,7 +28,7 @@
         <a href="${pageContext.request.contextPath}/create-post" class="menu" data-view="create">
             <img src="${pageContext.request.contextPath}/static/images/plus.png" alt="Create" />
         </a>
-        <a href="${pageContext.request.contextPath}/app/chats" class="menu" data-view="chats">
+        <a href="${pageContext.request.contextPath}/chats" class="menu" data-view="chats">
             <img src="${pageContext.request.contextPath}/static/images/text.bubble.png" alt="Chats" />
         </a>
         <a href="${pageContext.request.contextPath}/profile" class="menu" data-view="profile">
@@ -65,6 +67,11 @@
             
             // Initialize layout with active menu item
             $('[data-view="${view}"]').addClass('active');
+
+            // Load initial content if this is home view
+            if ('${view}' === 'home') {
+                App.loadFeed();
+            }
         });
     </script>
 </body>
