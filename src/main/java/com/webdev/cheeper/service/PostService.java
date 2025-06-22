@@ -57,4 +57,16 @@ public class PostService {
     public void deletePost(int postId) throws SQLException {
         postRepository.deleteById(postId);
     }
+
+    public void updatePost(Post post) throws SQLException {
+        // Validation 
+        if (post.getContent() == null || post.getContent().trim().isEmpty()) {
+            throw new IllegalArgumentException("Content cannot be empty");
+        }
+        
+        // Update the post's timestamp
+        post.setUpdatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+        
+        postRepository.update(post);
+    }
 }

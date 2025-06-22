@@ -33,7 +33,7 @@ public class PostRepository extends BaseRepository {
     }
 
     // Actualiza un post existente
-    public void update(Post post) {
+    /*public void update(Post post) {
         String sql = "UPDATE post SET source_id = ?, user_id = ?, content = ?, image = ?, updated_at = ? WHERE id = ?";
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
             stmt.setInt(1, post.getSourceId());
@@ -46,7 +46,7 @@ public class PostRepository extends BaseRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     // Busca un post por su ID
     public Optional<Post> findById(int id) {
@@ -168,6 +168,23 @@ public class PostRepository extends BaseRepository {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Error deleting post", e);
+        }
+    }
+
+    public void update(Post post) {
+        String sql = "UPDATE post SET content = ?, image = ?, updated_at = ? WHERE post_id = ?";
+        try (PreparedStatement stmt = db.prepareStatement(sql)) {
+            stmt.setString(1, post.getContent());
+            stmt.setString(2, post.getImage());
+            stmt.setTimestamp(3, post.getUpdatedAt());
+            stmt.setInt(4, post.getId());
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("No post found with ID: " + post.getId());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error updating post", e);
         }
     }
 }
