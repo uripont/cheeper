@@ -20,6 +20,7 @@ public class ChatsViewController extends HttpServlet {
     private FollowRepository followRepository;
     private RoomRepository roomRepository;
     private MessageRepository messageRepository;
+    private ChatService chatService;
     
     @Override
     public void init() throws ServletException {
@@ -27,6 +28,7 @@ public class ChatsViewController extends HttpServlet {
         this.followRepository = new FollowRepository();
         this.roomRepository = new RoomRepository();
         this.messageRepository = new MessageRepository();
+        this.chatService = new ChatService();
     }
     
     @Override
@@ -114,23 +116,26 @@ public class ChatsViewController extends HttpServlet {
             Optional<Room> roomOpt = roomRepository.findPrivateRoomBetweenUsers(currentUser.getId(), otherUserId);
             System.out.println("Checking for existing room...");
             
+            Room room;
             if (roomOpt.isPresent()) {
-                Room room = roomOpt.get();
+                room = roomOpt.get();
                 System.out.println("Found room: " + room.getId());
-                
-                // Get latest messages for preview
-                List<Message> messages = messageRepository.findLatestByRoomId(room.getId(), 5);
-                int totalMessages = messageRepository.findByRoomId(room.getId()).size();
-                
-                System.out.println("Room has " + totalMessages + " messages total");
-                System.out.println("Retrieved " + messages.size() + " latest messages for preview");
-                
-                req.setAttribute("room", room);
-                req.setAttribute("messages", messages);
-                req.setAttribute("totalMessages", totalMessages);
             } else {
-                System.out.println("No existing room found between users");
+                System.out.println("No existing room found between users, creating new room...");
+                room = chatService.createPrivateRoom(currentUser.getId(), otherUserId);
+                System.out.println("Created new room: " + room.getId());
             }
+            
+            // Get latest messages for preview
+            List<Message> messages = messageRepository.findLatestByRoomId(room.getId(), 5);
+            int totalMessages = messageRepository.findByRoomId(room.getId()).size();
+            
+            System.out.println("Room has " + totalMessages + " messages total");
+            System.out.println("Retrieved " + messages.size() + " latest messages for preview");
+            
+            req.setAttribute("room", room);
+            req.setAttribute("messages", messages);
+            req.setAttribute("totalMessages", totalMessages);
 
             // Set attributes for JSP
             req.setAttribute("otherUser", otherUser);

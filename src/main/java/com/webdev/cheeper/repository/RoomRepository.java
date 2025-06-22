@@ -9,11 +9,14 @@ import java.util.Optional;
 public class RoomRepository extends BaseRepository {
 
     public void save(Room room) {
-        String sql = "INSERT INTO room (name, is_private, created_at) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO room (name, description, created_by, created_at, expires_at, is_active) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, room.getName());
-            stmt.setBoolean(2, room.isPrivate());
-            stmt.setTimestamp(3, new Timestamp(room.getCreatedAt().getTime()));
+            stmt.setString(2, room.getDescription());
+            stmt.setInt(3, room.getCreatedBy());
+            stmt.setTimestamp(4, new Timestamp(room.getCreatedAt().getTime()));
+            stmt.setTimestamp(5, room.getExpiresAt() != null ? new Timestamp(room.getExpiresAt().getTime()) : null);
+            stmt.setBoolean(6, room.isActive());
             
             stmt.executeUpdate();
             
@@ -27,7 +30,7 @@ public class RoomRepository extends BaseRepository {
     }
 
     public Optional<Room> findById(Integer id) {
-        String sql = "SELECT * FROM room WHERE id = ?";
+        String sql = "SELECT * FROM room WHERE room_id = ?";
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -42,7 +45,7 @@ public class RoomRepository extends BaseRepository {
 
     public List<Room> findByUserId(Integer userId) {
         String sql = "SELECT r.* FROM room r " +
-                    "JOIN room_participants rp ON r.id = rp.room_id " +
+                    "JOIN room_participants rp ON r.room_id = rp.room_id " +
                     "WHERE rp.user_id = ? " +
                     "ORDER BY r.created_at DESC";
         List<Room> rooms = new ArrayList<>();
@@ -60,11 +63,11 @@ public class RoomRepository extends BaseRepository {
 
     public Optional<Room> findPrivateRoomBetweenUsers(Integer user1Id, Integer user2Id) {
         String sql = "SELECT r.* FROM room r " +
-                    "JOIN room_participants rp1 ON r.id = rp1.room_id " +
-                    "JOIN room_participants rp2 ON r.id = rp2.room_id " +
-                    "WHERE r.is_private = true " +
-                    "AND rp1.user_id = ? " +
+                    "JOIN room_participants rp1 ON r.room_id = rp1.room_id " +
+                    "JOIN room_participants rp2 ON r.room_id = rp2.room_id " +
+                    "WHERE rp1.user_id = ? " +
                     "AND rp2.user_id = ? " +
+                    "AND r.is_active = true " +
                     "LIMIT 1";
         try (PreparedStatement stmt = db.prepareStatement(sql)) {
             stmt.setInt(1, user1Id);
@@ -92,10 +95,16 @@ public class RoomRepository extends BaseRepository {
 
     private Room mapResultSetToRoom(ResultSet rs) throws SQLException {
         Room room = new Room();
-        room.setId(rs.getInt("id"));
+        room.setId(rs.getInt("room_id"));
         room.setName(rs.getString("name"));
-        room.setPrivate(rs.getBoolean("is_private"));
+        room.setDescription(rs.getString("description"));
+        room.setCreatedBy(rs.getInt("created_by"));
         room.setCreatedAt(rs.getTimestamp("created_at"));
+        Timestamp expiresAt = rs.getTimestamp("expires_at");
+        if (expiresAt != null) {
+            room.setExpiresAt(expiresAt);
+        }
+        room.setActive(rs.getBoolean("is_active"));
         return room;
     }
 }

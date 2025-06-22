@@ -5,16 +5,25 @@ import java.util.Date;
 public class Room {
     private Integer id;
     private String name;
-    private boolean isPrivate;
+    private String description;
+    private Integer createdBy;
     private Date createdAt;
+    private Date expiresAt;
+    private boolean isActive;
 
-    public Room() {}
+    public Room() {
+        this.isActive = true; // Default value matching schema
+    }
 
-    public Room(Integer id, String name, boolean isPrivate, Date createdAt) {
+    public Room(Integer id, String name, String description, Integer createdBy, 
+                Date createdAt, Date expiresAt, boolean isActive) {
         this.id = id;
         this.name = name;
-        this.isPrivate = isPrivate;
+        this.description = description;
+        this.createdBy = createdBy;
         this.createdAt = createdAt;
+        this.expiresAt = expiresAt;
+        this.isActive = isActive;
     }
 
     // Getters
@@ -26,12 +35,24 @@ public class Room {
         return name;
     }
 
-    public boolean isPrivate() {
-        return isPrivate;
+    public String getDescription() {
+        return description;
+    }
+
+    public Integer getCreatedBy() {
+        return createdBy;
     }
 
     public Date getCreatedAt() {
         return createdAt;
+    }
+
+    public Date getExpiresAt() {
+        return expiresAt;
+    }
+
+    public boolean isActive() {
+        return isActive;
     }
 
     // Setters 
@@ -43,11 +64,23 @@ public class Room {
         this.name = name;
     }
 
-    public void setPrivate(boolean isPrivate) {
-        this.isPrivate = isPrivate;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCreatedBy(Integer createdBy) {
+        this.createdBy = createdBy;
     }
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setExpiresAt(Date expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 }
