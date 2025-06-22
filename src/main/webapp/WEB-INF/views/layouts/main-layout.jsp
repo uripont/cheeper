@@ -65,6 +65,11 @@
             
             // Initialize layout with active menu item
             $('[data-view="${view}"]').addClass('active');
+
+            // Load initial content if this is home view
+            if ('${view}' === 'home') {
+                App.loadFeed();
+            }
         });
     </script>
 </body>

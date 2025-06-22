@@ -134,10 +134,6 @@ const App = (function() {
         handleNavigation();
         handlePopState();
 
-        // Load initial feed if we're on the home page
-        if (window.location.pathname === '/app/home') {
-            loadFeed();
-        }
     }
 
     return {
