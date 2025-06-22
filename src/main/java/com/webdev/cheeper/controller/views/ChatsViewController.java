@@ -110,6 +110,28 @@ public class ChatsViewController extends HttpServlet {
             User otherUser = otherUserOpt.get();
             System.out.println("Found other user: " + otherUser.getId() + " (" + otherUser.getUsername() + ")");
 
+            // Try to find existing room
+            Optional<Room> roomOpt = roomRepository.findPrivateRoomBetweenUsers(currentUser.getId(), otherUserId);
+            System.out.println("Checking for existing room...");
+            
+            if (roomOpt.isPresent()) {
+                Room room = roomOpt.get();
+                System.out.println("Found room: " + room.getId());
+                
+                // Get latest messages for preview
+                List<Message> messages = messageRepository.findLatestByRoomId(room.getId(), 5);
+                int totalMessages = messageRepository.findByRoomId(room.getId()).size();
+                
+                System.out.println("Room has " + totalMessages + " messages total");
+                System.out.println("Retrieved " + messages.size() + " latest messages for preview");
+                
+                req.setAttribute("room", room);
+                req.setAttribute("messages", messages);
+                req.setAttribute("totalMessages", totalMessages);
+            } else {
+                System.out.println("No existing room found between users");
+            }
+
             // Set attributes for JSP
             req.setAttribute("otherUser", otherUser);
             

@@ -38,38 +38,90 @@
 
 .chat-placeholder {
     flex: 1;
-    padding: 40px;
-    text-align: center;
+    padding: 30px;
     background-color: #f7f9fa;
+    overflow-y: auto;
 }
 
 .chat-placeholder h3 {
     color: #1da1f2;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    text-align: center;
 }
 
-.user-ids {
+.chat-placeholder h4 {
+    color: #14171a;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.room-status, .messages-preview {
     background-color: #fff;
     border: 1px solid #e1e8ed;
     border-radius: 8px;
     padding: 20px;
-    margin: 20px auto;
-    max-width: 400px;
+    margin: 20px 0;
 }
 
-.user-ids p {
-    margin: 10px 0;
-    color: #14171a;
+.status-found {
+    color: #28a745;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 10px;
 }
 
-.user-ids strong {
-    color: #1da1f2;
-    margin-right: 8px;
+.status-not-found {
+    color: #6c757d;
+    font-size: 16px;
+    margin-bottom: 10px;
 }
 
-.placeholder-note {
+.status-note {
     color: #657786;
     font-style: italic;
+    font-size: 14px;
+}
+
+.preview-list {
+    margin-top: 15px;
+    border-top: 1px solid #e1e8ed;
+}
+
+.preview-item {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.preview-item:last-child {
+    border-bottom: none;
+}
+
+.preview-item .sender {
+    font-weight: bold;
+    color: #1da1f2;
+    white-space: nowrap;
+}
+
+.preview-item .content {
+    color: #14171a;
+    flex: 1;
+}
+
+.preview-item .time {
+    color: #657786;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+.no-messages {
+    text-align: center;
+    color: #657786;
+    font-style: italic;
+    padding: 20px 0;
 }
 
 .placeholder-message {

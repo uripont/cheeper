@@ -17,12 +17,47 @@
             </div>
 
             <div class="chat-placeholder">
-                <h3>Chat Room Placeholder</h3>
-                <div class="user-ids">
-                    <p><strong>Your User ID:</strong> ${currentUser.id}</p>
-                    <p><strong>Other User ID:</strong> ${otherUser.id}</p>
+                <h3>Chat Room Information</h3>
+                
+                <!-- Room Status -->
+                <div class="room-status">
+                    <h4>Room Details</h4>
+                    <c:choose>
+                        <c:when test="${not empty room}">
+                            <p class="status-found">Room Found! ID: ${room.id}</p>
+                            <p>Created: <fmt:formatDate value="${room.createdAt}" pattern="MMM d, yyyy HH:mm"/></p>
+                        </c:when>
+                        <c:otherwise>
+                            <p class="status-not-found">No room exists yet between you and ${otherUser.fullName}</p>
+                            <p class="status-note">A room will be created when you send your first message</p>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
-                <p class="placeholder-note">This will be a conversation between you and ${otherUser.fullName}</p>
+
+                <!-- Messages Preview -->
+                <c:if test="${not empty room}">
+                    <div class="messages-preview">
+                        <h4>Messages Preview</h4>
+                        <p>Total Messages: ${totalMessages}</p>
+                        
+                        <c:if test="${not empty messages}">
+                            <div class="preview-list">
+                                <c:forEach var="message" items="${messages}">
+                                    <div class="preview-item">
+                                        <span class="sender">${message.senderId eq currentUser.id ? 'You' : otherUser.fullName}:</span>
+                                        <span class="content">${message.content}</span>
+                                        <span class="time">
+                                            <fmt:formatDate value="${message.createdAt}" pattern="HH:mm"/>
+                                        </span>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </c:if>
+                        <c:if test="${empty messages}">
+                            <p class="no-messages">No messages yet in this conversation</p>
+                        </c:if>
+                    </div>
+                </c:if>
             </div>
         </c:when>
         <c:otherwise>
