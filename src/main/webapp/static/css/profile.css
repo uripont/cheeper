@@ -168,15 +168,15 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    border: 1px solid #e0245e;
+    border: 1px solid #DA2E4F;
     background: white;
-    color: #e0245e;
+    color: #DA2E4F;
     margin-top: 10px;
     align-self: flex-start;
 }
 
 .profile-view .follow-standard-btn[data-following="true"] {
-    background-color: #e0245e;
+    background-color: #DA2E4F;
     color: white;
 }
 

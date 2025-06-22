@@ -91,9 +91,9 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    border: 1px solid #e0245e;
+    border: 1px solid #DA2E4F;
     background: white;
-    color: #e0245e;
+    color: #DA2E4F;
 }
 
 .follow-button:hover {
@@ -101,13 +101,13 @@
 }
 
 .follow-button.unfollow {
-    background-color: #e0245e;
+    background-color: #DA2E4F;
     color: white;
 }
 
 .follow-button.unfollow:hover {
-    background-color: #e0245e;
-    border-color: #e0245e;
+    background-color: #DA2E4F;
+    border-color: #DA2E4F;
 }
 
 .follow-button:disabled {
