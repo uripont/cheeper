@@ -125,3 +125,24 @@
     margin: 0;
     font-size: 16px;
 }
+
+.header-title-container {
+    display: flex;
+    align-items: center;  /* Vertically center items */
+    gap: 10px;           /* Space between items */
+}
+
+.refresh-button {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  padding: 4px;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.refresh-button:hover {
+  transform: scale(1.3);
+}
