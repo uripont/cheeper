@@ -58,7 +58,13 @@ function handleSearch(query) {
 }
 
 $(document).ready(function() {
-    // For now, user cards are just placeholders
-    // Click handlers will be added later
+    // Handle user card clicks
+    $('.private-chat-user-item').on('click', function() {
+        let userId = $(this).data('user-id');
+        App.loadView('chats', { 
+            action: 'load-conversation',
+            otherUserId: userId 
+        }, '#mainPanel');
+    });
 });
 </script>
