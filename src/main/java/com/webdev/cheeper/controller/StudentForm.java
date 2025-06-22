@@ -59,18 +59,40 @@ public class StudentForm extends HttpServlet {
             }
             
             String email = (String) session.getAttribute("email");
-            Optional<User> userOpt = userService.getUserByEmail(email);
+            Optional<User> currentUserOpt = userService.getUserByEmail(email);
             
-            if (userOpt.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
+            if (currentUserOpt.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Current user not found");
                 return;
             }
             
-            // Get full student profile
-            Optional<Student> studentOpt = studentService.getProfile(userOpt.get().getId());
+            User currentUser = currentUserOpt.get();
+            User targetUser = currentUser; // Default to current user's profile
+            
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try {
+                    int userId = Integer.parseInt(userIdParam);
+                    // If current user is an ENTITY, they can edit any profile
+                    if (currentUser.getRoleType() == com.webdev.cheeper.model.RoleType.ENTITY) {
+                        Optional<User> targetUserOpt = userRepository.findById(userId);
+                        if (targetUserOpt.isEmpty()) {
+                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Target user not found");
+                            return;
+                        }
+                        targetUser = targetUserOpt.get();
+                    }
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
+                    return;
+                }
+            }
+
+            // Get full student profile for the target user
+            Optional<Student> studentOpt = studentService.getProfile(targetUser.getId());
             
             if (studentOpt.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Student profile not found");
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Student profile not found for target user");
                 return;
             }
             

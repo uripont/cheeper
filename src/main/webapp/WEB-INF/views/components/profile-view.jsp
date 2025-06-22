@@ -44,7 +44,7 @@
                         <span id="followingCount">${followingCount}</span> Following
                     </button>
                     <c:if test="${canEdit}">
-                        <a href="${pageContext.request.contextPath}/edit-profile" class="standard-btn">
+                        <a href="${pageContext.request.contextPath}/edit-profile?userId=${profile.id}" class="standard-btn">
                             Edit Profile
                         </a>
                     </c:if>

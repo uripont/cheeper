@@ -35,18 +35,38 @@ public class EditProfileServlet extends HttpServlet {
         }
         
         String email = (String) session.getAttribute("email");
-        Optional<User> userOpt = userRepository.findByEmail(email);
+        Optional<User> currentUserOpt = userRepository.findByEmail(email);
         
-        if (userOpt.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
+        if (currentUserOpt.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Current user not found");
             return;
         }
         
-        User user = userOpt.get();
-        String formPath;
+        User currentUser = currentUserOpt.get();
+        User targetUser = currentUser; // Default to current user's profile
         
-        // Determine which form to use based on role type
-        switch (user.getRoleType()) {
+        String userIdParam = request.getParameter("userId");
+        if (userIdParam != null && !userIdParam.isEmpty()) {
+            try {
+                int userId = Integer.parseInt(userIdParam);
+                // If current user is an ENTITY, they can edit any profile
+                if (currentUser.getRoleType() == com.webdev.cheeper.model.RoleType.ENTITY) {
+                    Optional<User> targetUserOpt = userRepository.findById(userId);
+                    if (targetUserOpt.isEmpty()) {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND, "Target user not found");
+                        return;
+                    }
+                    targetUser = targetUserOpt.get();
+                }
+            } catch (NumberFormatException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
+                return;
+            }
+        }
+        
+        String formPath;
+        // Determine which form to use based on the target user's role type
+        switch (targetUser.getRoleType()) {
             case STUDENT:
                 formPath = "/auth/student-form";
                 break;
@@ -57,11 +77,11 @@ public class EditProfileServlet extends HttpServlet {
                 formPath = "/auth/association-form";
                 break;
             default:
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid role type");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid role type for target user");
                 return;
         }
         
-        // Redirect to appropriate form with edit mode parameter
-        response.sendRedirect(request.getContextPath() + formPath + "?mode=edit");
+        // Redirect to appropriate form with edit mode and target user ID parameters
+        response.sendRedirect(request.getContextPath() + formPath + "?mode=edit&userId=" + targetUser.getId());
     }
 }
