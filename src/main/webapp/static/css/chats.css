@@ -11,6 +11,7 @@
     padding: 15px;
     border-bottom: 1px solid #333;
     background-color: #1A1A1A;
+    flex-shrink: 0;
 }
 
 .chat-user-info {
@@ -39,26 +40,15 @@
     color: #777;
 }
 
-.chat-placeholder {
+.messages-preview {
     flex: 1;
-    padding: 20px;
-    background-color: #1C1C1C;
     overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    justify-content: flex-end;
 }
 
-.chat-placeholder h3 {
-    color: #DA2E4F;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.chat-placeholder h4 {
-    color: #F5F5F5;
-    margin-bottom: 10px;
-    font-size: 16px;
-}
-
-.room-status, .messages-preview {
+.room-status {
     background-color: #2A2A2A;
     border: 1px solid #333;
     border-radius: 8px;
@@ -84,13 +74,12 @@
     font-style: italic;
     font-size: 14px;
 }
+
 .messages-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding: 0;
-    flex-grow: 1;
-    overflow-y: auto;
 }
 
 .message-bubble {
@@ -143,6 +132,7 @@
     padding: 15px;
     border-top: 1px solid #333;
     background-color: #1A1A1A;
+    flex-shrink: 0;
 }
 
 .message-input-container form {

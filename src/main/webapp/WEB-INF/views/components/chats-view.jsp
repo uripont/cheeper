@@ -16,32 +16,12 @@
                 </div>
             </div>
 
-            <div class="chat-placeholder">
-                <h3>Chat Room Information</h3>
-                
-                <!-- Room Status -->
-                <div class="room-status">
-                    <h4>Room Details</h4>
-                    <c:choose>
-                        <c:when test="${not empty room}">
-                            <p class="status-found">Room Found! ID: ${room.id}</p>
-                            <p>Created: <fmt:formatDate value="${room.createdAt}" pattern="MMM d, yyyy HH:mm"/></p>
-                        </c:when>
-                        <c:otherwise>
-                            <p class="status-not-found">No room exists yet between you and ${otherUser.fullName}</p>
-                            <p class="status-note">A room will be created when you send your first message</p>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-
-                <!-- Messages Preview -->
-                <c:if test="${not empty room}">
-                    <div class="messages-preview">
-                        <h4>Messages Preview</h4>
-                        <p>Total Messages: ${totalMessages}</p>
-                        
+            <%-- Main chat area --%>
+            <c:choose>
+                <c:when test="${not empty room}">
+                    <div class="messages-preview"> <%-- This will be the scrollable area --%>
                         <c:if test="${not empty messages}">
-                            <div class="messages-list"> <%-- New container for bubbles --%>
+                            <div class="messages-list"> <%-- Container for bubbles --%>
                                 <c:forEach var="message" items="${messages}">
                                     <div class="message-bubble ${message.senderId eq currentUser.id ? 'my-message' : 'other-message'}">
                                         <div class="message-content">${message.content}</div>
@@ -56,21 +36,25 @@
                             <p class="no-messages">No messages yet in this conversation</p>
                         </c:if>
                     </div>
-                </c:if>
 
-                <!-- Message Input Form -->
-                <c:if test="${not empty room}">
-                    <div class="message-input-container"> <%-- New container class --%>
+                    <%-- Message Input Form --%>
+                    <div class="message-input-container"> <%-- This will be fixed at the bottom --%>
                         <form id="messageForm" action="${pageContext.request.contextPath}/views/chats" method="post">
                             <input type="hidden" name="action" value="send-message">
                             <input type="hidden" name="roomId" value="${room.id}">
                             <input type="hidden" name="otherUserId" value="${otherUser.id}"> <%-- Pass otherUserId for redirect --%>
-                            <input type="text" name="content" placeholder="Type your message..." required class="message-input-field"> <%-- New input class --%>
-                            <button type="submit" class="send-button">Send</button> <%-- New button class --%>
+                            <input type="text" name="content" placeholder="Type your message..." required class="message-input-field"> <%-- Input class --%>
+                            <button type="submit" class="send-button">Send</button> <%-- Button class --%>
                         </form>
                     </div>
-                </c:if>
-            </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="placeholder-message">
+                        <h3>Welcome to Chat</h3>
+                        <p>Select a user to start messaging</p>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </c:when>
         <c:otherwise>
             <div class="placeholder-message">
