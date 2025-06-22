@@ -137,5 +137,6 @@ public class EntityForm extends HttpServlet {
             
         } catch (Exception e) {
             e.printStackTrace();
+        }
     }
 }
