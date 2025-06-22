@@ -51,8 +51,8 @@
                                     <fmt:formatDate value="${post.createdAt}" pattern="MMM dd, yyyy HH:mm"/>
                                 </span>
 
-                                <!-- Delete button - only show if current user owns the post -->
-                                <c:if test="${currentUser != null && currentUser.id == post.userId}">
+                                <!-- Delete button - show if current user owns the post or is an ENTITY -->
+                                <c:if test="${currentUser != null && (currentUser.id == post.userId || currentUser.roleType == 'ENTITY')}">
                                     <button class="delete-btn" title="Delete post" data-post-id="${post.id}">
                                         <img src="${pageContext.request.contextPath}/static/images/trash.circle.fill.png" alt="Delete" >
                                     </button>

@@ -84,7 +84,7 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
             // Redirect to the appropriate form based on the role
             try (UserRepository userRepository = new UserRepository();) {
             	UserService userService = new UserService(userRepository);
-                if (!userService.emailExists(email)) {
+                if (!userService.emailExists(email, null)) {
                     if (role == RoleType.STUDENT) {
                         request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
                     } else if (role == RoleType.ENTITY) {
@@ -93,6 +93,11 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
                         request.getRequestDispatcher("/WEB-INF/views/onboarding/association-form.jsp").forward(request, response);
                     }
                 } else {
+                    // User exists, retrieve full user object and store in session
+                    com.webdev.cheeper.model.User user = userService.getUserByEmail(email).orElse(null);
+                    if (user != null) {
+                        session.setAttribute("currentUser", user);
+                    }
                     response.sendRedirect(request.getContextPath() + "/home");
                 }
             }

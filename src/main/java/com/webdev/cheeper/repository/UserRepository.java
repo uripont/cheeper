@@ -15,9 +15,19 @@ import com.webdev.cheeper.model.User;
 public class UserRepository extends BaseRepository {
     
     public boolean usernameExists(String username) {
-        String query = "SELECT COUNT(*) FROM users WHERE username = ?";
-        try (PreparedStatement stmt = db.prepareStatement(query)) {
+        return usernameExists(username, null);
+    }
+
+    public boolean usernameExists(String username, Integer excludeUserId) {
+        StringBuilder queryBuilder = new StringBuilder("SELECT COUNT(*) FROM users WHERE username = ?");
+        if (excludeUserId != null) {
+            queryBuilder.append(" AND id != ?");
+        }
+        try (PreparedStatement stmt = db.prepareStatement(queryBuilder.toString())) {
             stmt.setString(1, username);
+            if (excludeUserId != null) {
+                stmt.setInt(2, excludeUserId);
+            }
             ResultSet rs = stmt.executeQuery();
             return rs.next() && rs.getInt(1) > 0;
         } catch (SQLException e) {
@@ -27,9 +37,20 @@ public class UserRepository extends BaseRepository {
     }
 
     public boolean emailExists(String email) {
-        String query = "SELECT COUNT(*) FROM users WHERE email = ?";
-        try (PreparedStatement stmt = db.prepareStatement(query)) {
+        return emailExists(email, null);
+    }
+
+    public boolean emailExists(String email, Integer excludeUserId) {
+        StringBuilder queryBuilder = new StringBuilder("SELECT COUNT(*) FROM users WHERE email = ?");
+        if (excludeUserId != null) {
+            queryBuilder.append(" AND id != ?");
+        }
+
+        try (PreparedStatement stmt = db.prepareStatement(queryBuilder.toString())) {
             stmt.setString(1, email);
+            if (excludeUserId != null) {
+                stmt.setInt(2, excludeUserId);
+            }
             ResultSet rs = stmt.executeQuery();
             return rs.next() && rs.getInt(1) > 0;
         } catch (SQLException e) {
@@ -280,5 +301,15 @@ public class UserRepository extends BaseRepository {
         return users;
     }
 
+    public boolean delete(int userId) {
+        String query = "DELETE FROM users WHERE id = ?";
+        try (PreparedStatement stmt = db.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
-
