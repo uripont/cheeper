@@ -6,13 +6,13 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/post.css">
 
 <div class="timeline-view">
-    <!--Timeline Header (for DEBUG purpouses delete before finishing) -->
+    <!--Timeline Header (for DEBUG purpouses delete before finishing)
     <div class="timeline-view__header">
         Timeline - ${timeline_type}
         <div style="font-size: 0.8em; font-weight: normal; color: #657786;">
             Posts found: ${posts.size()}
         </div>
-    </div>
+    </div> -->
 
     <c:choose>
         <c:when test="${empty posts}">
@@ -34,14 +34,14 @@
                                 <c:set var="author" value="${postAuthors[post.id]}" />
                                 <c:choose>
                                     <c:when test="${not empty author}">
-                                        <img src="${pageContext.request.contextPath}/local-images/${author.picture}" alt="${author.fullName}" class="user-avatar">                                
+                                        <img src="${pageContext.request.contextPath}/local-images/profile/${author.picture}" alt="${author.fullName}" class="user-avatar">                                
                                         <div class="user-details">
                                             <strong>${author.fullName}</strong>
                                             <span class="username">@${author.username}</span>
                                         </div>
                                     </c:when>
                                     <c:otherwise>
-                                        <img src="${pageContext.request.contextPath}/local-images/default.png" alt="Unknown User" class="user-avatar">
+                                        <img src="${pageContext.request.contextPath}/local-images/profiles/default.png" alt="Unknown User" class="user-avatar">
                                         <div class="user-details">
                                             <strong>Unknown User</strong>
                                         </div>
