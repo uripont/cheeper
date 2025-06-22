@@ -39,7 +39,7 @@
 
 <script>
     $(document).ready(function() {
-        // Load users list in right sidebar
-        App.loadView('users', { context: 'chats' }, '#rightSidebar');
+        // Load private chat users list in right sidebar
+        App.loadView('chats', { component: 'private-chat-users' }, '#rightSidebar');
     });
 </script>

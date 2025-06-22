@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/main-page.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/profile.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/users-list.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/private-chat-users.css" />
     <link rel="icon" href="${pageContext.request.contextPath}/static/images/upf.jpg" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="${pageContext.request.contextPath}/static/js/app.js" defer></script>

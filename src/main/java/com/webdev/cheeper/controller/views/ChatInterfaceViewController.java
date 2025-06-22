@@ -11,8 +11,8 @@ import com.webdev.cheeper.repository.*;
 import java.io.*;
 import java.util.Optional;
 
-@WebServlet("/views/chats")
-public class ChatsViewController extends HttpServlet {
+@WebServlet("/views/chats-interface")
+public class ChatInterfaceViewController extends HttpServlet {
     
     private UserRepository userRepository;
     
@@ -44,12 +44,8 @@ public class ChatsViewController extends HttpServlet {
         // Set attributes for JSP
         req.setAttribute("currentUser", currentUser);
 
-        // Forward to appropriate view
+        // Forward to chat interface view
         resp.setContentType("text/html;charset=UTF-8");
-        if (req.getParameter("component") != null && req.getParameter("component").equals("private-chat-users")) {
-            req.getRequestDispatcher("/WEB-INF/views/components/private-chat-users-view.jsp").forward(req, resp);
-        } else {
-            req.getRequestDispatcher("/WEB-INF/views/components/chats-view.jsp").forward(req, resp);
-        }
+        req.getRequestDispatcher("/WEB-INF/views/components/chats-view.jsp").forward(req, resp);
     }
 }
