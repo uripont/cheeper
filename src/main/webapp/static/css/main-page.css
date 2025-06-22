@@ -23,6 +23,20 @@ html, body {
   overflow: hidden;
 }
 
+/* Logo */
+.logo {
+    position: fixed;
+    top: 30px;
+    left: 20px;
+    z-index: 1000;
+    display: block;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+}
+
 /* Left Sidebar */
 .sidebar {
   position: fixed;
