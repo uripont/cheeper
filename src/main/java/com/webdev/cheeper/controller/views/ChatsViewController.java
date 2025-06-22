@@ -156,13 +156,13 @@ public class ChatsViewController extends HttpServlet {
                 System.out.println("Created new room: " + room.getId());
             }
             
-            // Get latest messages for preview
-            List<Message> messages = messageRepository.findLatestByRoomId(room.getId(), 5);
-            int totalMessages = messageRepository.findByRoomId(room.getId()).size();
-            
+            // Get all messages for the room (not just latest 5)
+            List<Message> messages = messageRepository.findByRoomId(room.getId());
+            int totalMessages = messages.size();
+
             System.out.println("Room has " + totalMessages + " messages total");
-            System.out.println("Retrieved " + messages.size() + " latest messages for preview");
-            
+            System.out.println("Retrieved all messages for chat view");
+
             req.setAttribute("room", room);
             req.setAttribute("messages", messages);
             req.setAttribute("totalMessages", totalMessages);

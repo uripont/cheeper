@@ -42,6 +42,10 @@
 
 .messages-preview {
     flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    min-height: 0;
+    max-height: 100%;
 }
 
 .room-status {
@@ -49,7 +53,7 @@
     border: 1px solid #333;
     border-radius: 8px;
     padding: 15px;
-    margin: 15px 0;
+    margin: 15px;
 }
 
 .status-found {
