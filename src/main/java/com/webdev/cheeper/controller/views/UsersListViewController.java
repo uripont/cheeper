@@ -92,16 +92,6 @@ public class UsersListViewController extends HttpServlet {
                     users = userService.getRecommendedUsers(10, currentUser.getId());
                     contextTitle = "Suggested Users";
                     break;
-                    
-                case "chats":
-                    if (currentUser == null) {
-                        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                        return;
-                    }
-                    // TODO: Implement chat users (following users)
-                    users = userService.getRecommendedUsers(10, currentUser.getId());
-                    contextTitle = "Chat Users";
-                    break;
 
                 case "followers":
                 case "following":
