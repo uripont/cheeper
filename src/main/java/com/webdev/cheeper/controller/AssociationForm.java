@@ -127,6 +127,14 @@ public class AssociationForm extends HttpServlet {
                 try {
                     int userId = Integer.parseInt(userIdParam);
                     association.setId(userId);
+                    // Fetch existing user to get current picture
+                    Optional<User> existingUserOpt = userRepository.findById(userId);
+                    if (existingUserOpt.isPresent()) {
+                        association.setPicture(existingUserOpt.get().getPicture());
+                    } else {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND, "Target user not found for update");
+                        return;
+                    }
                 } catch (NumberFormatException e) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
                     return;
@@ -139,7 +147,11 @@ public class AssociationForm extends HttpServlet {
                     return;
                 }
                 association.setId(userOpt.get().getId());
+                association.setPicture(userOpt.get().getPicture()); // Set existing picture for current user
             }
+        } else {
+            // For registration mode, ensure picture is not null if no file is uploaded
+            association.setPicture("default.png"); 
         }
 
         association.setFullName(request.getParameter("fullName"));
@@ -148,7 +160,7 @@ public class AssociationForm extends HttpServlet {
         association.setBiography(request.getParameter("biography"));
         association.setRoleType(RoleType.ASSOCIATION);
 
-        // Set default verification status (PENDING)
+        // Set default verification status
         association.setVerificationStatus(VerfStatus.PENDING);
         association.setVerificationDate(new java.sql.Timestamp(System.currentTimeMillis()));
 

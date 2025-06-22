@@ -124,6 +124,14 @@ public class EntityForm extends HttpServlet {
                 try {
                     int userId = Integer.parseInt(userIdParam);
                     entity.setId(userId);
+                    // Fetch existing user to get current picture
+                    Optional<User> existingUserOpt = userRepository.findById(userId);
+                    if (existingUserOpt.isPresent()) {
+                        entity.setPicture(existingUserOpt.get().getPicture());
+                    } else {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND, "Target user not found for update");
+                        return;
+                    }
                 } catch (NumberFormatException e) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
                     return;
@@ -136,7 +144,11 @@ public class EntityForm extends HttpServlet {
                     return;
                 }
                 entity.setId(userOpt.get().getId());
+                entity.setPicture(userOpt.get().getPicture()); // Set existing picture for current user
             }
+        } else {
+            // For registration mode, ensure picture is not null if no file is uploaded
+            entity.setPicture("default.png"); 
         }
    
         try {

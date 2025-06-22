@@ -49,7 +49,7 @@ public class AssociationService extends UserService {
         
         if (errors.isEmpty()) {
         	try {
-                savePicture(association, filePart);
+                updatePicture(association, filePart); // Use the new updatePicture method
                 associationRepository.update(association);
             } catch (Exception e) {
                 errors.put("system", "Update failed: " + e.getMessage());

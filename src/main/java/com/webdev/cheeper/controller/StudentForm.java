@@ -128,6 +128,14 @@ public class StudentForm extends HttpServlet {
                 try {
                     int userId = Integer.parseInt(userIdParam);
                     student.setId(userId);
+                    // Fetch existing user to get current picture
+                    Optional<User> existingUserOpt = userRepository.findById(userId);
+                    if (existingUserOpt.isPresent()) {
+                        student.setPicture(existingUserOpt.get().getPicture());
+                    } else {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND, "Target user not found for update");
+                        return;
+                    }
                 } catch (NumberFormatException e) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
                     return;
@@ -140,8 +148,12 @@ public class StudentForm extends HttpServlet {
                     return;
                 }
                 student.setId(userOpt.get().getId());
+                student.setPicture(userOpt.get().getPicture()); // Set existing picture for current user
             }
-        } 
+        } else {
+            // For registration mode, ensure picture is not null if no file is uploaded
+            student.setPicture("default.png"); 
+        }
         
         Map<String, String> errors = new HashMap<>();
        

@@ -44,6 +44,18 @@ public class UserService {
         user.setPicture(fileName);
         
     }
+
+    public void updatePicture(User user, Part filePart) throws IOException {
+        if (filePart != null && filePart.getSize() > 0) {
+            System.out.println("Updating picture for user: " + user.getUsername());
+            String fileName = imageService.storeImage(filePart, user.getUsername());
+            user.setPicture(fileName);
+        } else {
+            System.out.println("No new picture provided for user: " + user.getUsername() + ". Retaining existing picture.");
+            // Do not update the picture field if no new file is provided
+            // The existing picture reference in the user object (which comes from db) will be retained
+        }
+    }
     
     public String getPicture(String username) {
         Optional<User> userOpt = userRepository.findByUsername(username);

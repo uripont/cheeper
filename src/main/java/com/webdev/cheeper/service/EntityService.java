@@ -51,7 +51,7 @@ public class EntityService extends UserService {
         
         if (errors.isEmpty()) {
         	try {
-                savePicture(entity, filePart);
+                updatePicture(entity, filePart); // Use the new updatePicture method
                 entityRepository.update(entity);
             } catch (Exception e) {
                 errors.put("system", "Update failed: " + e.getMessage());
