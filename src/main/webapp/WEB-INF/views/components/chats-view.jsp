@@ -41,14 +41,13 @@
                         <p>Total Messages: ${totalMessages}</p>
                         
                         <c:if test="${not empty messages}">
-                            <div class="preview-list">
+                            <div class="messages-list"> <%-- New container for bubbles --%>
                                 <c:forEach var="message" items="${messages}">
-                                    <div class="preview-item">
-                                        <span class="sender">${message.senderId eq currentUser.id ? 'You' : otherUser.fullName}:</span>
-                                        <span class="content">${message.content}</span>
-                                        <span class="time">
+                                    <div class="message-bubble ${message.senderId eq currentUser.id ? 'my-message' : 'other-message'}">
+                                        <div class="message-content">${message.content}</div>
+                                        <div class="message-time">
                                             <fmt:formatDate value="${message.createdAt}" pattern="HH:mm"/>
-                                        </span>
+                                        </div>
                                     </div>
                                 </c:forEach>
                             </div>
@@ -61,13 +60,13 @@
 
                 <!-- Message Input Form -->
                 <c:if test="${not empty room}">
-                    <div class="message-input">
+                    <div class="message-input-container"> <%-- New container class --%>
                         <form id="messageForm" action="${pageContext.request.contextPath}/views/chats" method="post">
                             <input type="hidden" name="action" value="send-message">
                             <input type="hidden" name="roomId" value="${room.id}">
                             <input type="hidden" name="otherUserId" value="${otherUser.id}"> <%-- Pass otherUserId for redirect --%>
-                            <input type="text" name="content" placeholder="Type your message..." required>
-                            <button type="submit">Send</button>
+                            <input type="text" name="content" placeholder="Type your message..." required class="message-input-field"> <%-- New input class --%>
+                            <button type="submit" class="send-button">Send</button> <%-- New button class --%>
                         </form>
                     </div>
                 </c:if>
@@ -106,6 +105,8 @@
                     // This assumes the server redirects to the GET endpoint for the chat view
                     // The redirect handles the view update
                     console.log("Message sent successfully, redirecting...");
+                    // Clear the input field after successful send
+                    form.find('input[name="content"]').val('');
                 },
                 error: function(xhr, status, error) {
                     console.error("Error sending message:", error);

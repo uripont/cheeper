@@ -3,12 +3,14 @@
     flex-direction: column;
     height: 100%;
     overflow: hidden;
+    background-color: #1C1C1C;
+    color: #F5F5F5;
 }
 
 .chat-header {
     padding: 15px;
-    border-bottom: 1px solid #e1e8ed;
-    background-color: #fff;
+    border-bottom: 1px solid #333;
+    background-color: #1A1A1A;
 }
 
 .chat-user-info {
@@ -30,107 +32,167 @@
 
 .chat-user-name {
     font-weight: bold;
+    color: #F5F5F5;
 }
 
 .chat-user-username {
-    color: #657786;
+    color: #777;
 }
 
 .chat-placeholder {
     flex: 1;
-    padding: 30px;
-    background-color: #f7f9fa;
+    padding: 20px;
+    background-color: #1C1C1C;
     overflow-y: auto;
 }
 
 .chat-placeholder h3 {
-    color: #1da1f2;
-    margin-bottom: 25px;
+    color: #DA2E4F;
+    margin-bottom: 20px;
     text-align: center;
 }
 
 .chat-placeholder h4 {
-    color: #14171a;
-    margin-bottom: 15px;
+    color: #F5F5F5;
+    margin-bottom: 10px;
     font-size: 16px;
 }
 
 .room-status, .messages-preview {
-    background-color: #fff;
-    border: 1px solid #e1e8ed;
+    background-color: #2A2A2A;
+    border: 1px solid #333;
     border-radius: 8px;
-    padding: 20px;
-    margin: 20px 0;
+    padding: 15px;
+    margin: 15px 0;
 }
 
 .status-found {
-    color: #28a745;
+    color: #4CAF50;
     font-weight: bold;
     font-size: 16px;
     margin-bottom: 10px;
 }
 
 .status-not-found {
-    color: #6c757d;
+    color: #777;
     font-size: 16px;
     margin-bottom: 10px;
 }
 
 .status-note {
-    color: #657786;
+    color: #666;
     font-style: italic;
     font-size: 14px;
 }
-
-.preview-list {
-    margin-top: 15px;
-    border-top: 1px solid #e1e8ed;
-}
-
-.preview-item {
-    padding: 12px;
-    border-bottom: 1px solid #f0f0f0;
+.messages-list {
     display: flex;
-    align-items: baseline;
-    gap: 8px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0;
+    flex-grow: 1;
+    overflow-y: auto;
 }
 
-.preview-item:last-child {
-    border-bottom: none;
+.message-bubble {
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 18px;
+    word-wrap: break-word;
+    position: relative;
+    font-size: 15px;
+    line-height: 1.4;
 }
 
-.preview-item .sender {
-    font-weight: bold;
-    color: #1da1f2;
-    white-space: nowrap;
+.my-message {
+    background-color: #DA2E4F;
+    color: #F5F5F5;
+    margin-left: auto;
+    border-bottom-right-radius: 2px;
 }
 
-.preview-item .content {
-    color: #14171a;
-    flex: 1;
+.other-message {
+    background-color: #333;
+    color: #F5F5F5;
+    margin-right: auto;
+    border-bottom-left-radius: 2px;
 }
 
-.preview-item .time {
-    color: #657786;
-    font-size: 0.9em;
-    white-space: nowrap;
+.message-content {
+    margin-bottom: 5px;
+}
+
+.message-time {
+    font-size: 0.8em;
+    color: rgba(245, 245, 245, 0.7);
+    text-align: right;
+    display: block;
+}
+
+.other-message .message-time {
+     color: rgba(245, 245, 245, 0.5);
 }
 
 .no-messages {
     text-align: center;
-    color: #657786;
+    color: #777;
     font-style: italic;
     padding: 20px 0;
 }
 
+.message-input-container {
+    padding: 15px;
+    border-top: 1px solid #333;
+    background-color: #1A1A1A;
+}
+
+.message-input-container form {
+    display: flex;
+    gap: 10px;
+}
+
+.message-input-field {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 1px solid #333;
+    border-radius: 20px;
+    background-color: #1C1C1C;
+    color: #F5F5F5;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s ease-in-out;
+}
+
+.message-input-field::placeholder {
+    color: #666;
+}
+
+.message-input-field:focus {
+    border-color: #DA2E4F;
+}
+
+.send-button {
+    padding: 10px 20px;
+    background-color: #DA2E4F;
+    color: #F5F5F5;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.send-button:hover {
+    background-color: #B41C18;
+}
+
 .placeholder-message {
     text-align: center;
-    color: #657786;
+    color: #777;
     padding: 40px;
 }
 
 .placeholder-message h3 {
-    color: #1da1f2;
+    color: #DA2E4F;
     margin-bottom: 10px;
 }
