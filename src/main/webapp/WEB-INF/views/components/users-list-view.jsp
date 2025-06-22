@@ -4,7 +4,12 @@
 
 <div class="users-list-view">
     <div class="users-list-header">
-        <h3>${context}</h3>
+        <div class="header-title-container">
+            <h3>${context}</h3>
+            <c:if test="${context == 'Suggested Users'}">
+                <button class="refresh-button" onclick="refreshSuggestions()">🎲</button>
+            </c:if>
+        </div>
         <c:if test="${context.startsWith('Search')}">
             <div class="search-input-container">
                 <input type="text" class="search-input" placeholder="Search users..." 
@@ -56,6 +61,10 @@
 </div>
 
 <script>
+function refreshSuggestions() {
+    App.loadView('users', { context: 'suggestions' }, '#rightSidebar');
+}
+
 let searchTimeout;
 
 function handleSearch(query) {
