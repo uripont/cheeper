@@ -43,8 +43,10 @@ public class UserService {
     }
     
     public void savePicture(User user, Part filePart) throws IOException {
+        System.out.println("Saving picture for user: " + user.getUsername());
         String fileName = imageService.storeImage(filePart, user.getUsername());
         user.setPicture(fileName);
+        
     }
     
     public String getPicture(String username) {

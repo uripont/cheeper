@@ -27,18 +27,11 @@ public class AssociationRepository extends UserRepository {
         }
     }
 
-    public void update(Association association) {
-        String userQuery = "UPDATE users SET full_name = ?, email = ?, biography = ? WHERE id = ?";
-        try (PreparedStatement stmt = db.prepareStatement(userQuery)) {
-            stmt.setString(1, association.getFullName());
-            stmt.setString(2, association.getEmail());
-            stmt.setString(3, association.getBiography());
-            stmt.setInt(4, association.getId());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+    public void update(Association association){
+        super.update(association);
+        updateAssociationDetails(association);
+    }
+    public void updateAssociationDetails(Association association) {
         String assocQuery = "UPDATE association SET verification_status = ?, verification_date = ? WHERE association_id = ?";
         try (PreparedStatement stmt = db.prepareStatement(assocQuery)) {
             stmt.setString(1, association.getVerificationStatus().name());

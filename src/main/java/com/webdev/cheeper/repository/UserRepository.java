@@ -59,6 +59,21 @@ public class UserRepository extends BaseRepository {
         }
     }
 
+    public void update(User user) {
+        String query = "UPDATE users SET full_name = ?, email = ?, username = ?, biography = ?, picture = ? WHERE id = ?";
+        try (PreparedStatement stmt = db.prepareStatement(query)) {
+            stmt.setString(1, user.getFullName());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getUsername());
+            stmt.setString(4, user.getBiography());
+            stmt.setString(5, user.getPicture());
+            stmt.setInt(6, user.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Optional<User> findByUsername(String username) {
         String query = "SELECT * FROM users WHERE username = ?";
         try (PreparedStatement stmt = db.prepareStatement(query)) {
