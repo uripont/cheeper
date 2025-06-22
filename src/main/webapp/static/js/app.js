@@ -62,9 +62,9 @@ const App = (function() {
                         loadView('users', { context: 'suggestions' }, '#rightSidebar');
                         break;
                     case 'chats':
-                        // Load chats view and users list
+                        // Load chats view and private chat users list
                         loadView('chats');
-                        loadView('users', { context: 'chats' }, '#rightSidebar');
+                        loadView('chats', { component: 'private-chat-users' }, '#rightSidebar');
                         break;
                     default:
                         loadView(view);
@@ -110,9 +110,9 @@ const App = (function() {
                         loadView('users', { context: 'suggestions' }, '#rightSidebar');
                         break;
                     case 'chats':
-                        // Load chats view and users list
+                        // Load chats view and private chat users list
                         loadView('chats');
-                        loadView('users', { context: 'chats' }, '#rightSidebar');
+                        loadView('chats', { component: 'private-chat-users' }, '#rightSidebar');
                         break;
                     default:
                         loadView(view);

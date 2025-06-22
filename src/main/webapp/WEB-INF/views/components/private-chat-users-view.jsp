@@ -44,28 +44,17 @@
 </div>
 
 <script>
-let searchTimeout;
-
 function handleSearch(query) {
-    clearTimeout(searchTimeout);
-    
-    if (query.trim().length === 0) {
-        // Load default users list
-        App.loadView('private-chat-users', { context: 'search' }, '#rightSidebar');
-        return;
-    }
-    
-    if (query.trim().length < 2) {
-        return;
-    }
-    
-    searchTimeout = setTimeout(() => {
-        // Load users with search query
-        App.loadView('private-chat-users', { 
-            context: 'search', 
+    if (query.trim().length >= 2) {
+        App.loadView('chats', { 
+            component: 'private-chat-users',
             q: query.trim() 
         }, '#rightSidebar');
-    }, 300);
+    } else if (query.trim().length === 0) {
+        App.loadView('chats', { 
+            component: 'private-chat-users'
+        }, '#rightSidebar');
+    }
 }
 
 $(document).ready(function() {
