@@ -65,6 +65,7 @@
 </div>
 
 <script>
+(function() {
 function refreshSuggestions() {
     App.loadView('users', { context: 'suggestions' }, '#rightSidebar');
 }
@@ -217,3 +218,4 @@ $(document).ready(function() {
         }
     });
 });
+})();
