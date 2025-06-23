@@ -104,8 +104,9 @@ public class UserService {
         Map<String, String> errors = validate(user, "register");
         if (errors.isEmpty()) {
             try {
-                savePicture(user, filePart);
-                userRepository.save(user);
+                userRepository.save(user); // Save user first to get generated ID
+                savePicture(user, filePart); // Now user.getId() is available
+                userRepository.update(user); // Update user with the picture filename
             } catch (Exception e) {
                 errors.put("system", "Registration failed: " + e.getMessage());
                 e.printStackTrace(); 

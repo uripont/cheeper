@@ -36,8 +36,9 @@ public class EntityService extends UserService {
         
         if (errors.isEmpty()) {
             try {
-                savePicture(entity, filePart);
-                entityRepository.save(entity);
+                entityRepository.save(entity); // This calls super.save(entity) and then saves entity details
+                savePicture(entity, filePart); // Now user.getId() is available (invisible error otherwise)
+                entityRepository.update(entity); // Update entity with the picture filename and other entity-specific data
             } catch (Exception e) {
                 errors.put("system", "Registration failed: " + e.getMessage());
                 e.printStackTrace(); 

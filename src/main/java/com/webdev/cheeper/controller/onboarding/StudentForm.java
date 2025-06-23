@@ -120,8 +120,8 @@ public class StudentForm extends HttpServlet {
         }
 
         String email = (String) session.getAttribute("email");
+        String name = (String) session.getAttribute("name");
 
-        
         if ("edit".equals(mode)) {
             String userIdParam = request.getParameter("userId");
             if (userIdParam != null && !userIdParam.isEmpty()) {
@@ -150,17 +150,23 @@ public class StudentForm extends HttpServlet {
                 student.setId(userOpt.get().getId());
                 student.setPicture(userOpt.get().getPicture()); // Set existing picture for current user
             }
-        } else {
+        } else { // Register mode
             // For registration mode, ensure picture is not null if no file is uploaded
             student.setPicture("default.png"); 
+            // For new registrations, get email and full name from session
+            student.setFullName(name);
+            student.setEmail(email);
         }
         
         Map<String, String> errors = new HashMap<>();
        
         try {
             // Manually decode and populate fields (simpler approach)
-            student.setFullName(request.getParameter("fullName"));
-            student.setEmail(request.getParameter("email"));
+            // FullName and Email are now handled above for register mode
+            if (!"register".equals(mode)) { // Only get from parameter if not register mode
+                student.setFullName(request.getParameter("fullName"));
+                student.setEmail(request.getParameter("email"));
+            }
             student.setUsername(request.getParameter("username"));
             student.setBiography(request.getParameter("biography"));
             student.setRoleType(RoleType.STUDENT);	
