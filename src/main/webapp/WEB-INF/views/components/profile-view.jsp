@@ -4,7 +4,6 @@
 <%@ page import="com.webdev.cheeper.model.User, com.webdev.cheeper.model.Association" %>
 <%@ page import="com.webdev.cheeper.model.RoleType" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cheeper" uri="http://cheeper.webdev/tags" %>
 
 <%
     User currentUser = (User) request.getAttribute("currentUser");
