@@ -40,9 +40,12 @@ public class UserService {
     
     public void savePicture(User user, Part filePart) throws IOException {
         System.out.println("Saving picture for user: " + user.getUsername());
-        String fileName = imageService.storeImage(filePart, user.getUsername());
-        user.setPicture(fileName);
-        
+        if(filePart == null || filePart.getSize() == 0){
+            user.setPicture(getPictureNameById(user.getId()));           
+        }else{
+            String fileName = imageService.storeImage(filePart, user.getId().toString());
+            user.setPicture(fileName);
+        }        
     }
 
     public void updatePicture(User user, Part filePart) throws IOException {
@@ -61,6 +64,10 @@ public class UserService {
         Optional<User> userOpt = userRepository.findByUsername(username);
         String fileName = userOpt.map(User::getPicture).orElse(null);
         return imageService.getImagePath(fileName);
+    }
+
+    public String getPictureNameById(Integer userId) {
+        return userRepository.findUserPicture(userId);
     }
 
 

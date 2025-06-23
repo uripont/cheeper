@@ -114,8 +114,8 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
         } else if (email.endsWith("@upf.edu")) { //Can be changed for testing
         	return RoleType.ENTITY;
         } else {
-        	//return RoleType.ENTITY;
-        	return RoleType.ASSOCIATION;
+        	return RoleType.ENTITY;
+        	//return RoleType.ASSOCIATION;
         }
     }
 }

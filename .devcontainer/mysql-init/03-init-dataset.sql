@@ -1,10 +1,10 @@
 -- Insert users
 INSERT INTO users (id, full_name, email, username, biography, picture, role_type) VALUES
-(1, 'Anna Martínez López', 'anna.martinez@estudiant.upf.edu', 'annaml', 'Biomedical engineering student curious about brain-computer interfaces.', 'annaml.png', 'STUDENT'),
-(2, 'Lucas Ferrer Grau', 'lucas.ferrer@estudiant.upf.edu', 'lucasfg', 'Bachelor student in Computer Engineering, backend developer in the making.', 'lucasfg.png', 'STUDENT'),
-(3, 'Marina Soler Puig', 'marina.soler@estudiant.upf.edu', 'marinasp', 'Data science student driven by social impact and open data.', 'marinasp.png', 'STUDENT'),
-(4, 'Joan Vidal Riera', 'joan.vidal@estudiant.upf.edu', 'joanvr', 'Lover of audiovisual tech and real-time systems.', 'joanvr.png', 'STUDENT'),
-(5, 'Clara Puig Roca', 'clara.puig@estudiant.upf.edu', 'clarapr', 'Telecom engineering student fascinated by wireless networks.', 'clarapr.png', 'STUDENT');
+(1, 'Anna Martínez López', 'anna.martinez@estudiant.upf.edu', 'annaml', 'Biomedical engineering student curious about brain-computer interfaces.', '1.png', 'STUDENT'),
+(2, 'Lucas Ferrer Grau', 'lucas.ferrer@estudiant.upf.edu', 'lucasfg', 'Bachelor student in Computer Engineering, backend developer in the making.', '2.png', 'STUDENT'),
+(3, 'Marina Soler Puig', 'marina.soler@estudiant.upf.edu', 'marinasp', 'Data science student driven by social impact and open data.', '3.png', 'STUDENT'),
+(4, 'Joan Vidal Riera', 'joan.vidal@estudiant.upf.edu', 'joanvr', 'Lover of audiovisual tech and real-time systems.', '4.png', 'STUDENT'),
+(5, 'Clara Puig Roca', 'clara.puig@estudiant.upf.edu', 'clarapr', 'Telecom engineering student fascinated by wireless networks.', '5.png', 'STUDENT');
 
 -- Insert student details
 INSERT INTO student (student_id, birthdate, social_links, degrees, enrolled_subjects) VALUES
@@ -36,11 +36,11 @@ INSERT INTO student (student_id, birthdate, social_links, degrees, enrolled_subj
  
  -- Insert ENTITY users
 INSERT INTO users (id, full_name, email, username, biography, picture, role_type) VALUES
-(6, 'Secretary UPF', 'secretary@upf.edu', 'secretaryupf', 'Official academic secretariat of UPF. Handling student records and administrative tasks.', 'secretaryupf.png', 'ENTITY'),
-(7, 'UPF Library', 'library@upf.edu', 'libraryupf', 'Providing academic resources, study spaces, and digital databases to students and staff.', 'libraryupf.png', 'ENTITY'),
-(8, 'Faculty of ICT', 'ictfaculty@upf.edu', 'ictfacultyupf', 'Faculty of Information and Communication Technologies. Promoting research and innovation.', 'ictfacultyupf.png', 'ENTITY'),
-(9, 'UPF Language Services', 'languages@upf.edu', 'languagesupf', 'Helping students with language learning and official certifications.', 'languagesupf.png', 'ENTITY'),
-(10, 'Career Services', 'careers@upf.edu', 'careersupf', 'Supporting students with internships, job offers, and professional growth.', 'careersupf.png', 'ENTITY');
+(6, 'Secretary UPF', 'secretary@upf.edu', 'secretaryupf', 'Official academic secretariat of UPF. Handling student records and administrative tasks.', '6.png', 'ENTITY'),
+(7, 'UPF Library', 'library@upf.edu', 'libraryupf', 'Providing academic resources, study spaces, and digital databases to students and staff.', '7.png', 'ENTITY'),
+(8, 'Faculty of ICT', 'ictfaculty@upf.edu', 'ictfacultyupf', 'Faculty of Information and Communication Technologies. Promoting research and innovation.', '8.png', 'ENTITY'),
+(9, 'UPF Language Services', 'languages@upf.edu', 'languagesupf', 'Helping students with language learning and official certifications.', '9.png', 'ENTITY'),
+(10, 'Career Services', 'careers@upf.edu', 'careersupf', 'Supporting students with internships, job offers, and professional growth.', '10.png', 'ENTITY');
 
 -- Insert ENTITY details
 INSERT INTO entity (entity_id, department) VALUES
@@ -53,11 +53,11 @@ INSERT INTO entity (entity_id, department) VALUES
 
 -- Insert ASSOCIATION users
 INSERT INTO users (id, full_name, email, username, biography, picture, role_type) VALUES
-(11, 'Trempats Association', 'trempats.association@gmail.com', 'trempats', 'Student hiking and nature club promoting outdoor activities.', 'trempats.png', 'ASSOCIATION'),
-(12, 'EHUB UPF', 'ehub.upf@gmail.com', 'ehub', 'Entrepreneurship hub fostering startups and innovation on campus.', 'ehub.png', 'ASSOCIATION'),
-(13, 'Actium UPF', 'actium.upf@gmail.com', 'actium', 'Cultural and artistic activities association at UPF.', 'actium.png', 'ASSOCIATION'),
-(14, 'AEMMAR UPF', 'aemmar.upf@gmail.com', 'aemmar', 'Association of Economics and Management students at UPF.', 'aemmar.png', 'ASSOCIATION'),
-(15, 'UPF Volunteer Group', 'upf.volunteers@gmail.com', 'upfvolunteers', 'Organizing volunteering activities and social impact projects.', 'upfvolunteers.png', 'ASSOCIATION');
+(11, 'Trempats Association', 'trempats.association@gmail.com', 'trempats', 'Student hiking and nature club promoting outdoor activities.', '11.png', 'ASSOCIATION'),
+(12, 'EHUB UPF', 'ehub.upf@gmail.com', 'ehub', 'Entrepreneurship hub fostering startups and innovation on campus.', '12.png', 'ASSOCIATION'),
+(13, 'Actium UPF', 'actium.upf@gmail.com', 'actium', 'Cultural and artistic activities association at UPF.', '13.png', 'ASSOCIATION'),
+(14, 'AEMMAR UPF', 'aemmar.upf@gmail.com', 'aemmar', 'Association of Economics and Management students at UPF.', '14.png', 'ASSOCIATION'),
+(15, 'UPF Volunteer Group', 'upf.volunteers@gmail.com', 'upfvolunteers', 'Organizing volunteering activities and social impact projects.', '15.png', 'ASSOCIATION');
 
 -- Insert association details
 INSERT INTO association (association_id, verification_status, verification_date) VALUES
