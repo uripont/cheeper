@@ -150,20 +150,14 @@ public class EntityForm extends HttpServlet {
         } else { // Register mode
             // For registration mode, ensure picture is not null if no file is uploaded
             entity.setPicture("default.png"); 
-            // For new registrations, get email and full name from session
-            entity.setFullName(name);
-            entity.setEmail(email);
         }
         
         Map<String, String> errors = new HashMap<>(); // Initialize errors map here
         try {
             
             // Manually decode and populate fields
-            // FullName and Email are now handled above for register mode
-            if (!"register".equals(mode)) { // Only get from parameter if not register mode
-                entity.setFullName(request.getParameter("fullName"));
-                entity.setEmail(request.getParameter("email"));
-            }
+            entity.setFullName(name);
+            entity.setEmail(email);
             entity.setUsername(request.getParameter("username"));
             entity.setBiography(request.getParameter("biography"));
             entity.setDepartment(request.getParameter("department"));

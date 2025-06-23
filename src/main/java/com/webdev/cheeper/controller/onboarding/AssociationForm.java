@@ -153,16 +153,11 @@ public class AssociationForm extends HttpServlet {
         } else { // Register mode
             // For registration mode, ensure picture is not null if no file is uploaded
             association.setPicture("default.png"); 
-            // For new registrations, get email and full name from session
-            association.setFullName(name);
-            association.setEmail(email);
         }
 
         // FullName and Email are now handled above for register mode
-        if (!"register".equals(mode)) { // Only get from parameter if not register mode
-            association.setFullName(request.getParameter("fullName"));
-            association.setEmail(request.getParameter("email"));
-        }
+        association.setFullName(name);
+        association.setEmail(email);
         association.setUsername(request.getParameter("username"));
         association.setBiography(request.getParameter("biography"));
         association.setRoleType(RoleType.ASSOCIATION);
