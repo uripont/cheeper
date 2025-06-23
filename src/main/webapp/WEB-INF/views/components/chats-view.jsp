@@ -112,7 +112,7 @@
         }
 
         // Handle message form submission
-        $('#messageForm').on('submit', function(e) {
+        $('#messageForm').off('submit').on('submit', function(e) {
             e.preventDefault(); // Prevent default form submission
 
             var form = $(this);
