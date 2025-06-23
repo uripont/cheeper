@@ -1,4 +1,4 @@
-package com.webdev.cheeper.controller;
+package com.webdev.cheeper.controller.navigation;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

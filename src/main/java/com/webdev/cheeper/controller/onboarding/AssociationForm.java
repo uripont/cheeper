@@ -1,4 +1,4 @@
-package com.webdev.cheeper.controller;
+package com.webdev.cheeper.controller.onboarding;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -9,37 +9,40 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 
+import com.webdev.cheeper.model.Association;
 import com.webdev.cheeper.model.RoleType;
 import com.webdev.cheeper.model.User;
-import com.webdev.cheeper.model.Entity;
-import com.webdev.cheeper.repository.EntityRepository;
+import com.webdev.cheeper.model.VerificationStatus;
+import com.webdev.cheeper.repository.AssociationRepository;
 import com.webdev.cheeper.repository.UserRepository;
-import com.webdev.cheeper.service.EntityService;
+import com.webdev.cheeper.service.AssociationService;
 import com.webdev.cheeper.service.UserService;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-@MultipartConfig
-@WebServlet("/auth/entity-form")
-public class EntityForm extends HttpServlet {
+/**
+ * Servlet implementation class AssociationForm
+ */
 
+@MultipartConfig
+@WebServlet("/auth/association-form")
+public class AssociationForm extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private UserRepository userRepository;
     private UserService userService;
-    private EntityRepository entityRepository;
-    private EntityService entityService;
+    private AssociationRepository associationRepository;
+    private AssociationService associationService;
 
     @Override
     public void init() throws ServletException {
         this.userRepository = new UserRepository();
         this.userService = new UserService(userRepository);
-        this.entityRepository = new EntityRepository();
-        this.entityService = new EntityService(userRepository, entityRepository);
+        this.associationRepository = new AssociationRepository();
+        this.associationService = new AssociationService(userRepository, associationRepository);
     }
 
-    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -84,29 +87,30 @@ public class EntityForm extends HttpServlet {
                 }
             }
 
-            // Get full entity profile for the target user
-            Optional<Entity> entityOpt = entityService.getProfile(targetUser.getId());
+            // Get full association profile for the target user
+            Optional<Association> associationOpt = associationService.getProfile(targetUser.getId());
             
-            if (entityOpt.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Entity profile not found for target user");
+            if (associationOpt.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Association profile not found for target user");
                 return;
             }
             
-            // Pre-populate form with entity data
-            Entity entity = entityOpt.get();
-            request.setAttribute("entity", entity);
+            // Pre-populate form with association data
+            Association association = associationOpt.get();
+            request.setAttribute("association", association);
             request.setAttribute("mode", "edit");
         }
         
         // Forward to form view
-        request.getRequestDispatcher("/WEB-INF/views/onboarding/entity-form.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/onboarding/association-form.jsp").forward(request, response);
     }
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+    
+	@Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String mode = request.getParameter("mode");
-        Entity entity = new Entity();
+		Association association = new Association();
 
         HttpSession session = request.getSession(false);
 
@@ -117,17 +121,16 @@ public class EntityForm extends HttpServlet {
 
         String email = (String) session.getAttribute("email");
 
-        
         if ("edit".equals(mode)) {
             String userIdParam = request.getParameter("userId");
             if (userIdParam != null && !userIdParam.isEmpty()) {
                 try {
                     int userId = Integer.parseInt(userIdParam);
-                    entity.setId(userId);
+                    association.setId(userId);
                     // Fetch existing user to get current picture
                     Optional<User> existingUserOpt = userRepository.findById(userId);
                     if (existingUserOpt.isPresent()) {
-                        entity.setPicture(existingUserOpt.get().getPicture());
+                        association.setPicture(existingUserOpt.get().getPicture());
                     } else {
                         response.sendError(HttpServletResponse.SC_NOT_FOUND, "Target user not found for update");
                         return;
@@ -143,46 +146,41 @@ public class EntityForm extends HttpServlet {
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     return;
                 }
-                entity.setId(userOpt.get().getId());
-                entity.setPicture(userOpt.get().getPicture()); // Set existing picture for current user
+                association.setId(userOpt.get().getId());
+                association.setPicture(userOpt.get().getPicture()); // Set existing picture for current user
             }
         } else {
             // For registration mode, ensure picture is not null if no file is uploaded
-            entity.setPicture("default.png"); 
+            association.setPicture("default.png"); 
         }
-   
-        try {
-            
-            // Manually decode and populate fields
-            entity.setFullName(request.getParameter("fullName"));
-            entity.setEmail(request.getParameter("email"));
-            entity.setUsername(request.getParameter("username"));
-            entity.setBiography(request.getParameter("biography"));
-            entity.setDepartment(request.getParameter("department"));
-            entity.setRoleType(RoleType.ENTITY);
-            
-            Part filePart = request.getPart("picture");
-            Map<String, String> validationErrors;
-            
-            if ("edit".equals(mode)) {
-                validationErrors = entityService.update(entity, filePart);
-            } else {
-                validationErrors = entityService.register(entity, filePart);
-            }
-            
-            if (validationErrors.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/home");
-            } else {
-                request.setAttribute("entity", entity);
-                request.setAttribute("errors", validationErrors);
-                request.setAttribute("mode", mode);
-                request.getRequestDispatcher("/WEB-INF/views/onboarding/entity-form.jsp").forward(request, response);
-            }
-            
-        } catch (Exception e) {
-            request.setAttribute("entity", entity);
-            request.setAttribute("error", "Registration failed: " + e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/views/onboarding/entity-form.jsp").forward(request, response);
+
+        association.setFullName(request.getParameter("fullName"));
+        association.setEmail(request.getParameter("email"));
+        association.setUsername(request.getParameter("username"));
+        association.setBiography(request.getParameter("biography"));
+        association.setRoleType(RoleType.ASSOCIATION);
+
+        // Set default verification status
+        association.setVerificationStatus(VerificationStatus.PENDING);
+        association.setVerificationDate(new java.sql.Timestamp(System.currentTimeMillis()));
+
+        Part filePart = request.getPart("picture");
+
+        Map<String, String> validationErrors;
+        
+        if ("edit".equals(mode)) {
+            validationErrors = associationService.update(association, filePart);
+        } else {
+            validationErrors = associationService.register(association, filePart);
         }
+
+        if (validationErrors.isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/home");
+        } else {
+            request.setAttribute("association", association);
+            request.setAttribute("errors", validationErrors);
+            request.getRequestDispatcher("/WEB-INF/views/onboarding/association-form.jsp").forward(request, response);
+        }
+ 
     }
 }

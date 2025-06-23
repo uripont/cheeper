@@ -1,4 +1,4 @@
-package com.webdev.cheeper.controller;
+package com.webdev.cheeper.controller.post;
 
 import com.webdev.cheeper.model.Post;
 import com.webdev.cheeper.model.User;
