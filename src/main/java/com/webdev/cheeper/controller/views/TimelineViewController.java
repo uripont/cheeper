@@ -33,6 +33,7 @@ public class TimelineViewController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User currentUser = null;
         String username = req.getParameter("u");
+        String userIdParam = req.getParameter("userId"); // Get userId from request
 
         HttpSession session = req.getSession(false);
         if (session != null && session.getAttribute("email") != null) {
@@ -57,6 +58,27 @@ public class TimelineViewController extends HttpServlet {
         }
 
         List<Post> posts = Collections.emptyList();
+        Integer targetUserId = null;
+
+        // Determine the target user ID for the timeline
+        if (userIdParam != null && !userIdParam.isEmpty()) {
+            try {
+                targetUserId = Integer.parseInt(userIdParam);
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid userId parameter: " + userIdParam);
+                // Fallback to current user if userId is invalid
+                targetUserId = currentUser.getId();
+            }
+        } else {
+            // If no userId parameter, default to current user's timeline
+            targetUserId = currentUser.getId();
+        }
+
+        // --- DEBUGGING LOGS ---
+        System.out.println("DEBUG: userIdParam from request: " + userIdParam);
+        System.out.println("DEBUG: currentUser.getId(): " + currentUser.getId());
+        System.out.println("DEBUG: Final targetUserId for query: " + targetUserId);
+        // --- END DEBUGGING LOGS ---
 
         try {
             switch (timeline_type) {
@@ -69,7 +91,9 @@ public class TimelineViewController extends HttpServlet {
                     break;
 
                 case "profile":
+
                     posts = postService.getPostsByUserId(currentUser.getId());
+
                     break;
 
                 case "comments":
@@ -90,7 +114,7 @@ public class TimelineViewController extends HttpServlet {
             }
 
             System.out.println("Timeline type: " + timeline_type);
-            System.out.println("Current user ID: " + currentUser.getId());
+            System.out.println("Target user ID: " + targetUserId); // Log target user ID
             System.out.println("Posts found: " + posts.size());
 
             // Create maps for post data

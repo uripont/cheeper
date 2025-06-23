@@ -224,6 +224,18 @@ body {
     border: 1px solid #ddd;
 }
 
+/* Cropper image styling */
+#cropped-result{
+    display: block;
+    margin: 20px auto;
+    width: 150px;
+    height: 150px;
+    border-radius: 18px;
+    border: 3px solid #B41C18;
+    object-fit: cover;
+    background: #000;
+  }
+
 /* Button styling */
 #crop-button, #cancel-crop {
     padding: 8px 15px;

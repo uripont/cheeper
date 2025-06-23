@@ -58,22 +58,44 @@ public class AssociationForm extends HttpServlet {
             }
             
             String email = (String) session.getAttribute("email");
-            Optional<User> userOpt = userService.getUserByEmail(email);
+            Optional<User> currentUserOpt = userService.getUserByEmail(email);
             
-            if (userOpt.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
+            if (currentUserOpt.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Current user not found");
                 return;
             }
             
-            // Get full entity profile
-            Optional<Association> associationOpt = associationService.getProfile(userOpt.get().getId());
+            User currentUser = currentUserOpt.get();
+            User targetUser = currentUser; // Default to current user's profile
+            
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try {
+                    int userId = Integer.parseInt(userIdParam);
+                    // If current user is an ENTITY, they can edit any profile
+                    if (currentUser.getRoleType() == com.webdev.cheeper.model.RoleType.ENTITY) {
+                        Optional<User> targetUserOpt = userRepository.findById(userId);
+                        if (targetUserOpt.isEmpty()) {
+                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Target user not found");
+                            return;
+                        }
+                        targetUser = targetUserOpt.get();
+                    }
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
+                    return;
+                }
+            }
+
+            // Get full association profile for the target user
+            Optional<Association> associationOpt = associationService.getProfile(targetUser.getId());
             
             if (associationOpt.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Association profile not found");
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Association profile not found for target user");
                 return;
             }
             
-            // Pre-populate form with entity data
+            // Pre-populate form with association data
             Association association = associationOpt.get();
             request.setAttribute("association", association);
             request.setAttribute("mode", "edit");
@@ -100,14 +122,36 @@ public class AssociationForm extends HttpServlet {
         String email = (String) session.getAttribute("email");
 
         if ("edit".equals(mode)) {
-            Optional<User> userOpt = userService.getUserByEmail(email);
-            if (userOpt.isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return;
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try {
+                    int userId = Integer.parseInt(userIdParam);
+                    association.setId(userId);
+                    // Fetch existing user to get current picture
+                    Optional<User> existingUserOpt = userRepository.findById(userId);
+                    if (existingUserOpt.isPresent()) {
+                        association.setPicture(existingUserOpt.get().getPicture());
+                    } else {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND, "Target user not found for update");
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
+                    return;
+                }
+            } else {
+                // Fallback to current user if no userId is provided in edit mode
+                Optional<User> userOpt = userService.getUserByEmail(email);
+                if (userOpt.isEmpty()) {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+                association.setId(userOpt.get().getId());
+                association.setPicture(userOpt.get().getPicture()); // Set existing picture for current user
             }
-            User user = userOpt.get();
-            int userId = user.getId();
-            association.setId(userId);
+        } else {
+            // For registration mode, ensure picture is not null if no file is uploaded
+            association.setPicture("default.png"); 
         }
 
         association.setFullName(request.getParameter("fullName"));
@@ -116,7 +160,7 @@ public class AssociationForm extends HttpServlet {
         association.setBiography(request.getParameter("biography"));
         association.setRoleType(RoleType.ASSOCIATION);
 
-        // Set default verification status (PENDING)
+        // Set default verification status
         association.setVerificationStatus(VerfStatus.PENDING);
         association.setVerificationDate(new java.sql.Timestamp(System.currentTimeMillis()));
 

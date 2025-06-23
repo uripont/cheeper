@@ -59,18 +59,40 @@ public class StudentForm extends HttpServlet {
             }
             
             String email = (String) session.getAttribute("email");
-            Optional<User> userOpt = userService.getUserByEmail(email);
+            Optional<User> currentUserOpt = userService.getUserByEmail(email);
             
-            if (userOpt.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
+            if (currentUserOpt.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Current user not found");
                 return;
             }
             
-            // Get full student profile
-            Optional<Student> studentOpt = studentService.getProfile(userOpt.get().getId());
+            User currentUser = currentUserOpt.get();
+            User targetUser = currentUser; // Default to current user's profile
+            
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try {
+                    int userId = Integer.parseInt(userIdParam);
+                    // If current user is an ENTITY, they can edit any profile
+                    if (currentUser.getRoleType() == com.webdev.cheeper.model.RoleType.ENTITY) {
+                        Optional<User> targetUserOpt = userRepository.findById(userId);
+                        if (targetUserOpt.isEmpty()) {
+                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Target user not found");
+                            return;
+                        }
+                        targetUser = targetUserOpt.get();
+                    }
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
+                    return;
+                }
+            }
+
+            // Get full student profile for the target user
+            Optional<Student> studentOpt = studentService.getProfile(targetUser.getId());
             
             if (studentOpt.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Student profile not found");
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Student profile not found for target user");
                 return;
             }
             
@@ -101,15 +123,37 @@ public class StudentForm extends HttpServlet {
 
         
         if ("edit".equals(mode)) {
-            Optional<User> userOpt = userService.getUserByEmail(email);
-            if (userOpt.isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return;
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try {
+                    int userId = Integer.parseInt(userIdParam);
+                    student.setId(userId);
+                    // Fetch existing user to get current picture
+                    Optional<User> existingUserOpt = userRepository.findById(userId);
+                    if (existingUserOpt.isPresent()) {
+                        student.setPicture(existingUserOpt.get().getPicture());
+                    } else {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND, "Target user not found for update");
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format");
+                    return;
+                }
+            } else {
+                // Fallback to current user if no userId is provided in edit mode
+                Optional<User> userOpt = userService.getUserByEmail(email);
+                if (userOpt.isEmpty()) {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+                student.setId(userOpt.get().getId());
+                student.setPicture(userOpt.get().getPicture()); // Set existing picture for current user
             }
-            User user = userOpt.get();
-            int userId = user.getId();
-            student.setId(userId); 
-        } 
+        } else {
+            // For registration mode, ensure picture is not null if no file is uploaded
+            student.setPicture("default.png"); 
+        }
         
         Map<String, String> errors = new HashMap<>();
        
@@ -168,9 +212,6 @@ public class StudentForm extends HttpServlet {
             
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("student", student);
-            request.setAttribute("error", "Registration failed: " + e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
         }
     }
     

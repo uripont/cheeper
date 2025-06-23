@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Association Registration</title>
+    <title>${param.mode eq 'edit' ? 'Edit Profile' : 'Association Registration'}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/register-style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -23,8 +23,9 @@
 
     <form id="registerForm" action="association-form?mode=${param.mode}" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="mode" value="${param.mode}">
-        <input type="hidden" name="fullName" value="<%= session.getAttribute("name") != null ? session.getAttribute("name") : "" %>">
-        <input type="hidden" name="email" value="<%= session.getAttribute("email") != null ? session.getAttribute("email") : "" %>">
+        <input type="hidden" name="userId" value="${association.id}"> <%-- Add hidden input for userId --%>
+        <input type="hidden" name="fullName" value="${association.fullName}">
+        <input type="hidden" name="email" value="${association.email}">
         <input type="hidden" name="role" value="ASSOCIATION">
 
         <label for="username">Username:</label> 
@@ -32,11 +33,10 @@
                value="${association.username}" title="Username must be between 3 and 20 characters."/> 
 
         <label for="biography">Biography:</label>
-        <textarea id="biography" name="biography" rows="4" minlength="10" maxlength="500" required
-                  placeholder="Tell us about your association (minimum 10 characters)">
-            ${association.biography}
-        </textarea>
-        <div class="error-message" id="biography-error"></div>
+            <textarea id="biography" name="biography" rows="4" 
+                      minlength="10" maxlength="500" required
+                      placeholder="Tell us about yourself (minimum 10 characters)">${association.biography}</textarea>
+            <div class="error-message" id="biography-error"></div>
 
         <!-- Picture Upload Section -->
         <div>
@@ -54,9 +54,11 @@
                 </div>
             </div>
 
-            <div id="cropped-preview" style="margin-top: 15px; display: none;">
-                <p>Preview:</p>
-                <img id="cropped-result" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; background-color: black;">
+            <div id="cropped-preview" style="margin-top: 15px; display: block;">
+                <p>${associaton.picture != null ? 'Current Profile Picture:' : 'Preview:'}</p>
+                <img id="cropped-result" 
+                        src="${pageContext.request.contextPath}/local-images/${association.picture != null ? 'profile/'.concat(association.picture) : 'default.png'}" 
+                        style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; background-color: black;">
                 <input type="hidden" id="cropped-image-data" name="croppedImageData">
             </div>
         </div>
@@ -64,9 +66,6 @@
         <button type="submit">${param.mode eq 'edit' ? 'Save Changes' : 'Register'}</button>
     </form>
 </div>
-
-<!-- Load validation script -->
-<script src="${pageContext.request.contextPath}/static/js/user-validation.js"></script>
 
 <script>
     // Picture cropper functionality
@@ -166,6 +165,57 @@
                 </c:forEach>
             };
 
+            for (const [field, message] of Object.entries(serverErrors)) {
+                const input = document.querySelector(`[name="${field}"]`);
+                if (input) {
+                    input.setCustomValidity(message);
+                    input.reportValidity();
+                }
+            }
+        }
+    });
+</script>
+
+<!-- Load validation scripts -->
+<script src="${pageContext.request.contextPath}/static/js/user-validation.js"></script>
+
+<!-- Initialize validation -->
+<script>
+    // Make context path available to validation scripts
+    window.contextPath = '${pageContext.request.contextPath}';
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('registerForm');
+        
+        if (form) {
+            const validateAssociation = window.initUserValidation(form);
+            
+            if (validateAssociation) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    
+                    // Clear previous errors
+                    form.querySelectorAll('input, textarea').forEach(input => {
+                        input.setCustomValidity('');
+                    });
+                    
+                    // Run validation
+                    const isValid = validateAssociation();
+                    
+                    if (isValid) {
+                        // If valid, submit the form
+                        form.submit();
+                    }
+                });
+            }
+            
+            // Display server errors on load
+            const serverErrors = {
+                <c:forEach var="error" items="${errors}">
+                    "${error.key}": "${error.value}",
+                </c:forEach>
+            };
+            
             for (const [field, message] of Object.entries(serverErrors)) {
                 const input = document.querySelector(`[name="${field}"]`);
                 if (input) {
