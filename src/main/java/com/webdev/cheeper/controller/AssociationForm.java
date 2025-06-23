@@ -12,7 +12,7 @@ import jakarta.servlet.http.Part;
 import com.webdev.cheeper.model.Association;
 import com.webdev.cheeper.model.RoleType;
 import com.webdev.cheeper.model.User;
-import com.webdev.cheeper.model.VerfStatus;
+import com.webdev.cheeper.model.VerificationStatus;
 import com.webdev.cheeper.repository.AssociationRepository;
 import com.webdev.cheeper.repository.UserRepository;
 import com.webdev.cheeper.service.AssociationService;
@@ -161,7 +161,7 @@ public class AssociationForm extends HttpServlet {
         association.setRoleType(RoleType.ASSOCIATION);
 
         // Set default verification status
-        association.setVerificationStatus(VerfStatus.PENDING);
+        association.setVerificationStatus(VerificationStatus.PENDING);
         association.setVerificationDate(new java.sql.Timestamp(System.currentTimeMillis()));
 
         Part filePart = request.getPart("picture");

@@ -1,6 +1,6 @@
 package com.webdev.cheeper.model;
 
-public enum VerfStatus {
+public enum VerificationStatus {
 	PENDING,
 	APPROVED,
 	REJECTEED
