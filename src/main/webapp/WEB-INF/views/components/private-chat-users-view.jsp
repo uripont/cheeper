@@ -16,7 +16,7 @@
             <c:when test="${not empty users}">
                 <c:forEach var="user" items="${users}">
                     <div class="private-chat-user-item" data-user-id="${user.id}">
-                        <img src="${pageContext.request.contextPath}${user.picture}" 
+                        <img src="${pageContext.request.contextPath}/local-images/profile/${user.picture}" 
                              alt="${user.fullName}" 
                              class="private-chat-user-avatar">
                         <div class="private-chat-user-info">

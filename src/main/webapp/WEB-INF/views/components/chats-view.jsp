@@ -12,7 +12,7 @@
         <c:when test="${not empty otherUser}">
             <div class="chat-header">
                 <div class="chat-user-info">
-                    <img src="${pageContext.request.contextPath}${otherUser.picture}" 
+                    <img src="${pageContext.request.contextPath}/local-images/profile/${otherUser.picture}" 
                          alt="${otherUser.fullName}" class="chat-user-avatar">
                     <div class="chat-user-details">
                         <div class="chat-user-name">${otherUser.fullName}</div>
