@@ -80,7 +80,13 @@
 }
 
 .user-actions {
+    display: flex;
+    flex-direction: column; /* Stack vertically */
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically if needed */
+    gap: 8px; /* Space between buttons */
     margin-left: 10px;
+    height: 100%; /* Take full height of parent */
 }
 
 .follow-button {
