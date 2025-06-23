@@ -48,7 +48,7 @@ public class ImageService {
         ensureStorageExists();
     }
     
-    public String storeImage(Part file, String username) throws IOException {
+    public String storeImage(Part file, String userId) throws IOException {
         if (file == null || file.getSize() == 0) {
             return DEFAULT_IMAGE;
         }
@@ -64,7 +64,7 @@ public class ImageService {
             extension = originalName.substring(dotIndex);
         }
         
-        String newFileName = username + extension;
+        String newFileName = userId + extension;
         Path targetPath = Paths.get(storageBasePath, "profiles", newFileName);
         
         try (InputStream in = file.getInputStream()) {
