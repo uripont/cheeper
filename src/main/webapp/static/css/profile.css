@@ -1,6 +1,5 @@
 @charset "UTF-8";
 
-/* Profile View Component */
 .profile-view {
   width: 100%;
   color: var(--text);
@@ -11,23 +10,20 @@
   flex-direction: column;
   width: 100%;
   max-width: 100%;
-  padding: 30px 40px;
+  padding: 20px 25px;
   font-family: "Helvetica Neue";
   box-sizing: border-box;
   overflow-x: hidden;
 }
 
-/* Header: image + info horizontal layout */
 .profile-view .profile-header {
   display: flex;
   align-items: flex-start;
   gap: 30px;
-  margin-bottom: 30px;
   flex-wrap: wrap;
   max-width: 100%;
 }
 
-/* Profile image */
 .profile-view .profile-picture-frame {
   width: 150px;
   height: 150px;
@@ -47,7 +43,6 @@
   display: block;
 }
 
-/* Info next to picture */
 .profile-view .profile-info {
   flex: 1;
   display: flex;
@@ -67,7 +62,6 @@
 .profile-view .profile-detail-item {
   display: flex;
   align-items: baseline;
-  margin-bottom: 10px;
   font-size: 1.1rem;
   flex-wrap: wrap;
 }
@@ -77,6 +71,11 @@
   width: 100%;
   flex-basis: 100%;
   font-size: 1.1rem;
+  color: #657786;
+  background-color: var(--bg-secondary);
+  padding: 15px;
+  border-radius: var(--border-radius);
+  text-align: left;
 }
 
 .profile-view .profile-detail-label {
@@ -92,13 +91,12 @@
   word-break: break-word;
 }
 
-/* Section: Other details like email, role, etc. */
 .profile-view .profile-details {
-  margin-top: 20px;
+  margin-top: 10px;
   overflow-x: hidden;
+  padding-left: 15px;
 }
 
-/* Follow stats */
 .profile-view .follow-stats{
   display: flex;
   gap: 15px;
@@ -135,7 +133,6 @@
   color: white;
 }
 
-/* Lists for degrees, subjects, social links */
 .profile-view .profile-detail-value ul {
   list-style: none;
   padding-left: 0;
@@ -159,8 +156,6 @@
   text-decoration: underline;
 }
 
-/* Follow/Unfollow buttons */
-
 .profile-view .follow-standard-btn {
     padding: 6px 16px;
     border-radius: 20px;
@@ -180,9 +175,8 @@
     color: white;
 }
 
-/* Timeline container */
 .profile-view .timeline-container {
-  margin-top: 30px;
-  border-top: 1px solid var(--border);
-  padding-top: 20px;
+  margin-top: 15px;
+  border-top: 2px solid #657786;
+  padding-top: 15px;
 }

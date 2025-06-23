@@ -6,23 +6,10 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/post.css">
 
 <div class="timeline-view">
-    <!--Timeline Header (for DEBUG purpouses delete before finishing) -->
-    <div class="timeline-view__header">
-        Timeline - ${timeline_type}
-        <div style="font-size: 0.8em; font-weight: normal; color: #657786;">
-            Posts found: ${posts.size()}
-        </div>
-    </div>
-
     <c:choose>
         <c:when test="${empty posts}">
             <div class="timeline-view__empty">
-                <h4>No posts found</h4>
-                <p>No posts available for this timeline.</p>
-                <div style="margin-top: 20px; font-size: 0.9em;">
-                    <p><strong>Timeline Type:</strong> ${timeline_type}</p>
-                    <p><strong>Current User:</strong> ${currentUser.username}</p>
-                </div>
+                <h2 style="font-size: 1.5em;">No posts available for this timeline.</h2>
             </div>
         </c:when>
         <c:otherwise>
