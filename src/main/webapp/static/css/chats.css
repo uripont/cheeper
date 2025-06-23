@@ -1,7 +1,7 @@
 .chats-view {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
     overflow: hidden;
     background-color: #1C1C1C;
     color: #F5F5F5;
