@@ -209,10 +209,11 @@ public class PostServlet extends HttpServlet {
                 return;
             }
             
-            System.out.println("[PostServlet DELETE] Post found - Post User ID: " + post.getUserId() + ", Current User ID: " + userId);
+            System.out.println("[PostServlet DELETE] Post found - Post User ID: " + post.getUserId() + ", Current User ID: " + userId + ", Current User Role: " + userOpt.get().getRoleType());
             
-            if (post.getUserId() != userId) {
-                System.out.println("[PostServlet DELETE] ERROR: User " + userId + " not authorized to delete post owned by " + post.getUserId());
+            // Allow deletion if current user is the post owner OR if current user is an ENTITY
+            if (post.getUserId() != userId && userOpt.get().getRoleType() != com.webdev.cheeper.model.RoleType.ENTITY) {
+                System.out.println("[PostServlet DELETE] ERROR: User " + userId + " not authorized to delete post owned by " + post.getUserId() + " and is not an ENTITY.");
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 response.setContentType("application/json");
                 response.getWriter().print("{\"success\": false, \"message\": \"Not authorized to delete this post\"}");

@@ -25,21 +25,17 @@ public class UserService {
     }
     
     public boolean usernameExists(String username, Integer excludeUserId) {
-        if (excludeUserId != null) {
-            // For existing users (edit mode), exclude their own ID from the check
-            return userRepository.findByUsername(username)
-                .map(u -> !u.getId().equals(excludeUserId))
-                .orElse(false);
-        }
-        // For new users, check if username exists at all
-        return userRepository.usernameExists(username);
+        return userRepository.usernameExists(username, excludeUserId);
     }
 
     public boolean usernameExists(String username) {
         return usernameExists(username, null);
     }
-    public boolean emailExists(String email) {
-    	return userRepository.emailExists(email);
+    public boolean emailExists(String email, Integer excludeUserId) {
+        if (excludeUserId != null) {
+            return userRepository.emailExists(email, excludeUserId);
+        }
+        return userRepository.emailExists(email);
     }
     
     public void savePicture(User user, Part filePart) throws IOException {
@@ -50,6 +46,18 @@ public class UserService {
             String fileName = imageService.storeImage(filePart, user.getId().toString());
             user.setPicture(fileName);
         }        
+    }
+
+    public void updatePicture(User user, Part filePart) throws IOException {
+        if (filePart != null && filePart.getSize() > 0) {
+            System.out.println("Updating picture for user: " + user.getUsername());
+            String fileName = imageService.storeImage(filePart, user.getUsername());
+            user.setPicture(fileName);
+        } else {
+            System.out.println("No new picture provided for user: " + user.getUsername() + ". Retaining existing picture.");
+            // Do not update the picture field if no new file is provided
+            // The existing picture reference in the user object (which comes from db) will be retained
+        }
     }
     
     public String getPicture(String username) {
@@ -71,7 +79,7 @@ public class UserService {
             errors.put("username", "Username is required");
         } else if (user.getUsername().length() < 3 || user.getUsername().length() > 20) {
             errors.put("username", "Username must be 3-20 characters");
-        } else if (userRepository.usernameExists(user.getUsername()) && !"edit".equals(mode)) {
+        } else if (usernameExists(user.getUsername(), "edit".equals(mode) ? user.getId() : null)) {
             errors.put("username", "Username already taken");
         }
 
@@ -80,7 +88,7 @@ public class UserService {
             errors.put("email", "Email is required");
         } else if (!user.getEmail().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
             errors.put("email", "Invalid email format");
-        } else if (userRepository.emailExists(user.getEmail()) && !"edit".equals(mode)) {
+        } else if (emailExists(user.getEmail(), "edit".equals(mode) ? user.getId() : null)) {
             errors.put("email", "Email already registered");
         }
 
@@ -147,6 +155,8 @@ public class UserService {
     public List<User> getRecommendedUsers(int limit, int excludeUserId) {
         return userRepository.findRandomUsers(limit, excludeUserId);
     }
-    
-}
 
+    public boolean deleteUser(int userId) {
+        return userRepository.delete(userId);
+    }
+}
