@@ -1,4 +1,4 @@
-package com.webdev.cheeper.controller;
+package com.webdev.cheeper.controller.user;
 
 import java.io.IOException;
 import java.util.List;

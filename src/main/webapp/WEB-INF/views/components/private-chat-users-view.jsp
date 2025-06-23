@@ -1,6 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cheeper" uri="/WEB-INF/cheeper.tld" %>
 
 <div class="private-chat-users">
     <div class="private-chat-users-header">

@@ -1,4 +1,4 @@
-package com.webdev.cheeper.websocket;
+package com.webdev.cheeper.controller.websocket;
 
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;

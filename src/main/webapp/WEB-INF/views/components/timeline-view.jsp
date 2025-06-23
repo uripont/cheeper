@@ -17,12 +17,7 @@
     <c:choose>
         <c:when test="${empty posts}">
             <div class="timeline-view__empty">
-                <h4>No posts found</h4>
-                <p>No posts available for this timeline.</p>
-                <div style="margin-top: 20px; font-size: 0.9em;">
-                    <p><strong>Timeline Type:</strong> ${timeline_type}</p>
-                    <p><strong>Current User:</strong> ${currentUser.username}</p>
-                </div>
+                <h2 style="font-size: 1.5em;">No posts available for this timeline.</h2>
             </div>
         </c:when>
         <c:otherwise>

@@ -1,4 +1,4 @@
-package com.webdev.cheeper.controller;
+package com.webdev.cheeper.controller.onboarding;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -12,7 +12,7 @@ import jakarta.servlet.http.Part;
 import com.webdev.cheeper.model.Association;
 import com.webdev.cheeper.model.RoleType;
 import com.webdev.cheeper.model.User;
-import com.webdev.cheeper.model.VerfStatus;
+import com.webdev.cheeper.model.VerificationStatus;
 import com.webdev.cheeper.repository.AssociationRepository;
 import com.webdev.cheeper.repository.UserRepository;
 import com.webdev.cheeper.service.AssociationService;
@@ -120,6 +120,7 @@ public class AssociationForm extends HttpServlet {
         }
 
         String email = (String) session.getAttribute("email");
+        String name = (String) session.getAttribute("name");
 
         if ("edit".equals(mode)) {
             String userIdParam = request.getParameter("userId");
@@ -149,19 +150,25 @@ public class AssociationForm extends HttpServlet {
                 association.setId(userOpt.get().getId());
                 association.setPicture(userOpt.get().getPicture()); // Set existing picture for current user
             }
-        } else {
+        } else { // Register mode
             // For registration mode, ensure picture is not null if no file is uploaded
             association.setPicture("default.png"); 
+            // For new registrations, get email and full name from session
+            association.setFullName(name);
+            association.setEmail(email);
         }
 
-        association.setFullName(request.getParameter("fullName"));
-        association.setEmail(request.getParameter("email"));
+        // FullName and Email are now handled above for register mode
+        if (!"register".equals(mode)) { // Only get from parameter if not register mode
+            association.setFullName(request.getParameter("fullName"));
+            association.setEmail(request.getParameter("email"));
+        }
         association.setUsername(request.getParameter("username"));
         association.setBiography(request.getParameter("biography"));
         association.setRoleType(RoleType.ASSOCIATION);
 
         // Set default verification status
-        association.setVerificationStatus(VerfStatus.PENDING);
+        association.setVerificationStatus(VerificationStatus.PENDING);
         association.setVerificationDate(new java.sql.Timestamp(System.currentTimeMillis()));
 
         Part filePart = request.getPart("picture");

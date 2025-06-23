@@ -1,4 +1,4 @@
-package com.webdev.cheeper.controller;
+package com.webdev.cheeper.controller.navigation;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,7 +18,7 @@ public class IndexServlet extends HttpServlet {
         
         if (session != null && session.getAttribute("email") != null) {
             // Valid session exists, redirect to main page
-            response.sendRedirect(request.getContextPath() + "/app/home");
+            response.sendRedirect(request.getContextPath() + "/home");
         } else {
             // No valid session, redirect to auth
             response.sendRedirect(request.getContextPath() + "/auth");

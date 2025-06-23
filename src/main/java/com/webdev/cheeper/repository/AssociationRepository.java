@@ -3,7 +3,7 @@ package com.webdev.cheeper.repository;
 import com.webdev.cheeper.model.Association;
 import com.webdev.cheeper.model.RoleType;
 import com.webdev.cheeper.model.User;
-import com.webdev.cheeper.model.VerfStatus;
+import com.webdev.cheeper.model.VerificationStatus;
 
 import java.sql.*;
 import java.util.Optional;
@@ -60,7 +60,7 @@ public class AssociationRepository extends UserRepository {
                 association.setEmail(user.getEmail());
                 association.setUsername(user.getUsername());
                 association.setBiography(user.getBiography());
-                association.setVerificationStatus(VerfStatus.valueOf(rs.getString("verification_status")));
+                association.setVerificationStatus(VerificationStatus.valueOf(rs.getString("verification_status")));
                 association.setVerificationDate(rs.getTimestamp("verification_date"));
                 return Optional.of(association);
             }
@@ -84,7 +84,7 @@ public class AssociationRepository extends UserRepository {
 
                 // Set association-specific fields
                 association.setId(userId);
-                association.setVerificationStatus(VerfStatus.valueOf(rs.getString("verification_status")));
+                association.setVerificationStatus(VerificationStatus.valueOf(rs.getString("verification_status")));
                 association.setVerificationDate(rs.getTimestamp("verification_date"));
 
                 // Set common user fields if needed

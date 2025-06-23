@@ -92,8 +92,9 @@ public class StudentService extends UserService {
         
         if (errors.isEmpty()) {
             try {
-                savePicture(student, filePart);
-                studentRepository.save(student);
+                studentRepository.save(student); // This calls super.save(student) and then saves student details
+                savePicture(student, filePart); // Now user.getId() is available
+                studentRepository.update(student); // Update student with the picture filename and other student-specific data
             } catch (Exception e) {
                 errors.put("system", "Registration failed: " + e.getMessage());
                 e.printStackTrace(); 

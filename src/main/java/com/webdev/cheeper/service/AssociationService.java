@@ -33,8 +33,9 @@ public class AssociationService extends UserService {
 
         if (errors.isEmpty()) {
             try {
-                savePicture(association, filePart);
-                associationRepository.save(association);
+                associationRepository.save(association); // This calls super.save(association) and then saves association details
+                savePicture(association, filePart); // Now user.getId() is available
+                associationRepository.update(association); // Update association with the picture filename and other association-specific data
             } catch (Exception e) {
                 errors.put("system", "Registration failed: " + e.getMessage());
                 e.printStackTrace();

@@ -1,4 +1,4 @@
-package com.webdev.cheeper.controller;
+package com.webdev.cheeper.controller.onboarding;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -18,6 +18,7 @@ import com.webdev.cheeper.service.EntityService;
 import com.webdev.cheeper.service.UserService;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -116,8 +117,8 @@ public class EntityForm extends HttpServlet {
         }
 
         String email = (String) session.getAttribute("email");
+        String name = (String) session.getAttribute("name");
 
-        
         if ("edit".equals(mode)) {
             String userIdParam = request.getParameter("userId");
             if (userIdParam != null && !userIdParam.isEmpty()) {
@@ -146,16 +147,23 @@ public class EntityForm extends HttpServlet {
                 entity.setId(userOpt.get().getId());
                 entity.setPicture(userOpt.get().getPicture()); // Set existing picture for current user
             }
-        } else {
+        } else { // Register mode
             // For registration mode, ensure picture is not null if no file is uploaded
             entity.setPicture("default.png"); 
+            // For new registrations, get email and full name from session
+            entity.setFullName(name);
+            entity.setEmail(email);
         }
-   
+        
+        Map<String, String> errors = new HashMap<>(); // Initialize errors map here
         try {
             
             // Manually decode and populate fields
-            entity.setFullName(request.getParameter("fullName"));
-            entity.setEmail(request.getParameter("email"));
+            // FullName and Email are now handled above for register mode
+            if (!"register".equals(mode)) { // Only get from parameter if not register mode
+                entity.setFullName(request.getParameter("fullName"));
+                entity.setEmail(request.getParameter("email"));
+            }
             entity.setUsername(request.getParameter("username"));
             entity.setBiography(request.getParameter("biography"));
             entity.setDepartment(request.getParameter("department"));

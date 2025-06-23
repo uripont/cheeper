@@ -4,7 +4,6 @@
 <%@ page import="com.webdev.cheeper.model.User, com.webdev.cheeper.model.Association" %>
 <%@ page import="com.webdev.cheeper.model.RoleType" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cheeper" uri="http://cheeper.webdev/tags" %>
 
 <%
     User currentUser = (User) request.getAttribute("currentUser");
@@ -32,7 +31,6 @@
             <div class="profile-info">
                 <h1 class="profile-name">${profile.fullName}</h1>
                 <div class="profile-detail-item">
-                    <span class="profile-detail-label">Username:</span>
                     <span class="profile-detail-value">@${profile.username}</span>
                 </div>
 
@@ -73,14 +71,6 @@
         </c:if>
 
         <div class="profile-details">
-            <div class="profile-detail-item">
-                <span class="profile-detail-label">Role:</span>
-                <span class="profile-detail-value">${profile.roleType}</span>
-            </div>
-            <div class="profile-detail-item">
-                <span class="profile-detail-label">Email:</span>
-                <span class="profile-detail-value">${profile.email}</span>
-            </div>
 
             <%-- Student-specific information --%>
             <c:if test="${profile['class'].simpleName eq 'Student'}">
@@ -130,6 +120,10 @@
                     <span class="profile-detail-label">Department:</span>
                     <span class="profile-detail-value">${profile.department}</span>
                 </div>
+            </c:if>
+            <%-- Association-specific information (no display) --%>
+            <c:if test="${profile['class'].simpleName eq 'Association'}">
+                <%-- No information to display for associations --%>
             </c:if>
         </div>
     </div>

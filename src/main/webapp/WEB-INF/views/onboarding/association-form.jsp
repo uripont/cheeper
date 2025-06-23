@@ -21,11 +21,9 @@
         </h2>
     </c:if>
 
-    <form id="registerForm" action="association-form?mode=${param.mode}" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="mode" value="${param.mode}">
+    <form id="registerForm" action="association-form?mode=${requestScope.mode != null ? requestScope.mode : param.mode}" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="mode" value="${requestScope.mode != null ? requestScope.mode : param.mode}">
         <input type="hidden" name="userId" value="${association.id}"> <%-- Add hidden input for userId --%>
-        <input type="hidden" name="fullName" value="${association.fullName}">
-        <input type="hidden" name="email" value="${association.email}">
         <input type="hidden" name="role" value="ASSOCIATION">
 
         <label for="username">Username:</label> 

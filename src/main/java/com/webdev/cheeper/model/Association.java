@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 public class Association extends User {
     private static final long serialVersionUID = 1L;
-    private VerfStatus verificationStatus;
+    private VerificationStatus verificationStatus;
     private Timestamp verificationDate;
 
     public Association() {
@@ -17,11 +17,11 @@ public class Association extends User {
     }
 
     // Getters and Setters
-    public VerfStatus getVerificationStatus() {
+    public VerificationStatus getVerificationStatus() {
         return verificationStatus;
     }
 
-    public void setVerificationStatus(VerfStatus verificationStatus) {
+    public void setVerificationStatus(VerificationStatus verificationStatus) {
         this.verificationStatus = verificationStatus;
     }
 

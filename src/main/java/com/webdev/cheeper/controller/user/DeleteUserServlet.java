@@ -1,4 +1,4 @@
-package com.webdev.cheeper.controller;
+package com.webdev.cheeper.controller.user;
 
 import com.webdev.cheeper.model.RoleType;
 import com.webdev.cheeper.model.User;

@@ -1,4 +1,4 @@
-package com.webdev.cheeper.controller;
+package com.webdev.cheeper.controller.auth;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -85,6 +85,7 @@ public class GoogleOAuthCallbackServlet extends HttpServlet {
             try (UserRepository userRepository = new UserRepository();) {
             	UserService userService = new UserService(userRepository);
                 if (!userService.emailExists(email, null)) {
+                    request.setAttribute("mode", "register"); // Set mode for new user registration
                     if (role == RoleType.STUDENT) {
                         request.getRequestDispatcher("/WEB-INF/views/onboarding/student-form.jsp").forward(request, response);
                     } else if (role == RoleType.ENTITY) {
