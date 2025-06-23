@@ -158,7 +158,7 @@
   border-color: #555;
 }
 
-.delete-btn {
+.delete-btn  {
   margin-left: auto;
   padding: 4px;
   background: none;
@@ -168,6 +168,19 @@
   transition: background-color 0.2s;
 }
 .delete-btn img {
+  width: 25px;
+  height: 25px;
+}
+
+.edit-btn  {
+  padding: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+.edit-btn img {
   width: 25px;
   height: 25px;
 }

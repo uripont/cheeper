@@ -7,6 +7,7 @@ RUN mkdir -p /var/lib/cheeper/images/profiles \
 
 # Copy default profile picture
 COPY src/main/webapp/static/images/default.png /var/lib/cheeper/images/defaults/
+COPY src/main/webapp/static/images/default.png /var/lib/cheeper/images/profiles/
 
 # backgroundProcessorDelay from 10s to 1s, faster "hot reload" on redeployment of .war
 RUN sed -i \

@@ -16,7 +16,7 @@
                     <div class="user-info">
                         <c:choose>
                             <c:when test="${not empty postAuthor}">
-                                <img src="${pageContext.request.contextPath}/local-images/${postAuthor.picture}" alt="${postAuthor.fullName}" class="user-avatar">                                
+                                <img src="${pageContext.request.contextPath}/local-images/profile/${postAuthor.picture}" alt="${postAuthor.fullName}" class="user-avatar">                                
                                 <div class="user-details">
                                     <strong>${postAuthor.fullName}</strong>
                                     <span class="username">@${postAuthor.username}</span>
@@ -37,7 +37,7 @@
                 <div class="post-content">
                     <p>${post.content}</p>
 
-                    <!--Image displauy here-->
+                    <!--Image display here-->
                     <c:if test="${not empty post.image}">
                         <div class="post-image">
                             <img src="${pageContext.request.contextPath}/local-images/posts/${post.image}" 
@@ -57,7 +57,14 @@
                                 <img src="${pageContext.request.contextPath}/static/images/heart.png" alt="Like" width="18" height="18">
                             </c:otherwise>
                         </c:choose>
-                        <span class="like-count">${likeCount}</span>
+                        <c:choose>
+                            <c:when test="${likeCounts[post.id] == 0}">
+                                <span class="like-count" style="display:none;">0</span>
+                            </c:when>
+                            <c:otherwise>
+                                <span class="like-count">${likeCounts[post.id]}</span>
+                            </c:otherwise>
+                        </c:choose>
                     </button>
                     <button class="action-btn reply-btn" title="Reply">
                         <img src="${pageContext.request.contextPath}/static/images/reply.png" alt="Reply" width="18" height="18">
@@ -109,28 +116,39 @@
             const postId = postElement.data('post-id');
             const likeBtn = $(this);
             const likeImg = likeBtn.find('img');
-            const likeCount = likeBtn.find('.like-count');
+            let likeCountEl = likeBtn.find('.like-count');
 
             if (postId) {
-                $.post('/like', { postId: postId })
-                    .done(function(response) {
+                $.ajax({
+                    url: '/like',
+                    method: 'POST',
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    data: { postId: postId },
+                    success: function (response) {
                         if (response.liked) {
-                            likeImg.attr('src', '${pageContext.request.contextPath}/static/images/heart-fill.png');
+                            likeImg.attr('src', '${pageContext.request.contextPath}/static/images/heart.fill.red.png');
                             likeImg.attr('alt', 'Liked');
                         } else {
                             likeImg.attr('src', '${pageContext.request.contextPath}/static/images/heart.png');
                             likeImg.attr('alt', 'Like');
                         }
 
-                        if (response.likeCount > 0) {
-                            likeCount.text(response.likeCount).show();
+                        if (response.likeCount !== undefined) {
+                            likeCountEl.text(response.likeCount);
+                            if (response.likeCount > 0) {
+                                likeCountEl.show();
+                            } else {
+                                likeCountEl.hide();
+                            }
                         } else {
-                            likeCount.hide();
+                            likeCountEl.text('');
                         }
-                    })
-                    .fail(function() {
-                        console.error('Error toggling like');
-                    });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error toggling like:', xhr.responseText);
+                        alert('Unable to toggle like. Please try again.');
+                    }
+                });
             }
         });
 
