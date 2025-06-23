@@ -40,6 +40,11 @@
                                     ${user.followed ? 'Unfollow' : 'Follow'}
                                 </button>
                             </c:if>
+                            <c:if test="${currentUser != null && currentUser.roleType == 'ENTITY' && currentUser.id != user.id}">
+                                <button class="delete-button" onclick="deleteUser(${user.id})">
+                                    X
+                                </button>
+                            </c:if>
                         </div>
                     </div>
                 </c:forEach>
@@ -92,6 +97,38 @@ function handleSearch(query) {
 function viewUserProfile(username) {
     // Navigate to user profile using App system
     App.loadView('profile', { username: username }, '#main-panel');
+}
+
+function deleteUser(userId) {
+    if (confirm('Are you sure you want to delete this user? This action cannot be undone and will remove all their associated data (posts, messages, etc.).')) {
+        fetch('/deleteUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'userId=' + userId
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Remove the user card from the DOM
+                $(`.user-item[data-user-id="${userId}"]`).remove();
+                alert('User deleted successfully!');
+            } else {
+                console.error('Error:', data.message);
+                alert('Failed to delete user: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the user.');
+        });
+    }
 }
 
 function toggleFollow(userId, button) {
@@ -181,4 +218,3 @@ $(document).ready(function() {
         }
     });
 });
-

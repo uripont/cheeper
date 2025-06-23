@@ -37,6 +37,12 @@ public class PostServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
+        String action = request.getParameter("action");
+        if ("edit".equals(action)) {
+            handleEditPost(request, response);
+            return;
+        }
+
         String content = request.getParameter("content");
         String sourceIdParam = request.getParameter("source_id");
         Integer sourceId = null;
@@ -209,10 +215,11 @@ public class PostServlet extends HttpServlet {
                 return;
             }
             
-            System.out.println("[PostServlet DELETE] Post found - Post User ID: " + post.getUserId() + ", Current User ID: " + userId);
+            System.out.println("[PostServlet DELETE] Post found - Post User ID: " + post.getUserId() + ", Current User ID: " + userId + ", Current User Role: " + userOpt.get().getRoleType());
             
-            if (post.getUserId() != userId) {
-                System.out.println("[PostServlet DELETE] ERROR: User " + userId + " not authorized to delete post owned by " + post.getUserId());
+            // Allow deletion if current user is the post owner OR if current user is an ENTITY
+            if (post.getUserId() != userId && userOpt.get().getRoleType() != com.webdev.cheeper.model.RoleType.ENTITY) {
+                System.out.println("[PostServlet DELETE] ERROR: User " + userId + " not authorized to delete post owned by " + post.getUserId() + " and is not an ENTITY.");
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 response.setContentType("application/json");
                 response.getWriter().print("{\"success\": false, \"message\": \"Not authorized to delete this post\"}");
@@ -236,4 +243,149 @@ public class PostServlet extends HttpServlet {
             response.getWriter().print("{\"success\": false, \"message\": \"Server error\"}");
         }
     }
+
+
+
+    //Function to handle editing a post
+    private void handleEditPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("[PostServlet EDIT] Request received");
+        request.setCharacterEncoding("UTF-8");
+    
+        String postIdParam = request.getParameter("postId");
+        String content = request.getParameter("content");
+        String removeImage = request.getParameter("removeImage");
+        
+        System.out.println("[PostServlet EDIT] PostId param: " + postIdParam);
+        System.out.println("[PostServlet EDIT] Content: " + (content != null ? content.substring(0, Math.min(content.length(), 50)) + "..." : "null"));
+        System.out.println("[PostServlet EDIT] Remove image flag: " + removeImage);
+        
+        if (postIdParam == null || content == null || content.trim().isEmpty()) {
+            System.out.println("[PostServlet EDIT] ERROR: Missing required fields - postId: " + (postIdParam != null) + ", content: " + (content != null && !content.trim().isEmpty()));
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setContentType("application/json");
+            response.getWriter().print("{\"success\": false, \"message\": \"Missing required fields\"}");
+            return;
+        }
+        
+        int postId;
+        try {
+            postId = Integer.parseInt(postIdParam);
+            System.out.println("[PostServlet EDIT] Parsed Post ID: " + postId);
+        } catch (NumberFormatException e) {
+            System.out.println("[PostServlet EDIT] ERROR: Invalid post ID format: " + postIdParam);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setContentType("application/json");
+            response.getWriter().print("{\"success\": false, \"message\": \"Invalid post ID\"}");
+            return;
+        }
+        
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("email") == null) {
+            System.out.println("[PostServlet EDIT] ERROR: No valid session found");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().print("{\"success\": false, \"message\": \"Unauthorized\"}");
+            return;
+        }
+        
+        String email = (String) session.getAttribute("email");
+        System.out.println("[PostServlet EDIT] Email from session: " + email);
+        
+        try {
+            // Check for image part
+            Part imagePart = null;
+            try {
+                imagePart = request.getPart("image");
+                System.out.println("[PostServlet EDIT] Image part: " + (imagePart != null ? "present, size: " + imagePart.getSize() : "null"));
+            } catch (Exception e) {
+                System.out.println("[PostServlet EDIT] No image part found or error reading: " + e.getMessage());
+            }
+            
+            try (UserRepository userRepository = new UserRepository()) {
+                Optional<User> userOpt = userRepository.findByEmail(email);
+                if (userOpt.isEmpty()) {
+                    System.out.println("[PostServlet EDIT] ERROR: User not found for email: " + email);
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    response.setContentType("application/json");
+                    response.getWriter().print("{\"success\": false, \"message\": \"User not found\"}");
+                    return;
+                }
+                
+                int userId = userOpt.get().getId();
+                System.out.println("[PostServlet EDIT] Current user ID: " + userId);
+                
+                // Get existing post and verify ownership
+                Post existingPost = postService.getPostById(postId);
+                if (existingPost == null) {
+                    System.out.println("[PostServlet EDIT] ERROR: Post not found with ID: " + postId);
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    response.setContentType("application/json");
+                    response.getWriter().print("{\"success\": false, \"message\": \"Post not found\"}");
+                    return;
+                }
+                
+                System.out.println("[PostServlet EDIT] Post found - Post User ID: " + existingPost.getUserId() + ", Current User ID: " + userId);
+                
+                if (existingPost.getUserId() != userId) {
+                    System.out.println("[PostServlet EDIT] ERROR: User " + userId + " not authorized to edit post owned by " + existingPost.getUserId());
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("application/json");
+                    response.getWriter().print("{\"success\": false, \"message\": \"Not authorized to edit this post\"}");
+                    return;
+                }
+                
+                System.out.println("[PostServlet EDIT] Authorization passed. Updating post content...");
+                
+                // Update post content
+                existingPost.setContent(content);
+                System.out.println("[PostServlet EDIT] Content updated");
+                
+                // Handle image update
+                if ("true".equals(removeImage)) {
+                    System.out.println("[PostServlet EDIT] Removing current image: " + existingPost.getImage());
+                    existingPost.setImage(null);
+                } else if (imagePart != null && imagePart.getSize() > 0) {
+                    System.out.println("[PostServlet EDIT] Processing new image upload...");
+                    try {
+                        // Generate unique filename for the post
+                        String baseName = "post_" + postId + "_" + System.currentTimeMillis();
+                        String fileName = imageService.storePostImage(imagePart, baseName); // ✅ Método correcto
+                        System.out.println("[PostServlet EDIT] New image saved as: " + fileName);
+                        existingPost.setImage(fileName);
+                    } catch (Exception e) {
+                        System.err.println("[PostServlet EDIT] ERROR saving image: " + e.getMessage());
+                        e.printStackTrace();
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        response.setContentType("application/json");
+                        response.getWriter().print("{\"success\": false, \"message\": \"Error saving image\"}");
+                        return;
+                    }
+                } else {
+                    System.out.println("[PostServlet EDIT] Keeping existing image: " + existingPost.getImage());
+                }
+                
+                System.out.println("[PostServlet EDIT] Calling postService.updatePost()...");
+                postService.updatePost(existingPost);
+                System.out.println("[PostServlet EDIT] Post updated successfully");
+                
+                response.setContentType("application/json");
+                response.getWriter().print("{\"success\": true}");
+                
+            } catch (Exception e) {
+                System.err.println("[PostServlet EDIT] ERROR: Exception occurred - " + e.getMessage());
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.setContentType("application/json");
+                response.getWriter().print("{\"success\": false, \"message\": \"Server error: " + e.getMessage() + "\"}");
+            }
+        } catch (Exception e) {
+            System.err.println("[PostServlet EDIT] ERROR: Outer exception - " + e.getMessage());
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType("application/json");
+            response.getWriter().print("{\"success\": false, \"message\": \"Server error\"}");
+        }
+    }    
+    
 }
+

@@ -14,15 +14,18 @@ import java.util.*;
 @WebServlet("/views/timeline")
 public class TimelineViewController extends HttpServlet {
 
-    private UserRepository userRepository;
-    private PostRepository postRepository;
+    private UserService userService;
+    private PostService postService;
     private LikeService likeService;
 
     @Override
     public void init() throws ServletException {
-        this.userRepository = new UserRepository();
-        this.postRepository = new PostRepository();
+        UserRepository userRepository = new UserRepository();
+        PostRepository postRepository = new PostRepository();
         LikeRepository likeRepository = new LikeRepository();
+
+        this.userService = new UserService(userRepository);
+        this.postService = new PostService(postRepository);
         this.likeService = new LikeService(likeRepository);
     }
 
@@ -30,11 +33,12 @@ public class TimelineViewController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User currentUser = null;
         String username = req.getParameter("u");
+        String userIdParam = req.getParameter("userId"); // Get userId from request
 
         HttpSession session = req.getSession(false);
         if (session != null && session.getAttribute("email") != null) {
             String email = (String) session.getAttribute("email");
-            Optional<User> currentUserOpt = userRepository.findByEmail(email);
+            Optional<User> currentUserOpt = userService.getUserByEmail(email);
             if (currentUserOpt.isPresent()) {
                 currentUser = currentUserOpt.get();
             }
@@ -54,19 +58,42 @@ public class TimelineViewController extends HttpServlet {
         }
 
         List<Post> posts = Collections.emptyList();
+        Integer targetUserId = null;
+
+        // Determine the target user ID for the timeline
+        if (userIdParam != null && !userIdParam.isEmpty()) {
+            try {
+                targetUserId = Integer.parseInt(userIdParam);
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid userId parameter: " + userIdParam);
+                // Fallback to current user if userId is invalid
+                targetUserId = currentUser.getId();
+            }
+        } else {
+            // If no userId parameter, default to current user's timeline
+            targetUserId = currentUser.getId();
+        }
+
+        // --- DEBUGGING LOGS ---
+        System.out.println("DEBUG: userIdParam from request: " + userIdParam);
+        System.out.println("DEBUG: currentUser.getId(): " + currentUser.getId());
+        System.out.println("DEBUG: Final targetUserId for query: " + targetUserId);
+        // --- END DEBUGGING LOGS ---
 
         try {
             switch (timeline_type) {
                 case "for-you":
-                    posts = postRepository.findAll();
+                    posts = postService.getAllPostsButYours(currentUser.getId());
                     break;
 
                 case "following":
-                    posts = postRepository.findByFollowedUsers(currentUser.getId());
+                    posts = postService.getPostsByFollowedUsers(currentUser.getId());
                     break;
 
                 case "profile":
-                    posts = postRepository.findByUserId(currentUser.getId());
+
+                    posts = postService.getPostsByUserId(currentUser.getId());
+
                     break;
 
                 case "comments":
@@ -74,7 +101,7 @@ public class TimelineViewController extends HttpServlet {
                     if (postIdParam != null) {
                         try {
                             int postId = Integer.parseInt(postIdParam);
-                            posts = postRepository.findBySourceId(postId);
+                            posts = postService.getCommentsForPost(postId);
                         } catch (NumberFormatException e) {
                             System.err.println("Invalid postId: " + postIdParam);
                         }
@@ -82,12 +109,12 @@ public class TimelineViewController extends HttpServlet {
                     break;
                     
                 default:
-                    posts = postRepository.findAll();
+                    posts = postService.getAllPosts();
                     break;
             }
 
             System.out.println("Timeline type: " + timeline_type);
-            System.out.println("Current user ID: " + currentUser.getId());
+            System.out.println("Target user ID: " + targetUserId); // Log target user ID
             System.out.println("Posts found: " + posts.size());
 
             // Create maps for post data
@@ -103,7 +130,7 @@ public class TimelineViewController extends HttpServlet {
                 likeCounts.put(post.getId(), likeCount);
                 
                 // Get post author information
-                Optional<User> authorOpt = userRepository.findById(post.getUserId());
+                Optional<User> authorOpt = userService.getUserById(post.getUserId());
                 if (authorOpt.isPresent()) {
                     postAuthors.put(post.getId(), authorOpt.get());
                 }

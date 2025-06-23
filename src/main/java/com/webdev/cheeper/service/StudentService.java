@@ -107,7 +107,7 @@ public class StudentService extends UserService {
         
         if (errors.isEmpty()) {
         	try {
-                savePicture(student, filePart);
+                updatePicture(student, filePart); // Use the new updatePicture method
                 studentRepository.update(student);
             } catch (Exception e) {
                 errors.put("system", "Update failed: " + e.getMessage());

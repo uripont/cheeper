@@ -4,12 +4,21 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Helvetica Neue';
   background-color: #B41C18; /* UPF Red */
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  position: relative;
+}
+
+/* === Center logo + container === */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* === Shared Container Styles === */
@@ -22,7 +31,9 @@ body {
   text-align: center;
   max-width: 400px;
   width: 90%;
-  margin: 20px;
+  margin-top: 40px; /* Creates space between logo and container */
+  z-index: 2;
+  position: relative;
 }
 
 /* === Shared Heading Styles === */
@@ -120,4 +131,37 @@ body {
   font-size: 14px;
   margin: -5px 0 15px 0;
   text-align: left;
+}
+
+/* === Background Logo === */
+.background-logo {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px; /* Pulls logo closer to the container */
+  opacity: 1;
+  z-index: 1;
+}
+
+/* === Logo Heading Styles === */
+/* Adjusted to center the logo and text */
+.logo-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px; /* spacing between logo and text */
+  margin-bottom: -30px; /* keep your negative spacing if needed */
+  z-index: 1;
+}
+
+.logo-heading .background-logo {
+  width: 100px;
+  height: 100px;
+  opacity: 1;
+}
+
+.logo-text {
+  font-size: 70px;
+  font-weight: 500;
+  color: white;
+  font-family: 'Helvetica Neue';
 }

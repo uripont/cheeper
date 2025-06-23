@@ -7,11 +7,15 @@ RUN mkdir -p /var/lib/cheeper/images/profiles \
 
 # Copy default profile picture
 COPY src/main/webapp/static/images/default.png /var/lib/cheeper/images/defaults/
+COPY src/main/webapp/static/images/default.png /var/lib/cheeper/images/profiles/
 
 # backgroundProcessorDelay from 10s to 1s, faster "hot reload" on redeployment of .war
 RUN sed -i \
     's/backgroundProcessorDelay="10"/backgroundProcessorDelay="1"/' \
     /usr/local/tomcat/conf/server.xml
+    
+# Add maxPartCount and maxPartHeaderSize to the Connector
+RUN sed -i 's|<Connector port="8080" protocol="HTTP/1.1"|<Connector port="8080" protocol="HTTP/1.1" maxPartCount="100" maxPartHeaderSize="8192"|' /usr/local/tomcat/conf/server.xml
 
 # Create ROOT directory and symlink for serving images
 RUN mkdir -p /usr/local/tomcat/webapps/ROOT && \
