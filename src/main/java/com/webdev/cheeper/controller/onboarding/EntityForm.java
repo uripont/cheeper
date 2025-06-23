@@ -126,7 +126,7 @@ public class EntityForm extends HttpServlet {
                     int userId = Integer.parseInt(userIdParam);
                     entity.setId(userId);
                     // Fetch existing user to get current picture
-                    Optional<User> existingUserOpt = userRepository.findById(userId);
+                    Optional<User> existingUserOpt = userService.getUserById(userId);
                     if (existingUserOpt.isPresent()) {
                         entity.setPicture(existingUserOpt.get().getPicture());
                     } else {
@@ -150,14 +150,26 @@ public class EntityForm extends HttpServlet {
         } else { // Register mode
             // For registration mode, ensure picture is not null if no file is uploaded
             entity.setPicture("default.png"); 
+            // Set Full Name and Email from session
+            entity.setFullName(name);
+            entity.setEmail(email);
         }
         
         Map<String, String> errors = new HashMap<>(); // Initialize errors map here
         try {
             
+            // Set Full Name and Email from the database if in edit mode
+            if("edit".equals(mode)){
+                String userIdParam = request.getParameter("userId");
+                int userId = Integer.parseInt(userIdParam);
+                Optional<User> tempUser = userService.getUserById(userId);
+                if (tempUser.isPresent()) {
+                    entity.setFullName(tempUser.get().getFullName());
+                    entity.setEmail(tempUser.get().getEmail());
+                }
+            }
+            
             // Manually decode and populate fields
-            entity.setFullName(name);
-            entity.setEmail(email);
             entity.setUsername(request.getParameter("username"));
             entity.setBiography(request.getParameter("biography"));
             entity.setDepartment(request.getParameter("department"));

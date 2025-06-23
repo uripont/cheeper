@@ -129,7 +129,7 @@ public class AssociationForm extends HttpServlet {
                     int userId = Integer.parseInt(userIdParam);
                     association.setId(userId);
                     // Fetch existing user to get current picture
-                    Optional<User> existingUserOpt = userRepository.findById(userId);
+                    Optional<User> existingUserOpt = userService.getUserById(userId);
                     if (existingUserOpt.isPresent()) {
                         association.setPicture(existingUserOpt.get().getPicture());
                     } else {
@@ -153,11 +153,23 @@ public class AssociationForm extends HttpServlet {
         } else { // Register mode
             // For registration mode, ensure picture is not null if no file is uploaded
             association.setPicture("default.png"); 
+            // Set Full Name and Email from session
+            association.setFullName(name);
+            association.setEmail(email);
         }
 
-        // FullName and Email are now handled above for register mode
-        association.setFullName(name);
-        association.setEmail(email);
+        // Set Full Name and Email from the database if in edit mode
+        if("edit".equals(mode)){
+            String userIdParam = request.getParameter("userId");
+            int userId = Integer.parseInt(userIdParam);
+            Optional<User> tempUser = userService.getUserById(userId);
+            if (tempUser.isPresent()) {
+                association.setFullName(tempUser.get().getFullName());
+                association.setEmail(tempUser.get().getEmail());
+            }
+        }
+            
+        // Manually decode and populate fields
         association.setUsername(request.getParameter("username"));
         association.setBiography(request.getParameter("biography"));
         association.setRoleType(RoleType.ASSOCIATION);
