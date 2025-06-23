@@ -1,7 +1,7 @@
 .chats-view {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
     overflow: hidden;
     background-color: #1C1C1C;
     color: #F5F5F5;
@@ -10,7 +10,6 @@
 .chat-header {
     padding: 15px;
     border-bottom: 1px solid #333;
-    background-color: #1A1A1A;
     flex-shrink: 0;
 }
 
@@ -134,7 +133,6 @@
 .message-input-container {
     padding: 15px;
     border-top: 1px solid #333;
-    background-color: #1A1A1A;
     flex-shrink: 0;
     position: sticky;
     bottom: 0;

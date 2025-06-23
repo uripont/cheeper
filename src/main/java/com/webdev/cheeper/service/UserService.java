@@ -51,7 +51,7 @@ public class UserService {
     public void updatePicture(User user, Part filePart) throws IOException {
         if (filePart != null && filePart.getSize() > 0) {
             System.out.println("Updating picture for user: " + user.getUsername());
-            String fileName = imageService.storeImage(filePart, user.getUsername());
+            String fileName = imageService.storeImage(filePart, user.getId().toString());
             user.setPicture(fileName);
         } else {
             System.out.println("No new picture provided for user: " + user.getUsername() + ". Retaining existing picture.");

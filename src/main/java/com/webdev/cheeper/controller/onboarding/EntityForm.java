@@ -126,7 +126,7 @@ public class EntityForm extends HttpServlet {
                     int userId = Integer.parseInt(userIdParam);
                     entity.setId(userId);
                     // Fetch existing user to get current picture
-                    Optional<User> existingUserOpt = userRepository.findById(userId);
+                    Optional<User> existingUserOpt = userService.getUserById(userId);
                     if (existingUserOpt.isPresent()) {
                         entity.setPicture(existingUserOpt.get().getPicture());
                     } else {
@@ -150,7 +150,7 @@ public class EntityForm extends HttpServlet {
         } else { // Register mode
             // For registration mode, ensure picture is not null if no file is uploaded
             entity.setPicture("default.png"); 
-            // For new registrations, get email and full name from session
+            // Set Full Name and Email from session
             entity.setFullName(name);
             entity.setEmail(email);
         }
@@ -158,12 +158,18 @@ public class EntityForm extends HttpServlet {
         Map<String, String> errors = new HashMap<>(); // Initialize errors map here
         try {
             
-            // Manually decode and populate fields
-            // FullName and Email are now handled above for register mode
-            if (!"register".equals(mode)) { // Only get from parameter if not register mode
-                entity.setFullName(request.getParameter("fullName"));
-                entity.setEmail(request.getParameter("email"));
+            // Set Full Name and Email from the database if in edit mode
+            if("edit".equals(mode)){
+                String userIdParam = request.getParameter("userId");
+                int userId = Integer.parseInt(userIdParam);
+                Optional<User> tempUser = userService.getUserById(userId);
+                if (tempUser.isPresent()) {
+                    entity.setFullName(tempUser.get().getFullName());
+                    entity.setEmail(tempUser.get().getEmail());
+                }
             }
+            
+            // Manually decode and populate fields
             entity.setUsername(request.getParameter("username"));
             entity.setBiography(request.getParameter("biography"));
             entity.setDepartment(request.getParameter("department"));

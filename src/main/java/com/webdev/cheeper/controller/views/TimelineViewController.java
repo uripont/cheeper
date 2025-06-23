@@ -92,7 +92,7 @@ public class TimelineViewController extends HttpServlet {
 
                 case "profile":
 
-                    posts = postService.getPostsByUserId(currentUser.getId());
+                    posts = postService.getPostsByUserId(targetUserId);
 
                     break;
 

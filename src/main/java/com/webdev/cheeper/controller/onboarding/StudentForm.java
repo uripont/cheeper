@@ -129,7 +129,7 @@ public class StudentForm extends HttpServlet {
                     int userId = Integer.parseInt(userIdParam);
                     student.setId(userId);
                     // Fetch existing user to get current picture
-                    Optional<User> existingUserOpt = userRepository.findById(userId);
+                    Optional<User> existingUserOpt = userService.getUserById(userId);
                     if (existingUserOpt.isPresent()) {
                         student.setPicture(existingUserOpt.get().getPicture());
                     } else {
@@ -153,7 +153,7 @@ public class StudentForm extends HttpServlet {
         } else { // Register mode
             // For registration mode, ensure picture is not null if no file is uploaded
             student.setPicture("default.png"); 
-            // For new registrations, get email and full name from session
+            // Set Full Name and Email from session
             student.setFullName(name);
             student.setEmail(email);
         }
@@ -161,12 +161,19 @@ public class StudentForm extends HttpServlet {
         Map<String, String> errors = new HashMap<>();
        
         try {
-            // Manually decode and populate fields (simpler approach)
-            // FullName and Email are now handled above for register mode
-            if (!"register".equals(mode)) { // Only get from parameter if not register mode
-                student.setFullName(request.getParameter("fullName"));
-                student.setEmail(request.getParameter("email"));
+            
+            // Set Full Name and Email from the database if in edit mode
+            if("edit".equals(mode)){
+                String userIdParam = request.getParameter("userId");
+                int userId = Integer.parseInt(userIdParam);
+                Optional<User> tempUser = userService.getUserById(userId);
+                if (tempUser.isPresent()) {
+                    student.setFullName(tempUser.get().getFullName());
+                    student.setEmail(tempUser.get().getEmail());
+                }
             }
+
+            // Manually decode and populate fields (simpler approach)
             student.setUsername(request.getParameter("username"));
             student.setBiography(request.getParameter("biography"));
             student.setRoleType(RoleType.STUDENT);	

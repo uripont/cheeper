@@ -2,8 +2,6 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    background-color: #1A1A1A;
-    border-left: 1px solid #333;
 }
 
 .private-chat-users-header {
@@ -37,20 +35,29 @@
 .private-chat-users-list {
     flex: 1;
     overflow-y: auto;
-    padding: 0 20px;
+    padding: 0 40px;
 }
 
 .private-chat-user-item {
     display: flex;
     align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid #333;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.2s;
+    margin-bottom: 10px; /* Added spacing between items */
 }
 
 .private-chat-user-item:hover {
-    background-color: #2A2A2A;
+    background-color: #f8f9fa;
+    border-color: #ddd;
+}
+
+/* Text color changes on hover */
+.private-chat-user-item:hover .private-chat-user-name,
+.private-chat-user-item:hover .private-chat-user-username {
+    color: #333;
 }
 
 .private-chat-user-avatar {
@@ -65,14 +72,16 @@
 }
 
 .private-chat-user-name {
-    color: #FFFFFF;
+    color: #ddd; /* Changed from #FFFFFF to match user-list */
     font-weight: 500;
     margin-bottom: 4px;
+    transition: color 0.2s; /* Smooth color transition */
 }
 
 .private-chat-user-username {
     color: #666;
     font-size: 14px;
+    transition: color 0.2s; /* Smooth color transition */
 }
 
 .private-chat-placeholder {

@@ -45,39 +45,43 @@ outline: none;
 border-color: #444;
 }
 
-.form-container button[type="submit"] {
-background-color: transparent;
-color: #888;
-border: 1px solid #444;
-border-radius: 9999px;
-padding: 6px 14px;
-font-size: 13px;
-cursor: pointer;
-transition: all 0.2s ease;
-}
-
-.form-container button[type="submit"]:hover {
-background-color: #992a23;
-color: #ddd;
-border-color: #555;
-}
-
+.form-container button[type="submit"],
 .form-container button {
-background-color: transparent;
-color: #888;
-border: 1px solid #444;
-border-radius: 9999px;
-padding: 6px 14px;
-font-size: 13px;
-cursor: pointer;
-transition: all 0.2s ease;
+    padding: 6px 14px; /* Original smaller size */
+    background-color: #DA2E4F; /* Red color */
+    color: #F5F5F5; /* White text */
+    border: none; /* No border */
+    border-radius: 9999px; /* Fully rounded (same as before) */
+    cursor: pointer;
+    font-size: 13px; /* Original smaller font */
+    font-weight: normal; /* Not bold (like before) */
+    transition: all 0.2s ease; /* Smooth transition */
 }
 
+.form-container button[type="submit"]:hover,
 .form-container button:hover {
-background-color: #222;
-color: #ddd;
-border-color: #555;
+    background-color: #B41C18; /* Darker red on hover */
+    color: #F5F5F5; /* Keep text white */
 }
+
+#crop-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#cancel-crop {
+    background-color: #f44336;
+    color: white;
+}
+
+#crop-button:hover {
+    background-color: #45a049;
+}
+
+#cancel-crop:hover {
+    background-color: #d32f2f;
+}
+
 
 .form-container .error-message {
 margin-top: 8px;

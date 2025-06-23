@@ -16,7 +16,7 @@
             <c:when test="${not empty users}">
                 <c:forEach var="user" items="${users}">
                     <div class="private-chat-user-item" data-user-id="${user.id}">
-                        <img src="${pageContext.request.contextPath}${user.picture}" 
+                        <img src="${pageContext.request.contextPath}/local-images/profile/${user.picture}" 
                              alt="${user.fullName}" 
                              class="private-chat-user-avatar">
                         <div class="private-chat-user-info">
@@ -43,17 +43,23 @@
 </div>
 
 <script>
+let searchTimeout = null;
+
 function handleSearch(query) {
-    if (query.trim().length >= 2) {
-        App.loadView('chats', { 
-            component: 'private-chat-users',
-            q: query.trim() 
-        }, '#rightSidebar');
-    } else if (query.trim().length === 0) {
-        App.loadView('chats', { 
-            component: 'private-chat-users'
-        }, '#rightSidebar');
-    }
+    clearTimeout(searchTimeout);
+
+    searchTimeout = setTimeout(() => {
+        if (query.trim().length >= 2) {
+            App.loadView('chats', { 
+                component: 'private-chat-users',
+                q: query.trim() 
+            }, '#rightSidebar');
+        } else if (query.trim().length === 0) {
+            App.loadView('chats', { 
+                component: 'private-chat-users'
+            }, '#rightSidebar');
+        }
+    }, 300); // 300ms debounce, igual que en user-list
 }
 
 // Use event delegation for dynamically loaded content
