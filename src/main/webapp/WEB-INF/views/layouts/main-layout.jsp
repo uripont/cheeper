@@ -46,23 +46,11 @@
         <!-- Main content area -->
         <div class="main-content">
             <div id="main-panel" class="feed">
-                <!-- Temporary content for testing -->
-                <h1>Main Content Area</h1>
-                <p>This is where dynamic content will be loaded.</p>
-                <p>The layout should maintain proper spacing and responsiveness.</p>
             </div>
         </div>
 
         <!-- Right sidebar -->
         <div class="right-sidebar" id="rightSidebar">
-            <!-- Temporary content for testing -->
-            <h2>Right Sidebar</h2>
-            <p>This sidebar should:</p>
-            <ul>
-                <li>Stay visible above 1000px width</li>
-                <li>Hide below 1000px</li>
-                <li>Maintain fixed width</li>
-            </ul>
         </div>
     </div>
 
