@@ -16,7 +16,7 @@
     <script src="${pageContext.request.contextPath}/static/js/app.js" defer></script>
 </head>
 
-<body>
+<body data-context-path="${pageContext.request.contextPath}">
     <!-- Add logo at the top -->
     <a href="${pageContext.request.contextPath}/home" class="logo">
         <img src="${pageContext.request.contextPath}/static/images/red-logo.png" alt="Logo"/>
@@ -25,19 +25,19 @@
     <!-- Left/Icon Sidebar -->
     <div class="sidebar" id="navigation">
         <a href="${pageContext.request.contextPath}/home" class="menu" data-view="home">
-            <img src="${pageContext.request.contextPath}/static/images/house.fill.png" alt="Home" />
+            <img src="${pageContext.request.contextPath}/static/images/house.png" alt="Home" data-icon-base="house" />
         </a>
         <a href="${pageContext.request.contextPath}/explore" class="menu" data-view="explore">
-            <img src="${pageContext.request.contextPath}/static/images/magnifyingglass.png" alt="Explore" />
+            <img src="${pageContext.request.contextPath}/static/images/magnifyingglass.png" alt="Explore" data-icon-base="magnifyingglass" />
         </a>
         <a href="${pageContext.request.contextPath}/create-post" class="menu" data-view="create">
-            <img src="${pageContext.request.contextPath}/static/images/plus.png" alt="Create" />
+            <img src="${pageContext.request.contextPath}/static/images/plus.png" alt="Create" data-icon-base="plus" />
         </a>
         <a href="${pageContext.request.contextPath}/chats" class="menu" data-view="chats">
-            <img src="${pageContext.request.contextPath}/static/images/text.bubble.png" alt="Chats" />
+            <img src="${pageContext.request.contextPath}/static/images/text.bubble.png" alt="Chats" data-icon-base="text.bubble" />
         </a>
         <a href="${pageContext.request.contextPath}/profile" class="menu" data-view="profile">
-            <img src="${pageContext.request.contextPath}/static/images/person.png" alt="Profile" />
+            <img src="${pageContext.request.contextPath}/static/images/person.png" alt="Profile" data-icon-base="person" />
         </a>
     </div>
 
@@ -60,6 +60,7 @@
             
             // Initialize layout with active menu item
             $('[data-view="${view}"]').addClass('active');
+            App.updateSidebarIcons();
 
             // Load initial content if this is home view
             if ('${view}' === 'home') {

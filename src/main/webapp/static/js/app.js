@@ -43,6 +43,7 @@ const App = (function() {
             // Update active menu item
             $('.menu').removeClass('active');
             $(this).addClass('active');
+            App.updateSidebarIcons(); // Update icons after changing active class
             
             // Update browser URL without reload
             window.history.pushState({}, '', url);
@@ -93,6 +94,7 @@ const App = (function() {
             // Update active menu item
             $('.menu').removeClass('active');
             $(`a[href="${path}"]`).addClass('active');
+            App.updateSidebarIcons(); // Update icons after changing active class
             
             // Clear dynamic areas
             $('#main-panel').empty();
@@ -140,16 +142,33 @@ const App = (function() {
         loadView('users', { context: 'suggestions' }, '#rightSidebar');
     }
 
+    function updateSidebarIcons() {
+        $('.menu').each(function() {
+            const $menuItem = $(this);
+            const $icon = $menuItem.find('img');
+            const iconBase = $icon.data('icon-base'); // Corrected typo here
+            const isActive = $menuItem.hasClass('active');
+
+            if (iconBase) {
+                const newSrc = isActive
+                    ? `${App.contextPath}/static/images/${iconBase}.fill.png`
+                    : `${App.contextPath}/static/images/${iconBase}.png`;
+                $icon.attr('src', newSrc);
+            }
+        });
+    }
+
     function init() {
         // Setup navigation handling
         handleNavigation();
         handlePopState();
-
     }
 
     return {
         init: init,
         loadView: loadView,
-        loadFeed: loadFeed
+        loadFeed: loadFeed,
+        updateSidebarIcons: updateSidebarIcons,
+        contextPath: $('body').data('context-path')
     };
 })();
