@@ -6,13 +6,13 @@
         <div class="header-title-container">
             <h3>${context}</h3>
             <c:if test="${context == 'Suggested Users'}">
-                <button class="refresh-button" onclick="refreshSuggestions()">🎲</button>
+                <button class="refresh-button" onclick="App.refreshSuggestions()">🎲</button>
             </c:if>
         </div>
         <c:if test="${context.startsWith('Search')}">
             <div class="search-input-container">
                 <input type="text" class="search-input" placeholder="Search users..." 
-                       value="${searchQuery}" oninput="handleSearch(this.value)">
+                       value="${searchQuery}" oninput="App.handleSearch(this.value)">
                 <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
             </div>
         </c:if>
@@ -34,13 +34,13 @@
                         <div class="user-actions" onclick="event.stopPropagation()">
                             <c:if test="${currentUser != null && currentUser.id != user.id}">
                                 <button class="follow-button ${user.followed ? 'unfollow' : ''}" 
-                                        onclick="toggleFollow(${user.id}, this)"
+                                        onclick="App.toggleFollow(${user.id}, this)"
                                         data-hover-text="Unfollow">
                                     ${user.followed ? 'Unfollow' : 'Follow'}
                                 </button>
                             </c:if>
                             <c:if test="${currentUser != null && currentUser.roleType == 'ENTITY' && currentUser.id != user.id}">
-                                <button class="delete-button" onclick="deleteUser(${user.id})">
+                                <button class="delete-button" onclick="App.deleteUser(${user.id})">
                                     X
                                 </button>
                             </c:if>
@@ -65,15 +65,14 @@
 </div>
 
 <script>
-(function() {
-function refreshSuggestions() {
+App.refreshSuggestions = function() {
     App.loadView('users', { context: 'suggestions' }, '#rightSidebar');
-}
+};
 
-let searchTimeout;
+App.searchTimeout = App.searchTimeout || null; // Initialize or reuse existing
 
-function handleSearch(query) {
-    clearTimeout(searchTimeout);
+App.handleSearch = function(query) {
+    clearTimeout(App.searchTimeout);
     
     if (query.trim().length === 0) {
         // Load default users list
@@ -85,21 +84,23 @@ function handleSearch(query) {
         return;
     }
     
-    searchTimeout = setTimeout(() => {
+    App.searchTimeout = setTimeout(() => {
         // Load users with search query
         App.loadView('users', { 
             context: 'search', 
             q: query.trim() 
         }, '#main-panel');
     }, 300);
-}
+};
 
+// viewUserProfile is only called internally, so it can remain local if desired, or be moved to App if it makes sense for future use.
+// For now, keeping it local as it's not directly called from HTML.
 function viewUserProfile(username) {
     // Navigate to user profile using App system
     App.loadView('profile', { username: username }, '#main-panel');
 }
 
-function deleteUser(userId) {
+App.deleteUser = function(userId) {
     if (confirm('Are you sure you want to delete this user? This action cannot be undone and will remove all their associated data (posts, messages, etc.).')) {
         fetch('/deleteUser', {
             method: 'POST',
@@ -129,9 +130,9 @@ function deleteUser(userId) {
             alert('An error occurred while deleting the user.');
         });
     }
-}
+};
 
-function toggleFollow(userId, button) {
+App.toggleFollow = function(userId, button) {
     // Prevent multiple clicks while processing
     if (button.disabled) return;
     button.disabled = true;
@@ -177,7 +178,7 @@ function toggleFollow(userId, button) {
     .finally(() => {
         button.disabled = false;
     });
-}
+};
 
 $(document).ready(function() {
     // Handle hover effects for follow buttons
@@ -218,4 +219,3 @@ $(document).ready(function() {
         }
     });
 });
-})();
