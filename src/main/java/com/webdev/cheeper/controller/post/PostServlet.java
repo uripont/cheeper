@@ -326,8 +326,8 @@ public class PostServlet extends HttpServlet {
                 
                 System.out.println("[PostServlet EDIT] Post found - Post User ID: " + existingPost.getUserId() + ", Current User ID: " + userId);
                 
-                if (existingPost.getUserId() != userId) {
-                    System.out.println("[PostServlet EDIT] ERROR: User " + userId + " not authorized to edit post owned by " + existingPost.getUserId());
+                if (existingPost.getUserId() != userId && userOpt.get().getRoleType() != com.webdev.cheeper.model.RoleType.ENTITY) {
+                    System.out.println("[PostServlet EDIT] ERROR: User " + userId + " not authorized to edit post owned by " + existingPost.getUserId() + " and is not an ENTITY.");
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     response.setContentType("application/json");
                     response.getWriter().print("{\"success\": false, \"message\": \"Not authorized to edit this post\"}");
@@ -388,4 +388,3 @@ public class PostServlet extends HttpServlet {
     }    
     
 }
-
