@@ -51,7 +51,7 @@ public class EditPostViewController extends HttpServlet {
             // Verify ownership
             String email = (String) session.getAttribute("email");
             Optional<User> userOpt = userRepository.findByEmail(email);
-            if (userOpt.isEmpty() || userOpt.get().getId() != post.getUserId()) {
+            if (userOpt.isEmpty() || (userOpt.get().getId() != post.getUserId() && userOpt.get().getRoleType() != RoleType.ENTITY)) {
                 resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Not authorized to edit this post");
                 return;
             }
