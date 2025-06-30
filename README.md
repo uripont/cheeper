@@ -1,11 +1,23 @@
-# Cheeper WebApp
+ <img src="docs/images/upf_logo.png" width="120">
 
-## Directory Overview
+---
 
-https://github.com/user-attachments/assets/35bff980-33c3-4a8e-912a-d5a9e75b28a7
+<p align="center">
+  <img src="docs/images/cheeper_logos.png" width="200">
+</p>
+
+# Cheeper, a Twitter-like webapp platform in Java
+
+#### A project for the **UPF - Software Engineering for Web Applications** course, 2025
+
+**Cheeper** is a Twitter-like social media application built using Java EE technologies: Servlets, JPC and JavaBeans under MVC2 design pattern.
+
+![Cheeper overview](docs/images/readme_collage.png)
 
 
-```
+This is clearly reflected in the project structure, which separates the application code into distinct layers:
+
+```plaintext
 src/
 ├── main/
     ├── java/com/webdev/cheeper/
@@ -24,17 +36,25 @@ src/
             └── web.xml   # Web application config
 ```
 
-## Dev Container setup for Java/Tomcat/Maven
+## Full functionality walkthrough
+
+https://github.com/user-attachments/assets/35bff980-33c3-4a8e-912a-d5a9e75b28a7
+
+## Test it yourself: Dev Container setup for Java/Tomcat/Maven
 
 ### Motivation
+
 We spent a *non-negligible* amount of time setting up with local Java/Tomcat/Maven setups and interiorizing IDE-specific GUI flows. We wanted to let every teammate use **any IDE** (VS Code, IntelliJ,...) against a single, reproducible environment, with the minimum amount of local installs.
 
-### Architecture Overview
-Our project uses Docker Compose to orchestrate three separate services. The first service, `dev`, is our development environment container. We settled on using a devcontainer, which is an open standard for defining a development environment in a Docker container. We just have to set up a single Dockerfile, and then we can use it in any IDE that supports devcontainers: they can "mount" the local filesystem into the container and integrate the whole IDE experience, providing a transparent experience as if it was running locally on the host machine. It includes OpenJDK 21, the Maven CLI, Git, and other essential devtools for our Java EE2 stack.
+### Devcontainer Architecture Overview
 
-The second service, `tomcat`, runs the official Tomcat 11 server. We extend the base image with a small customization so that Tomcat rescans the deployment directory every second, allowing faster "hot-deploy" when a new WAR file is built. Deployments happen automatically: when a fresh `ROOT.war` is placed into a shared `webapps` folder, Tomcat detects the change and reloads the application. Note that there is a bit of edge-case handling using a container-bind mount directory (`tomcat-webapps`) to ensure that the `webapps` folder on the server is always empty before a new deployment, to trigger the reload.
+Our project uses Docker Compose to orchestrate three separate services. We settled on using a devcontainer, which is an open standard for defining a development environment in a Docker container. The first service, `dev`, is our development environment container. We just have to set up a single Dockerfile, and then we can use it in any IDE that supports devcontainers: they can "mount" the local filesystem into the container and integrate the whole IDE experience, providing a transparent experience as if it was running locally on the host machine. It includes OpenJDK 21, the Maven CLI, Git, and other essential devtools for our Java EE2 stack.
 
-The third service, `db`, runs MySQL 8 to host the application’s database. All credentials and configuration values are stored in a single `.env` file at the repository root for simplicity and consistency. This file is then used to configure the system environment variables for all three services. For simplicity, and given that we have control over the three containers, we set up all environment variables from the `.env` file on all three containers.
+The second service, `tomcat`, runs the official Tomcat 11 server. We extend the base image with a small customization so that Tomcat rescans the deployment directory more often, allowing faster "hot-deploy" when a new WAR file is built. Deployments happen automatically: when a fresh `ROOT.war` is placed into a shared `webapps` folder, Tomcat detects the change and reloads the application. Note that there is a bit of edge-case handling using a container-bind mount directory (`tomcat-webapps`) to ensure that the `webapps` folder on the server is always empty before a new deployment, to trigger the reload. We have set up, as explained later, a build script to handle this process using a single command.
+
+The third service, `db`, runs MySQL 8 to host the application’s database. The folder `.devcontainer/mysql-init` contains the SQL scripts that will be executed on image build in order to set up the database schema and some initial sample data.
+
+ All credentials and configuration values are stored in a single `.env` file at the repository root for simplicity and consistency. This file is then used to configure the system environment variables for all three services. For simplicity, and given that we have control over the three containers, we set up all environment variables from the `.env` file on all three containers.
 
 ### Getting Started
 
@@ -47,7 +67,7 @@ The third service, `db`, runs MySQL 8 to host the application’s database. All
 
 The build and deploy process can be run in two ways:
 
-1. **Using VSCode Build Task**: 
+1. **Using VSCode Build Task**:
    - Open Command Palette (Ctrl+Shift+P) and select **Tasks: Run Build Task**
    - Or use the shortcut **Ctrl+Shift+B** (Windows/Linux)/**Cmd+Shift+B** (Mac)
 
